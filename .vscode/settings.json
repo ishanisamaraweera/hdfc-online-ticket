@@ -1,0 +1,23 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#06387d",
+    "activityBar.activeBorder": "#06387d",
+    "activityBar.background": "#000000",
+    "activityBar.foreground": "#ffffff",
+    "activityBar.inactiveForeground": "#ffffff",
+    "activityBarBadge.background": "#06387d",
+    "activityBarBadge.foreground": "#ffffff",
+    "statusBar.background": "#06387d",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#021d45",
+    "statusBarItem.remoteBackground": "#06387d",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#001f4b",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#4a76b3",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "cSpell.words": [
+    "HDFC"
+  ]
+}

@@ -1,0 +1,248 @@
+.side-menu {
+  position: fixed;
+  background: var(--color-bg);
+  width: 270px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  transition: width 0.2s ease-in;
+}
+
+.side-menu.inactive {
+  width: 80px;
+}
+
+.side-menu .top-section {
+  position: relative;
+}
+
+.side-menu .top-section .logo {
+  width: 45px;
+  height: 45px;
+  overflow: hidden;
+  display: flex;
+}
+.side-menu .top-section .logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.side-menu .top-section .logo span {
+  position: absolute;
+  display: inline-block;
+  line-height: 22px;
+  opacity: 1;
+  font-size: 16px;
+  transition: opacity 0.2s ease-in;
+  font-weight: 700;
+  color: var(--color-white);
+  padding-left: 55px;
+}
+
+.side-menu.inactive .top-section .logo span {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.side-menu .main-menu .menu-item {
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: block;
+  color: var(--color-white);
+  margin-bottom: 10px;
+}
+
+.side-menu .main-menu .menu-item.active {
+  background: var(--color-white);
+  border-radius: 5px;
+  color: var(--color-text);
+  box-shadow: var(--box-shadow-base);
+}
+
+.side-menu .main-menu {
+  margin: 40px 0 0 0;
+  position: relative;
+  max-height: 550px;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.side-menu .main-menu ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+/* not required any more */
+
+.side-menu .main-menu .menu-item .menu-icon {
+  display: inline-block;
+  width: 37px;
+  height: 40px;
+  font-size: 20px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.side-menu .main-menu .menu-item span {
+  position: absolute;
+  display: inline-block;
+  line-height: 40px;
+  opacity: 1;
+  transition: opacity 0.2s ease-in;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.side-menu.inactive .main-menu .menu-item span {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.side-menu .main-menu .sub-menu {
+  color: var(--color-white);
+  margin-left: 20px;
+  border-left: 1px solid var(--color-white);
+  box-sizing: border-box;
+  padding-left: 10px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in;
+}
+
+.side-menu .main-menu .sub-menu.active {
+  max-height: none;
+}
+
+.side-menu .main-menu .sub-menu a {
+  display: block;
+  margin: 5px 0;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--color-white);
+  box-sizing: border-box;
+  padding: 5px 10px;
+}
+
+.side-menu .main-menu .sub-menu a.active {
+  /* change in background, not recorded in video */
+  background: var(--color-white);
+  display: block;
+  border-radius: 5px;
+  color: var(--color-text);
+}
+
+.side-menu.inactive .main-menu .sub-menu a.active {
+  /* change in background, not recorded in video */
+  display: none;
+}
+
+.side-menu-footer {
+  width: 100%;
+  background: #131313;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.side-menu-footer .avatar {
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  display: inline-block;
+}
+.side-menu-footer .avatar img {
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.side-menu-footer .user-info {
+  display: inline-block;
+  margin: 0 10px;
+  color: #fff;
+  position: absolute;
+  opacity: 1;
+  transition: opacity 0.2s ease-in;
+}
+
+.side-menu.inactive .side-menu-footer .user-info {
+  opacity: 1;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.side-menu-footer .user-info h5 {
+  font-size: 12px;
+  color: white;
+  margin: 0;
+  font-weight: 600;
+}
+
+.side-menu-footer .user-info p {
+  font-size: 10px;
+  color: white;
+  margin: 0;
+}
+
+.side-menu-footer .user-info .version {
+  font-size: 8px;
+  color: white;
+  margin: 0;
+}
+
+.side-menu .side-menu-footer .toggle-menu-btn {
+  color: #fff;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.side-menu.inactive .side-menu-footer .toggle-menu-btn {
+  right: -50px;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  border-radius: 1px;
+  background: #333;
+}
+
+.container_main {
+  margin-left: 270px;
+  transition: margin-left 0.2s ease-in;
+   /* padding: 15px; */
+  box-sizing: border-box;
+}
+
+.container_main.inactive {
+  margin-left: 80px;
+}
+
+.side-menu .top-section .toggle-menu-btn {
+  color: #666;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.side-menu.inactive .top-section .toggle-menu-btn {
+  right: -50px;
+}
