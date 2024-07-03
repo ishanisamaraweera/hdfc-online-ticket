@@ -215,9 +215,7 @@ function AddTicket() {
                 <Radio.Group>
                   <Radio value="Yes">Working PC</Radio>
                   <Radio value="No">Another PC</Radio>
-
                 </Radio.Group>
-
               </Form.Item>
 
               <Form.Item
