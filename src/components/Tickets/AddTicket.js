@@ -26,8 +26,8 @@ function AddTicket() {
         ...values,
         //issueDesAndRemarks: desData,
         lastUpdatedDateTime: new Date().toISOString(),
-        lastUpdatedUser: "admin",
-        sender: "admin",
+        lastUpdatedUser: "1428",
+        sender: "1428",
         reportedDateTime: new Date().toISOString()
         
       };

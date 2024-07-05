@@ -24,9 +24,9 @@ export default function Login() {
     setLoading(true);
     form.validateFields().then((values) => {
       setTimeout(() => {
-        if (values.username === "admin" && values.password === "admin") {
+        if (values.username === "1428" && values.password === "admin") {
           message.success("Login Successful");
-          setLogUser(true, "admin", "admin");
+          setLogUser(true, "1428", "admin");
           setActiveRoute("dashboard");
           Auth.login(() => {
             navigate("/dashboard");
@@ -52,7 +52,7 @@ export default function Login() {
   //   console.log(login);
   //   if (login.data.success) {
   //     message.success("Login Successful");
-  //     setLogUser(true, "admin", "admin");
+  //     setLogUser(true, "1428", "admin");
   //     setActiveRoute("dashboard");
   //     Auth.login(() => {
   //       navigate("/dashboard");
