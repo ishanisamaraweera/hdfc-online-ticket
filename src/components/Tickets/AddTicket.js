@@ -1,7 +1,7 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { Button, Col, Form, Input, message, Radio, Row, Select } from "antd";
 import TextArea from "antd/lib/input/TextArea";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
@@ -16,6 +16,46 @@ function AddTicket() {
 
   useBreadCrumb("Create Ticket", location.pathname, "", "add");
 
+  useEffect(() => {
+    fetchInitialValues();
+    fetchIPAddress();
+  }, []);
+
+  const fetchInitialValues = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getUserDetailsForTicketByUsername/1428'); // Adjust the endpoint as necessary
+      const initialValues = response.data;
+      form.setFieldsValue({
+        location: initialValues.location,
+        branchOrDivision: initialValues.branchOrDivision,
+      });
+    } catch (error) {
+      message.error("Failed to load initial values");
+    }
+  };
+
+  const fetchIPAddress = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getIPAddress');
+      const ipAddress = response.data;
+      form.setFieldsValue({
+        ip: ipAddress,
+      });
+    } catch (error) {
+      message.error("Failed to load IP address");
+    }
+  };
+
+  const handlePcTypeChange = (e) => {
+  	    if (e.target.value === "No") {
+  	      form.setFieldsValue({
+  	        ip: "",
+  	      });
+  	    } else {
+  	      fetchIPAddress();
+  	    }
+  	  };
+
   const onFinishFailed = () => {
     message.error("Please fill all the details");
   };
@@ -29,13 +69,13 @@ function AddTicket() {
         lastUpdatedUser: "1428",
         sender: "1428",
         reportedDateTime: new Date().toISOString()
-        
+
       };
       axios.post("http://localhost:8080/addTicket", data)
         .then((result) => {
           console.log(result.data);
           form.resetFields();
-          message.success("Ticket details added successfully");
+          message.success("Ticket details added successfully for ticket no: " + result.data.ticketNo);
           navigate('/tickets'); // Navigate back to tickets page after success
         })
         .catch((error) => {
@@ -108,7 +148,7 @@ function AddTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Location" size="large">
+                <Select allowClear placeholder="Select Location" size="large" disabled>
                   <Option value="Head Office">Head Office</Option>
                   <Option value="Branch/Division">Branch/Division</Option>
                 </Select>
@@ -127,7 +167,7 @@ function AddTicket() {
                 <Select
                   allowClear
                   placeholder="Select Branch/Division"
-                  size="large"
+                  size="large" disabled
                 >
                   <Option value="Galle">Galle</Option>
                   <Option value="Mathara">Mathara</Option>
@@ -215,7 +255,7 @@ function AddTicket() {
                     message: "PC Type cannot be empty!",
                   },
                 ]}>
-                <Radio.Group>
+                <Radio.Group onChange={handlePcTypeChange}>
                   <Radio value="Yes">Working PC</Radio>
                   <Radio value="No">Another PC</Radio>
                 </Radio.Group>
@@ -231,7 +271,7 @@ function AddTicket() {
                   },
                 ]}
               >
-                <Input type="text" size="large" placeholder="IP Address" />
+                <Input type="text" size="large" placeholder="Add relavent IP address of the issue related PC" />
               </Form.Item>
               <Form.Item
                 label="Issue Description & Remarks"
@@ -243,7 +283,7 @@ function AddTicket() {
                   },
                 ]}
               >
-                <TextArea rows={4} placeholder="Type here ..." />
+                <TextArea rows={4} placeholder="Type explanation about the issue ..." />
               </Form.Item>
             </Col>
           </Row>

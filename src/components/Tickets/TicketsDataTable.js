@@ -64,7 +64,7 @@ function TicketDataTable() {
       title: "Assignee",
       dataIndex: "assignee",
       width: 200,
-      sorter: (a, b) => a.assignee.localeCompare(b.assignee),
+      sorter: (a, b) => (a.assignee && b.assignee ? a.assignee.localeCompare(b.assignee) :0),
     },
     {
       title: "Reported Date Time",
@@ -116,7 +116,7 @@ function TicketDataTable() {
       title: "Serial No",
       render: (record) => record?.serialNo,
       width: 200,
-      sorter: (a, b) => a.serialNo.localeCompare(b.serialNo),
+      sorter: (a, b) => (a.serialNo && b.serialNo ? a.serialNo.localeCompare(b.serialNo) :0),
     },
     {
       title: "Is Working PC",
@@ -141,32 +141,32 @@ function TicketDataTable() {
       render: (record) => record?.agentResponseDateTime,
       width: 200,
       sorter: (a, b) =>
-        new Date(a.agentResponseDateTime) - new Date(b.agentResponseDateTime),
+        (a.agentResponseDateTime && b.agentResponseDateTime ? new Date(a.agentResponseDateTime) - new Date(b.agentResponseDateTime) :0),
     },
     {
       title: "Resolved Date Time",
       render: (record) => record?.resolvedDateTime,
       width: 200,
       sorter: (a, b) =>
-        new Date(a.resolvedDateTime) - new Date(b.resolvedDateTime),
+        (a.resolvedDateTime && b.resolvedDateTime ? new Date(a.resolvedDateTime) - new Date(b.resolvedDateTime) : 0),
     },
     {
       title: "Resolution Period",
       render: (record) => record?.resolutionPeriod,
       width: 200,
-      sorter: (a, b) => a.resolutionPeriod - b.resolutionPeriod,
+      sorter: (a, b) => (a.resolutionPeriod && b.resolutionPeriod ? a.resolutionPeriod - b.resolutionPeriod : 0),
     },
     {
       title: "Agent Comments",
       render: (record) => record?.agentComments,
       width: 200,
-      sorter: (a, b) => a.agentComments.localeCompare(b.agentComments),
+      sorter: (a, b) => (a.agentComments && b.agentComments ? a.agentComments.localeCompare(b.agentComments) : 0),
     },
     {
       title: "Last Updated User",
       render: (record) => record?.lastUpdatedUser,
       width: 200,
-      sorter: (a, b) => a.lastUpdatedUser.localeCompare(b.lastUpdatedUser),
+      sorter: (a, b) => (a.lastUpdatedUser && b.lastUpdatedUser ? a.lastUpdatedUser.localeCompare(b.lastUpdatedUser) : 0),
     },
     {
       title: "Last Updated Date-Time",
