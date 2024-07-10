@@ -52,7 +52,7 @@ function TicketDataTable() {
       title: "Ticket No",
       dataIndex: "ticketNo",
       width: 200,
-      sorter: (a, b) => a.ticketNo.toString().localeCompare(b.ticketNo.toString()),
+      sorter: (a, b) => parseInt(a.ticketNo, 10) - parseInt(b.ticketNo, 10),
     },
     {
       title: "Sender",

@@ -219,9 +219,20 @@ function EditTicket() {
               <Form.Item
                 label="Contact No"
                 name="contactNo"
-                rules={[{ required: true, message: "Cannot be empty!" }]}
+                rules={[{ required: true, message: "Cannot be empty!" },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message: "Contact No must be exactly 10 digits!"
+                }
+                ]}
               >
-                <Input type="text" size="large" placeholder="Contact No" />
+                <Input type="text" size="large" placeholder="Contact No" maxLength={10}
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
               </Form.Item>
               <Form.Item label="Serial No" name="serialNo">
                 <Input type="text" size="large" placeholder="Serial No" />
@@ -241,18 +252,38 @@ function EditTicket() {
                   <Radio value="No">Another PC</Radio>
                 </Radio.Group>
               </Form.Item>
+
               <Form.Item
-                label="IP Address"
+                label="IP Address (Enter the IP address that belong to the issue if you have logged from another PC)"
                 name="ip"
                 rules={[
                   {
                     required: true,
                     message: "IP Address cannot be empty!",
                   },
+                  {
+                    pattern: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                    message: "Please enter a valid IP address!",
+                  }
                 ]}
               >
-                <Input type="text" size="large" placeholder="IP Address" />
+                <Input
+                  type="text"
+                  size="large"
+                  placeholder="IP Address"
+                  onKeyPress={(event) => {
+                    const charCode = event.which ? event.which : event.keyCode;
+                    if (
+                      charCode !== 46 && // Full stop
+                      (charCode < 48 || charCode > 57) // Digits
+                    ) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
               </Form.Item>
+
+
               <Form.Item
                 label="Issue Description & Remarks"
                 name="issueDesAndRemarks"

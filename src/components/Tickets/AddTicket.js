@@ -28,6 +28,7 @@ function AddTicket() {
       form.setFieldsValue({
         location: initialValues.location,
         branchOrDivision: initialValues.branchOrDivision,
+        status: 'New',
       });
     } catch (error) {
       message.error("Failed to load initial values");
@@ -226,8 +227,8 @@ function AddTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Status" size="large">
-                  <Option value="New">New</Option>
+                <Select allowClear placeholder="Select Status" size="large" disabled>
+                  <Option value="New" selected >New</Option>
                   <Option value="In Progress">In Progress</Option>
                   <Option value="Pending">Pending</Option>
                   <Option value="Completed">Completed</Option>
@@ -262,7 +263,7 @@ function AddTicket() {
               </Form.Item>
 
               <Form.Item
-                label="IP Address"
+                label="IP Address (Enter the IP address that belong to the issue if you have logged from another PC)"
                 name="ip"
                 rules={[
                   {
