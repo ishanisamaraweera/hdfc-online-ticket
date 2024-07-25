@@ -49,10 +49,10 @@ function TicketDataTable() {
 
     const columns = [
     {
-      title: "Ticket No",
-      dataIndex: "ticketNo",
+      title: "Ticket ID",
+      dataIndex: "ticketId",
       width: 200,
-      sorter: (a, b) => parseInt(a.ticketNo, 10) - parseInt(b.ticketNo, 10),
+      sorter: (a, b) => parseInt(a.ticketId, 10) - parseInt(b.ticketId, 10),
     },
     {
       title: "Sender",
@@ -90,9 +90,9 @@ function TicketDataTable() {
     },
     {
       title: "Branch or Division",
-      render: (record) => record?.branchOrDivision,
+      render: (record) => record?.branchDivision,
       width: 200,
-      sorter: (a, b) => a.branchOrDivision.localeCompare(b.branchOrDivision),
+      sorter: (a, b) => a.branchDivision.localeCompare(b.branchDivision),
     },
     {
       title: "Issue Type",
@@ -137,11 +137,11 @@ function TicketDataTable() {
       sorter: (a, b) => a.issueDesAndRemarks.localeCompare(b.issueDesAndRemarks),
     },
     {
-      title: "Agent Response Date-Time",
-      render: (record) => record?.agentResponseDateTime,
+      title: "Assignee Response Date-Time",
+      render: (record) => record?.assigneeResponseDateTime,
       width: 200,
       sorter: (a, b) =>
-        (a.agentResponseDateTime && b.agentResponseDateTime ? new Date(a.agentResponseDateTime) - new Date(b.agentResponseDateTime) :0),
+        (a.assigneeResponseDateTime && b.assigneeResponseDateTime ? new Date(a.assigneeResponseDateTime) - new Date(b.assigneeResponseDateTime) :0),
     },
     {
       title: "Resolved Date Time",
@@ -157,10 +157,10 @@ function TicketDataTable() {
       sorter: (a, b) => (a.resolutionPeriod && b.resolutionPeriod ? a.resolutionPeriod - b.resolutionPeriod : 0),
     },
     {
-      title: "Agent Comments",
-      render: (record) => record?.agentComments,
+      title: "Assingee Comments",
+      render: (record) => record?.assigneeComments,
       width: 200,
-      sorter: (a, b) => (a.agentComments && b.agentComments ? a.agentComments.localeCompare(b.agentComments) : 0),
+      sorter: (a, b) => (a.assigneeComments && b.assigneeComments ? a.assigneeComments.localeCompare(b.assigneeComments) : 0),
     },
     {
       title: "Last Updated User",
@@ -202,7 +202,7 @@ function TicketDataTable() {
               shape="circle"
               icon={<EyeOutlined />}
               onClick={() => {
-                navigate(`/viewTicket/${record.ticketNo}`);
+                navigate(`/viewTicket/${record.ticketId}`);
               }}
             />
           </Tooltip>
@@ -213,7 +213,7 @@ function TicketDataTable() {
               shape="circle"
               icon={<EditOutlined />}
               onClick={() => {
-                navigate(`/updateTicket/${record.ticketNo}`);
+                navigate(`/updateTicket/${record.ticketId}`);
               }}
             />
           </Tooltip>
@@ -223,7 +223,7 @@ function TicketDataTable() {
               className="delete_button"
               shape="circle"
               icon={<CloseOutlined />}
-              onClick={() => statusChange(record.ticketNo, "Closed")}
+              onClick={() => statusChange(record.ticketId, "Closed")}
             />
           </Tooltip>
           &nbsp;&nbsp;
@@ -232,7 +232,7 @@ function TicketDataTable() {
               className="delete_button"
               shape="circle"
               icon={<DeleteOutlined />}
-              onClick={() => deleteContent(record.ticketNo)}
+              onClick={() => deleteContent(record.ticketId)}
             />
           </Tooltip>
         </>

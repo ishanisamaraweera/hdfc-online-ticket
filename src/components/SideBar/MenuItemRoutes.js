@@ -122,13 +122,20 @@ export const menuItems = [
     ],
   },
   {
-    name: "User Role",
+    name: "Users",
     exact: true,
-    to: "/user-role",
+    to: "/add-user",
     iconClassName: "bi bi-people",
     route_key: "user-role",
     privilege: ["SUPER_ADMIN"],
     subMenus: [
+      {
+        name: "Add User",
+        exact: true,
+        to: "/user/add-new",
+        route_key: "add-new",
+        privilege: ["SUPER_ADMIN"], 
+      },
       {
         name: "Add User Role",
         exact: true,

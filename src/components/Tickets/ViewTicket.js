@@ -16,22 +16,35 @@ function ViewTicket() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [desData, setDesData] = useState();
+  const [statuses, setStatuses] = useState([]);
 
   useBreadCrumb("View Ticket", location.pathname, "", "add");
 
   useEffect(() => {
     fetchTicketDetails();
+    fetchStatuses();
   }, [id]);
+
+
+    const fetchStatuses = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/getStatuses');
+            setStatuses(response.data);
+        } catch (error) {
+            console.error('Error fetching statuses:', error);
+        }
+    };
 
   const fetchTicketDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
       const ticket = response.data;
+      console.log(ticket);
       form.setFieldsValue({
-        ticketNo: ticket.ticketNo,
+        ticketId: ticket.ticketId,
         emergencyLevel: ticket.emergencyLevel,
         location: ticket.location,
-        branchOrDivision: ticket.branchOrDivision,
+        branchDivision: ticket.branchDivision,
         issueType: ticket.issueType,
         issueCategory: ticket.issueCategory,
         status: ticket.status,
@@ -92,16 +105,16 @@ function ViewTicket() {
           <Row gutter={24}>
             <Col span={12}>
               <Form.Item
-                label="Ticket No"
-                name="ticketNo" readOnly
+                label="Ticket ID"
+                name="ticketId" 
                 rules={[
                   {
                     required: true,
-                    message: "Ticket No cannot be empty!",
+                    message: "Ticket ID cannot be empty!",
                   },
                 ]}
               >
-                <Input type="text" size="large" placeholder="Ticket No" />
+                <Input type="text" size="large" placeholder="Ticket ID" readOnly />
               </Form.Item>
               <Form.Item
                 label="Emergency Level"
@@ -142,7 +155,7 @@ function ViewTicket() {
 
               <Form.Item
                 label="Branch/Division"
-                name="branchOrDivision"
+                name="branchDivision"
                 rules={[
                   {
                     required: true,
@@ -155,8 +168,6 @@ function ViewTicket() {
                   placeholder="Select Branch/Division"
                   size="large" disabled
                 >
-                  <Option value="Galle">Galle</Option>
-                  <Option value="Mathara">Mathara</Option>
                 </Select>
               </Form.Item>
 
@@ -171,8 +182,6 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Issue Type" size="large" disabled>
-                  <Option value="Hardware">Hardware</Option>
-                  <Option value="Software">Software</Option>
                 </Select>
               </Form.Item>
 
@@ -191,12 +200,6 @@ function ViewTicket() {
                   placeholder="Select Issue Category"
                   size="large" disabled
                 >
-                  <Option value="UPS Issue">UPS Issue</Option>
-                  <Option value="Printer Issue">Printer Issue</Option>
-                  <Option value="PC Issue">PC Issue</Option>
-                  <Option value="DMS Issue">DMS Issue</Option>
-                  <Option value="CBS Issue">CBS Issue</Option>
-                  <Option value="LOS Issue">LOS Issue</Option>
                 </Select>
               </Form.Item>
 
@@ -211,11 +214,11 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Status" size="large" disabled >
-                  <Option value="New">New</Option>
-                  <Option value="Pending">Pending</Option>
-                  <Option value="In Progress">In Progress</Option>
-                  <Option value="Completed">Completed</Option>
-                  <Option value="Closed">Closed</Option>
+                {statuses.map(status => (
+                    <Option key={status.statusId} value={status.statusId}>
+                        {status.statusDes}
+                    </Option>
+                ))}
                 </Select>
               </Form.Item>
             </Col>

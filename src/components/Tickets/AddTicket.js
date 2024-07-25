@@ -13,25 +13,43 @@ function AddTicket() {
   const location = useLocation();
   const navigate = useNavigate();
   const [desData, setDesData] = useState("");
+  const [issueCategories, setIssueCategories] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [issueTypes, setIssueTypes] = useState([]);
+  const [emergencyLevels, setEmergencyLevels] = useState([]);
 
   useBreadCrumb("Create Ticket", location.pathname, "", "add");
 
   useEffect(() => {
     fetchInitialValues();
     fetchIPAddress();
+    fetchStatuses();
+    fetchEmergencyLevels();
+    fetchIssueTypes();
+    fetchIssueCategories();
   }, []);
 
   const fetchInitialValues = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getUserDetailsForTicketByUsername/1428'); // Adjust the endpoint as necessary
+      const response = await axios.get('http://localhost:8080/getUserDetailsForTicketByUsername/1428');
       const initialValues = response.data;
       form.setFieldsValue({
-        location: initialValues.location,
-        branchOrDivision: initialValues.branchOrDivision,
-        status: 'New',
+        location: initialValues.locationDes,
+        branchDivision: initialValues.branchDivisionDes,
+        statusDes: "New",
+        status: 1
       });
     } catch (error) {
       message.error("Failed to load initial values");
+    }
+  };
+
+  const fetchIssueTypes = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getIssueTypes');
+      setIssueTypes(response.data);
+    } catch (error) {
+      message.error("Failed to load issue types");
     }
   };
 
@@ -48,14 +66,42 @@ function AddTicket() {
   };
 
   const handlePcTypeChange = (e) => {
-  	    if (e.target.value === "No") {
-  	      form.setFieldsValue({
-  	        ip: "",
-  	      });
-  	    } else {
-  	      fetchIPAddress();
-  	    }
-  	  };
+    if (e.target.value === "No") {
+      form.setFieldsValue({
+        ip: "",
+      });
+    } else {
+      fetchIPAddress();
+    }
+  };
+
+  const fetchIssueCategories = async (issueTypeId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+      setIssueCategories(response.data);
+    } catch (error) {
+      //message.error("Failed to load issue categories");
+    }
+  };
+
+  const fetchStatuses = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getStatuses`);
+      setStatuses(response.data);
+    } catch (error) {
+      message.error("Failed to load statuses");
+    }
+  };
+
+  const fetchEmergencyLevels = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+      setEmergencyLevels(response.data);
+    } catch (error) {
+      message.error("Failed to load emergency levels");
+    }
+  };
+
 
   const onFinishFailed = () => {
     message.error("Please fill all the details");
@@ -76,7 +122,7 @@ function AddTicket() {
         .then((result) => {
           console.log(result.data);
           form.resetFields();
-          message.success("Ticket details added successfully for ticket no: " + result.data.ticketNo);
+          message.success("Ticket details added successfully for ticket ID: " + result.data.ticketId);
           navigate('/tickets'); // Navigate back to tickets page after success
         })
         .catch((error) => {
@@ -106,16 +152,16 @@ function AddTicket() {
           <Row gutter={24}>
             <Col span={12}>
               {/* <Form.Item
-                label="Ticket No"
-                name="ticketNo" 
+                label="Ticket ID"
+                name="ticketId" 
                 rules={[
                   {
                     required: true,
-                    message: "Ticket No cannot be empty!",
+                    message: "Ticket ID cannot be empty!",
                   },
                 ]}
               >
-                <Input type="text" size="large" placeholder="Ticket No" readOnly />
+                <Input type="text" size="large" placeholder="Ticket ID" readOnly />
               </Form.Item> */}
 
               <Form.Item
@@ -133,9 +179,11 @@ function AddTicket() {
                   placeholder="Select Emergency Level"
                   size="large"
                 >
-                  <Option value="High">High</Option>
-                  <Option value="Medium">Medium</Option>
-                  <Option value="Low">Low</Option>
+                  {emergencyLevels.map(level => (
+                    <Option key={level.levelId} value={level.levelId}>
+                      {level.levelDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -150,14 +198,12 @@ function AddTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Location" size="large" disabled>
-                  <Option value="Head Office">Head Office</Option>
-                  <Option value="Branch/Division">Branch/Division</Option>
                 </Select>
               </Form.Item>
 
               <Form.Item
                 label="Branch/Division"
-                name="branchOrDivision"
+                name="branchDivision"
                 rules={[
                   {
                     required: true,
@@ -170,10 +216,6 @@ function AddTicket() {
                   placeholder="Select Branch/Division"
                   size="large" disabled
                 >
-                  <Option value="Galle">Galle</Option>
-                  <Option value="Mathara">Mathara</Option>
-                  <Option value="IT Division">IT Division</Option>
-                  <Option value="Front Office">Front Office</Option>
                 </Select>
               </Form.Item>
 
@@ -187,9 +229,12 @@ function AddTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Issue Type" size="large">
-                  <Option value="Hardware">Hardware</Option>
-                  <Option value="Software">Software</Option>
+                <Select allowClear placeholder="Select Issue Type" size="large" onChange={fetchIssueCategories}>
+                {issueTypes.map(issueTypes => (
+                    <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
+                      {issueTypes.issueTypeDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -208,12 +253,11 @@ function AddTicket() {
                   placeholder="Select Issue Category"
                   size="large"
                 >
-                  <Option value="UPS Issue">UPS Issue</Option>
-                  <Option value="Printer Issue">Printer Issue</Option>
-                  <Option value="PC Issue">PC Issue</Option>
-                  <Option value="DMS Issue">DMS Issue</Option>
-                  <Option value="CBS Issue">CBS Issue</Option>
-                  <Option value="LOS Issue">LOS Issue</Option>
+                  {issueCategories.map(category => (
+                    <Option key={category.issueCategoryId} value={category.issueCategoryId}>
+                      {category.issueCategoryDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -228,11 +272,11 @@ function AddTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Status" size="large" disabled>
-                  <Option value="New" selected >New</Option>
-                  <Option value="In Progress">In Progress</Option>
-                  <Option value="Pending">Pending</Option>
-                  <Option value="Completed">Completed</Option>
-                  <Option value="Closed">Closed</Option>
+                  {statuses.map(status => (
+                    <Option key={status.statusId} value={status.statusId}>
+                      {status.statusDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -240,9 +284,20 @@ function AddTicket() {
               <Form.Item
                 label="Contact No"
                 name="contactNo"
-                rules={[{ required: true, message: "Cannot be empty!" }]}
+                rules={[{ required: true, message: "Cannot be empty!" },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message: "Contact No must be exactly 10 digits!"
+                }
+                ]}
               >
-                <Input type="text" size="large" placeholder="Contact No" />
+                <Input type="text" size="large" placeholder="Contact No" maxLength={10}
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
               </Form.Item>
 
               <Form.Item label="Serial No" name="serialNo">
@@ -270,10 +325,28 @@ function AddTicket() {
                     required: true,
                     message: "IP Address cannot be empty!",
                   },
+                  {
+                    pattern: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                    message: "Please enter a valid IP address!",
+                  }
                 ]}
               >
-                <Input type="text" size="large" placeholder="Add relavent IP address of the issue related PC" />
+                <Input
+                  type="text"
+                  size="large"
+                  placeholder="IP Address"
+                  onKeyPress={(event) => {
+                    const charCode = event.which ? event.which : event.keyCode;
+                    if (
+                      charCode !== 46 && // Full stop
+                      (charCode < 48 || charCode > 57) // Digits
+                    ) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
               </Form.Item>
+
               <Form.Item
                 label="Issue Description & Remarks"
                 name="issueDesAndRemarks"

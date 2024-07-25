@@ -60,16 +60,16 @@ function AddTicket() {
           <Row gutter={24}>
             <Col span={12}>
               <Form.Item
-                label="Ticket No"
-                name="ticketNo"
+                label="Ticket ID"
+                name="ticketId"
                 rules={[
                   {
                     required: true,
-                    message: "Ticket No cannot be empty!",
+                    message: "Ticket ID cannot be empty!",
                   },
                 ]}
               >
-                <Input type="text" size="large" placeholder="Ticket No" />
+                <Input type="text" size="large" placeholder="Ticket ID" />
               </Form.Item>
 
               <Form.Item

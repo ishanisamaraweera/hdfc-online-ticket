@@ -14,22 +14,59 @@ function EditTicket() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [desData, setDesData] = useState("");
+  const [issueCategories, setIssueCategories] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [emergencyLevels, setEmergencyLevels] = useState([]);
 
   useBreadCrumb("Edit Ticket", location.pathname, "", "add");
 
   useEffect(() => {
     fetchTicketDetails();
+    fetchAllIssueCategories();
+    // fetchIssueTypes();
+    fetchStatuses();
+    fetchEmergencyLevels();
   }, [id]);
+
+
+  const fetchAllIssueCategories = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/getAllIssueCategories");
+      setIssueCategories(response.data);
+    } catch (error) {
+      message.error("Failed to load issue categories");
+    }
+  };
+
+  const fetchStatuses = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getStatuses`);
+      setStatuses(response.data);
+    } catch (error) {
+      message.error("Failed to load statuses");
+    }
+  };
+
+  const fetchEmergencyLevels = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+      setEmergencyLevels(response.data);
+    } catch (error) {
+      message.error("Failed to load emergency levels");
+    }
+  };
 
   const fetchTicketDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
       const ticket = response.data;
+      const issueCategoryDesc = issueCategories.find(category => category.issueCategoryId === ticket.issueCategory)?.issueCategoryDes || '';
+
       form.setFieldsValue({
-        ticketNo: ticket.ticketNo,
+        ticketId: ticket.ticketId,
         emergencyLevel: ticket.emergencyLevel,
         location: ticket.location,
-        branchOrDivision: ticket.branchOrDivision,
+        branchDivision: ticket.branchDivision,
         issueType: ticket.issueType,
         issueCategory: ticket.issueCategory,
         status: ticket.status,
@@ -38,11 +75,21 @@ function EditTicket() {
         isWorkingPc: ticket.isWorkingPc,
         ip: ticket.ip,
         issueDesAndRemarks: ticket.issueDesAndRemarks,
-        lastUpdatedUser: "admin",
+        lastUpdatedUser: "1428",
       });
       setDesData(ticket.issueDesAndRemarks);
+      fetchIssueCategories(ticket.issueType);
     } catch (error) {
       message.error("Failed to load ticket details");
+    }
+  };
+
+  const fetchIssueCategories = async (issueTypeId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+      setIssueCategories(response.data);
+    } catch (error) {
+      // message.error("Failed to load issue categories");
     }
   };
 
@@ -54,7 +101,9 @@ function EditTicket() {
     form.validateFields().then((values) => {
       const data = {
         ...values,
+        issueType: Number(values.issueType),
         issueDesAndRemarks: desData,
+        lastUpdatedUser: "1428",
       };
 
       axios
@@ -91,16 +140,16 @@ function EditTicket() {
           <Row gutter={24}>
             <Col span={12}>
               <Form.Item
-                label="Ticket No"
-                name="ticketNo"
+                label="Ticket ID"
+                name="ticketId"
                 rules={[
                   {
                     required: true,
-                    message: "Ticket No cannot be empty!",
+                    message: "Ticket ID cannot be empty!",
                   },
                 ]}
               >
-                <Input type="text" size="large" placeholder="Ticket No" readOnly />
+                <Input type="text" size="large" placeholder="Ticket ID" readOnly />
               </Form.Item>
               <Form.Item
                 label="Emergency Level"
@@ -117,9 +166,11 @@ function EditTicket() {
                   placeholder="Select Emergency Level"
                   size="large"
                 >
-                  <Option value="High">High</Option>
-                  <Option value="Medium">Medium</Option>
-                  <Option value="Low">Low</Option>
+                  {emergencyLevels.map(level => (
+                    <Option key={level.levelId} value={level.levelId}>
+                      {level.levelDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
               <Form.Item
@@ -132,14 +183,14 @@ function EditTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Location" size="large">
+                <Select allowClear placeholder="Select Location" size="large" disabled>
                   <Option value="Head Office">Head Office</Option>
                   <Option value="Branch/Division">Branch/Division</Option>
                 </Select>
               </Form.Item>
               <Form.Item
                 label="Branch/Division"
-                name="branchOrDivision"
+                name="branchDivision"
                 rules={[
                   {
                     required: true,
@@ -151,11 +202,7 @@ function EditTicket() {
                   allowClear
                   placeholder="Select Branch/Division"
                   size="large"
-                >
-                  <Option value="Galle">Galle</Option>
-                  <Option value="Mathara">Mathara</Option>
-                  <Option value="IT Division">IT Division</Option>
-                  <Option value="Front Office">Front Office</Option>
+                  disabled >
                 </Select>
               </Form.Item>
               <Form.Item
@@ -168,9 +215,9 @@ function EditTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Issue Type" size="large">
-                  <Option value="Hardware">Hardware</Option>
-                  <Option value="Software">Software</Option>
+                <Select allowClear placeholder="Select Issue Type" size="large" onChange={fetchIssueCategories} >
+                  <Option value={1}>Hardware</Option>
+                  <Option value={2}>Software</Option>
                 </Select>
               </Form.Item>
               <Form.Item
@@ -188,12 +235,12 @@ function EditTicket() {
                   placeholder="Select Issue Category"
                   size="large"
                 >
-                  <Option value="UPS Issue">UPS Issue</Option>
-                  <Option value="Printer Issue">Printer Issue</Option>
-                  <Option value="PC Issue">PC Issue</Option>
-                  <Option value="DMS Issue">DMS Issue</Option>
-                  <Option value="CBS Issue">CBS Issue</Option>
-                  <Option value="LOS Issue">LOS Issue</Option>
+                  {issueCategories.map(category => (
+                    <Option key={category.issueCategoryId}
+                      value={category.issueCategoryId}>
+                      {category.issueCategoryDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
               <Form.Item
@@ -206,12 +253,12 @@ function EditTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Status" size="large">
-                  <Option value="New">New</Option>
-                  <Option value="Pending">Pending</Option>
-                  <Option value="In Progress">In Progress</Option>
-                  <Option value="Completed">Completed</Option>
-                  <Option value="Closed">Closed</Option>
+                <Select allowClear placeholder="Select Status" size="large" disabled>
+                  {statuses.map(status => (
+                    <Option key={status.statusId} value={status.statusId}>
+                      {status.statusDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -283,7 +330,6 @@ function EditTicket() {
                 />
               </Form.Item>
 
-
               <Form.Item
                 label="Issue Description & Remarks"
                 name="issueDesAndRemarks"
@@ -294,7 +340,7 @@ function EditTicket() {
                   },
                 ]}
               >
-                <TextArea rows={4} placeholder="Type here ..." />
+                <TextArea rows={4} placeholder="Type here..." />
               </Form.Item>
             </Col>
           </Row>
