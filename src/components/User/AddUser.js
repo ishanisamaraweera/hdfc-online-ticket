@@ -1,11 +1,11 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, message, Radio, Row, Select } from "antd";
-import TextArea from "antd/lib/input/TextArea";
+import { Button, Col, Form, Input, message, Row, Select, DatePicker, Transfer } from "antd";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
-import { DatePicker, Transfer } from 'antd';
+import moment from 'moment';
+
 
 const { Option } = Select;
 
@@ -14,90 +14,62 @@ function AddUser() {
   const location = useLocation();
   const navigate = useNavigate();
   const [desData, setDesData] = useState("");
-  const [issueCategories, setIssueCategories] = useState([]);
   const [statuses, setStatuses] = useState([]);
-  const [issueTypes, setIssueTypes] = useState([]);
-  const [emergencyLevels, setEmergencyLevels] = useState([]);
+  const [userRoles, setUserRoles] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [branchDivision, setBranchDivision] = useState([]);
   const enableAllDates = () => false;
   const [targetKeys, setTargetKeys] = useState([]);
 
-  const roles = [
-    { key: '1', title: 'Admin' },
-    { key: '2', title: 'Editor' },
-    { key: '3', title: 'Viewer' },
-    { key: '4', title: 'Contributor' },
-    { key: '5', title: 'Manager' }
-  ];
+  useEffect(() => {
+    fetchUserRoles();
+    fetchLocations();
+    fetchStatuses();
+  }, []);
+
+  useEffect(() => {
+    form.setFieldsValue({ branchDivision: undefined });
+    fetchBranchDivisionByLocation(form.getFieldValue('location'));
+  }, [form.getFieldValue('location')]);
+
+  const fetchBranchDivisionByLocation = async (locationId) => {
+    try {
+
+      if (locationId) {
+        const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+        setBranchDivision(response.data);
+      } else {
+        setBranchDivision([]);
+      }
+    } catch (error) {
+      message.error("Failed to load branch or divisions");
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getLocations`);
+      setLocations(response.data);
+    } catch (error) {
+      message.error("Failed to load locations");
+    }
+  };
+
+  const fetchUserRoles = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getUserRoles`);
+      setUserRoles(response.data.map(role => ({ key: role.userRoleId, title: role.userRoleDes })));
+    } catch (error) {
+      message.error("Failed to load user roles");
+    }
+  };
+
 
   const handleChange = (nextTargetKeys) => {
     setTargetKeys(nextTargetKeys);
   };
 
-  useBreadCrumb("Create Ticket", location.pathname, "", "add");
-
-  useEffect(() => {
-    fetchInitialValues();
-    fetchIPAddress();
-    fetchStatuses();
-    fetchEmergencyLevels();
-    fetchIssueTypes();
-    fetchIssueCategories();
-  }, []);
-
-  const fetchInitialValues = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/getUserDetailsForTicketByUsername/1428');
-      const initialValues = response.data;
-      form.setFieldsValue({
-        location: initialValues.locationDes,
-        branchDivision: initialValues.branchDivisionDes,
-        statusDes: "New",
-        status: 1
-      });
-    } catch (error) {
-      message.error("Failed to load initial values");
-    }
-  };
-
-  const fetchIssueTypes = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/getIssueTypes');
-      setIssueTypes(response.data);
-    } catch (error) {
-      message.error("Failed to load issue types");
-    }
-  };
-
-  const fetchIPAddress = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/getIPAddress');
-      const ipAddress = response.data;
-      form.setFieldsValue({
-        ip: ipAddress,
-      });
-    } catch (error) {
-      message.error("Failed to load IP address");
-    }
-  };
-
-  const handlePcTypeChange = (e) => {
-    if (e.target.value === "No") {
-      form.setFieldsValue({
-        ip: "",
-      });
-    } else {
-      fetchIPAddress();
-    }
-  };
-
-  const fetchIssueCategories = async (issueTypeId) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
-      setIssueCategories(response.data);
-    } catch (error) {
-      //message.error("Failed to load issue categories");
-    }
-  };
+  useBreadCrumb("Create User", location.pathname, "", "add");
 
   const fetchStatuses = async () => {
     try {
@@ -108,40 +80,30 @@ function AddUser() {
     }
   };
 
-  const fetchEmergencyLevels = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
-      setEmergencyLevels(response.data);
-    } catch (error) {
-      message.error("Failed to load emergency levels");
-    }
-  };
-
-
   const onFinishFailed = () => {
     message.error("Please fill all the details");
   };
 
   const submitForm = () => {
     form.validateFields().then((values) => {
+      const formattedDob = values.dob ? moment(values.dob).format('YYYY-MM-DD') : null;
       const data = {
         ...values,
-        //issueDesAndRemarks: desData,
         lastUpdatedDateTime: new Date().toISOString(),
         lastUpdatedUser: "1428",
-        sender: "1428",
-        reportedDateTime: new Date().toISOString()
-
+        dob: formattedDob
       };
-      axios.post("http://localhost:8080/addTicket", data)
+
+
+      axios.post("http://localhost:8080/addUser", data)
         .then((result) => {
-          console.log(result.data);
           form.resetFields();
-          message.success("Ticket details added successfully for ticket ID: " + result.data.ticketId);
-          navigate('/tickets'); // Navigate back to tickets page after success
+          console.log("******" + JSON.stringify(result.data, null, 2) + "********")
+          message.success("User details added successfully for username: " + result.data.username);
+          navigate('/dashboard');
         })
         .catch((error) => {
-          message.error(error.response?.data?.message || "Failed to add ticket");
+          message.error(error.response?.data?.message || "Failed to add user");
         });
     }).catch(() => {
       message.error("Validation failed, please check the fields and try again.");
@@ -153,7 +115,7 @@ function AddUser() {
       <div className="section_row">
         <div className="com_head">
           <LeftOutlined onClick={() => navigate(-1)} />
-          <p className="common_header">Create Ticket</p>
+          <p className="common_header">Create User</p>
         </div>
 
         <Form
@@ -166,22 +128,22 @@ function AddUser() {
         >
           <Row gutter={24}>
             <Col span={12}>
-              <Form.Item label="Name" name="name" rules={[
-                  {
-                    required: true,
-                    message: "Name cannot be empty!",
-                  },
-                ]}>
-                <Input type="text" size="large" placeholder="Name" />
+              <Form.Item label="Name" name="displayName" rules={[
+                {
+                  required: true,
+                  message: "Name cannot be empty!",
+                },
+              ]}>
+                <Input type="text" size="large" placeholder="Enter Name" />
               </Form.Item>
 
               <Form.Item
-                name="userRole"
+                name="userRoles"
                 label="User Role"
                 rules={[{ required: true, message: 'Please select at least one role!' }]}
               >
                 <Transfer
-                  dataSource={roles}
+                  dataSource={userRoles}
                   showSearch
                   listStyle={{
                     width: 250,
@@ -195,15 +157,15 @@ function AddUser() {
               </Form.Item>
 
 
-              <Form.Item label="EPF No" name="epf">
-                <Input type="text" size="large" placeholder="EPF No" />
+              <Form.Item label="EPF No" name="epf" rules={[{ required: true, message: 'EPF No cannot be empty!' }]}>
+                <Input type="text" size="large" placeholder="Enter EPF No" />
               </Form.Item>
-              </Col>
-              <Col span={12}>
-              <Form.Item label="Designation" name="designation">
-                <Input type="text" size="large" placeholder="Designation" />
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Designation" name="designation" rules={[{ required: true, message: 'Designation cannot be empty!' }]}>
+                <Input type="text" size="large" placeholder="Enter Designation" />
               </Form.Item>
-            
+
               <Form.Item
                 label="Date of Birth"
                 name="dob"
@@ -222,7 +184,12 @@ function AddUser() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Location" size="large">
+                <Select allowClear placeholder="Select Location" size="large" onChange={value => fetchBranchDivisionByLocation(value)}>
+                  {locations.map(location => (
+                    <Option key={location.locationId} value={location.locationId}>
+                      {location.locationDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -239,12 +206,36 @@ function AddUser() {
                 <Select
                   allowClear
                   placeholder="Select Branch/Division"
-                  size="large" disabled
-                >
+                  size="large">
+                  {branchDivision.map(branchDivision => (
+                    <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
+                      {branchDivision.branchDivisionDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
-
+              <Form.Item
+                label="Status"
+                name="status"
+                rules={[
+                  {
+                    required: true,
+                    message: "Status cannot be empty!",
+                  },
+                ]}
+              >
+                <Select
+                  allowClear
+                  placeholder="Select Status"
+                  size="large">
+                  {Array.isArray(statuses) &&  statuses.map(status => (
+                    <Option key={status.statusId} value={status.statusId}>
+                      {status.statusDes}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </Col>
           </Row>
 
@@ -253,7 +244,7 @@ function AddUser() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href='http://localhost:3000/dashboard' style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

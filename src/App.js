@@ -51,7 +51,7 @@ function App() {
           <Route path="/viewTicket/:id" element={<ViewTicket />} />
           <Route path="/issue-type" element={<IssueType />} />
           <Route path="/issue-type/create" element={<AddIssueType />} />
-          <Route path="/user/add-new" element={<AddUser />} />
+          <Route path="/user/add-user" element={<AddUser />} />
           <Route
             path="/issue-category"
             element={<IssueCategory />}
