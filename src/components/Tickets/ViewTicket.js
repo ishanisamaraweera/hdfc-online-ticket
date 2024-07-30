@@ -33,6 +33,7 @@ function ViewTicket() {
     fetchEmergencyLevels();
     fetchIssueTypes();
     fetchIssueCategories();
+    fetchAllIssueCategories();
   }, [id]);
 
 
@@ -96,6 +97,15 @@ function ViewTicket() {
       }
     };
 
+    const fetchAllIssueCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/getAllIssueCategories");
+        setIssueCategories(response.data);
+      } catch (error) {
+        //message.error("Failed to load issue categories");
+      }
+    };
+
   const fetchTicketDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
@@ -116,6 +126,8 @@ function ViewTicket() {
         issueDesAndRemarks: ticket.issueDesAndRemarks,
       });
       setDesData(ticket.issueDesAndRemarks);
+      fetchIssueCategories(ticket.issueType);
+      fetchBranchDivisions(ticket.location);
     } catch (error) {
       message.error("Failed to load ticket details");
     }

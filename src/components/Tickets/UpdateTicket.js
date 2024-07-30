@@ -99,7 +99,7 @@ function EditTicket() {
     try {
       const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
       const ticket = response.data;
-      console.log("fetchTicketDetails " , ticket);
+      console.log("fetchTicketDetails ", ticket);
       //const issueCategoryDesc = issueCategories.find(category => category.issueCategoryId === ticket.issueCategory)?.issueCategoryDes || '';
 
       form.setFieldsValue({
@@ -119,6 +119,8 @@ function EditTicket() {
       });
       setDesData(ticket.issueDesAndRemarks);
       fetchIssueCategories(ticket.issueType);
+      fetchBranchDivisions(ticket.location);
+
     } catch (error) {
       message.error("Failed to load ticket details");
     }
@@ -250,8 +252,13 @@ function EditTicket() {
                 <Select
                   allowClear
                   placeholder="Select Branch/Division"
-                  size="large"
-                  disabled >
+                  size="large" disabled
+                >
+                  {branchDivisions.map(branchDivision => (
+                    <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
+                      {branchDivision.branchDivisionDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
               <Form.Item
