@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import moment from 'moment';
 
 const { Option } = Select;
 
@@ -12,18 +13,27 @@ function AddTicket() {
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
-  const [desData, setDesData] = useState("");
   const [issueCategories, setIssueCategories] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [issueTypes, setIssueTypes] = useState([]);
   const [emergencyLevels, setEmergencyLevels] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [branchDivisions, setBranchDivisions] = useState([]);
+  const [branchDivisionMap, setBranchDivisionMap] = useState({});
+  const [initialValues, setInitialValues] = useState({
+    location: undefined,
+    branchDivision: undefined,
+    status: 1
+  });
 
   useBreadCrumb("Create Ticket", location.pathname, "", "add");
 
   useEffect(() => {
     fetchInitialValues();
     fetchIPAddress();
-    fetchStatuses();
+    fetchStatuses('TICKET');
+    fetchLocations();
+    fetchBranchDivisions();
     fetchEmergencyLevels();
     fetchIssueTypes();
     fetchIssueCategories();
@@ -32,15 +42,43 @@ function AddTicket() {
   const fetchInitialValues = async () => {
     try {
       const response = await axios.get('http://localhost:8080/getUserDetailsForTicketByUsername/1428');
-      const initialValues = response.data;
+      const data = response.data;
+      setInitialValues({
+        location: data.locationId,
+        branchDivision: data.branchDivisionId,
+        status: 1
+      });
       form.setFieldsValue({
-        location: initialValues.locationDes,
-        branchDivision: initialValues.branchDivisionDes,
-        statusDes: "New",
+        location: data.locationId,
+        branchDivision: data.branchDivisionId,
         status: 1
       });
     } catch (error) {
       message.error("Failed to load initial values");
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getLocations');
+      setLocations(response.data);
+    } catch (error) {
+      message.error("Failed to load locations");
+    }
+  };
+
+  const fetchBranchDivisions = async (locationId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+      const branchDivisionsData = response.data;
+      const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
+        acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
+        return acc;
+      }, {});
+      setBranchDivisions(branchDivisionsData);
+      setBranchDivisionMap(branchDivisionMap);
+    } catch (error) {
+      message.error("Failed to load branch divisions");
     }
   };
 
@@ -80,13 +118,13 @@ function AddTicket() {
       const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
       setIssueCategories(response.data);
     } catch (error) {
-      //message.error("Failed to load issue categories");
+      // message.error("Failed to load issue categories");
     }
   };
 
-  const fetchStatuses = async () => {
+  const fetchStatuses = async (module) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses`);
+      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -111,19 +149,17 @@ function AddTicket() {
     form.validateFields().then((values) => {
       const data = {
         ...values,
-        //issueDesAndRemarks: desData,
-        lastUpdatedDateTime: new Date().toISOString(),
-        lastUpdatedUser: "1428",
+        reportedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
         sender: "1428",
-        reportedDateTime: new Date().toISOString()
-
+        lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+        lastUpdatedUser: "1428",
       };
       axios.post("http://localhost:8080/addTicket", data)
         .then((result) => {
           console.log(result.data);
           form.resetFields();
           message.success("Ticket details added successfully for ticket ID: " + result.data.ticketId);
-          navigate('/tickets'); // Navigate back to tickets page after success
+          navigate('/tickets');
         })
         .catch((error) => {
           message.error(error.response?.data?.message || "Failed to add ticket");
@@ -146,7 +182,7 @@ function AddTicket() {
           form={form}
           onFinish={submitForm}
           onFinishFailed={onFinishFailed}
-          initialValues={{ remember: true }}
+          initialValues={initialValues}
           layout="vertical"
         >
           <Row gutter={24}>
@@ -198,6 +234,11 @@ function AddTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Location" size="large" disabled>
+                  {locations.map(location => (
+                    <Option key={location.locationId} value={location.locationId}>
+                      {location.locationDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -216,6 +257,11 @@ function AddTicket() {
                   placeholder="Select Branch/Division"
                   size="large" disabled
                 >
+                  {branchDivisions.map(branchDivision => (
+                    <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
+                      {branchDivision.branchDivisionDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -230,7 +276,7 @@ function AddTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Issue Type" size="large" onChange={fetchIssueCategories}>
-                {issueTypes.map(issueTypes => (
+                  {issueTypes.map(issueTypes => (
                     <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
                       {issueTypes.issueTypeDes}
                     </Option>

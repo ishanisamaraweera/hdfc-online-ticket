@@ -10,10 +10,7 @@ import Progress from "react-progress-2";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
-import GemstoneCertifications from "./components/Categories/GemstoneCertifications/GemstoneCertifications";
 import DeleteIssueCategory from "./components/Categories/DeleteIssueCategory/DeleteIssueCategory";
-import RingMetals from "./components/Categories/RingMetals/RingMetals";
-import RingSize from "./components/Categories/RingSize/RingSize";
 import AddTicket from "./components/Tickets/AddTicket";
 import UpdateTicket from "./components/Tickets/UpdateTicket";
 import ViewTicket from "./components/Tickets/ViewTicket";
@@ -24,9 +21,10 @@ import Tickets from "./pages/Tickets";
 import Login from "./pages/Login";
 import IssueType from "./pages/IssueType";
 import IssueCategory from "./pages/IssueCategory";
-import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
 import AddIssueType from "./components/IssueType/AddIssueType";
+import AddUserRole from "./components/User/AddUserRole";
+import AddFunction from "./components/User/AddFunction";
 
 
 function App() {
@@ -52,6 +50,8 @@ function App() {
           <Route path="/issue-type" element={<IssueType />} />
           <Route path="/issue-type/create" element={<AddIssueType />} />
           <Route path="/user/add-user" element={<AddUser />} />
+          <Route path="/user/add-user-role" element={<AddUserRole />} />
+          <Route path="/user/add-function" element={<AddFunction />} />
           <Route
             path="/issue-category"
             element={<IssueCategory />}
@@ -60,13 +60,6 @@ function App() {
             path="/delete-issue-category"
             element={<DeleteIssueCategory />}
           />
-          <Route
-            path="/categories/gemstone-certifications"
-            element={<GemstoneCertifications />}
-          />
-          <Route path="/categories/ring-sizes" element={<RingSize />} />
-          <Route path="/categories/ring-metals" element={<RingMetals />} />
-          <Route path="/orders" element={<Orders />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<NotFount />} />

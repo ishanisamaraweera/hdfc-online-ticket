@@ -6,7 +6,6 @@ import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import moment from 'moment';
 
-
 const { Option } = Select;
 
 function AddUser() {
@@ -24,7 +23,7 @@ function AddUser() {
   useEffect(() => {
     fetchUserRoles();
     fetchLocations();
-    fetchStatuses();
+    fetchStatuses('USER');
   }, []);
 
   useEffect(() => {
@@ -69,11 +68,12 @@ function AddUser() {
     setTargetKeys(nextTargetKeys);
   };
 
-  useBreadCrumb("Create User", location.pathname, "", "add");
+  useBreadCrumb("Create User", "Create User");
 
-  const fetchStatuses = async () => {
+  const fetchStatuses = async (module) => {
+    console.log("Fetching statuses for module:", module);
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses`);
+      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -89,7 +89,9 @@ function AddUser() {
       const formattedDob = values.dob ? moment(values.dob).format('YYYY-MM-DD') : null;
       const data = {
         ...values,
-        lastUpdatedDateTime: new Date().toISOString(),
+        addedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+        addedBy: "1428",
+        lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
         lastUpdatedUser: "1428",
         dob: formattedDob
       };
@@ -98,7 +100,6 @@ function AddUser() {
       axios.post("http://localhost:8080/addUser", data)
         .then((result) => {
           form.resetFields();
-          console.log("******" + JSON.stringify(result.data, null, 2) + "********")
           message.success("User details added successfully for username: " + result.data.username);
           navigate('/dashboard');
         })

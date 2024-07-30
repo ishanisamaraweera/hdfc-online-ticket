@@ -14,7 +14,11 @@ function EditTicket() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [desData, setDesData] = useState("");
+  const [issueTypes, setIssueTypes] = useState([]);
   const [issueCategories, setIssueCategories] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [branchDivisions, setBranchDivisions] = useState([]);
+  const [branchDivisionMap, setBranchDivisionMap] = useState({});
   const [statuses, setStatuses] = useState([]);
   const [emergencyLevels, setEmergencyLevels] = useState([]);
 
@@ -23,24 +27,59 @@ function EditTicket() {
   useEffect(() => {
     fetchTicketDetails();
     fetchAllIssueCategories();
-    // fetchIssueTypes();
-    fetchStatuses();
+    fetchIssueTypes();
+    fetchStatuses('TICKET');
+    fetchLocations();
+    fetchBranchDivisions();
     fetchEmergencyLevels();
+    fetchIssueCategories();
   }, [id]);
 
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getLocations');
+      setLocations(response.data);
+    } catch (error) {
+      message.error("Failed to load locations");
+    }
+  };
+
+  const fetchBranchDivisions = async (locationId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+      const branchDivisionsData = response.data;
+      const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
+        acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
+        return acc;
+      }, {});
+      setBranchDivisions(branchDivisionsData);
+      setBranchDivisionMap(branchDivisionMap);
+    } catch (error) {
+      message.error("Failed to load branch divisions");
+    }
+  };
+
+  const fetchIssueTypes = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getIssueTypes');
+      setIssueTypes(response.data);
+    } catch (error) {
+      message.error("Failed to load issue types");
+    }
+  };
 
   const fetchAllIssueCategories = async () => {
     try {
       const response = await axios.get("http://localhost:8080/getAllIssueCategories");
       setIssueCategories(response.data);
     } catch (error) {
-      message.error("Failed to load issue categories");
+      //message.error("Failed to load issue categories");
     }
   };
 
-  const fetchStatuses = async () => {
+  const fetchStatuses = async (module) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses`);
+      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -60,7 +99,8 @@ function EditTicket() {
     try {
       const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
       const ticket = response.data;
-      const issueCategoryDesc = issueCategories.find(category => category.issueCategoryId === ticket.issueCategory)?.issueCategoryDes || '';
+      console.log("fetchTicketDetails " , ticket);
+      //const issueCategoryDesc = issueCategories.find(category => category.issueCategoryId === ticket.issueCategory)?.issueCategoryDes || '';
 
       form.setFieldsValue({
         ticketId: ticket.ticketId,
@@ -101,10 +141,16 @@ function EditTicket() {
     form.validateFields().then((values) => {
       const data = {
         ...values,
-        issueType: Number(values.issueType),
+        issueType: values.issueType,
+        issueCategory: values.issueCategory,
+        status: values.status,
         issueDesAndRemarks: desData,
         lastUpdatedUser: "1428",
       };
+
+      // Debugging logs to verify the form values
+      console.log("Form values:", values);
+      console.log("Data to be sent to backend:", data);
 
       axios
         .put("http://localhost:8080/updateTicket", data)
@@ -184,8 +230,11 @@ function EditTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Location" size="large" disabled>
-                  <Option value="Head Office">Head Office</Option>
-                  <Option value="Branch/Division">Branch/Division</Option>
+                  {locations.map(location => (
+                    <Option key={location.locationId} value={location.locationId}>
+                      {location.locationDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
               <Form.Item
@@ -216,8 +265,11 @@ function EditTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Issue Type" size="large" onChange={fetchIssueCategories} >
-                  <Option value={1}>Hardware</Option>
-                  <Option value={2}>Software</Option>
+                  {issueTypes.map(issueTypes => (
+                    <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
+                      {issueTypes.issueTypeDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
               <Form.Item
