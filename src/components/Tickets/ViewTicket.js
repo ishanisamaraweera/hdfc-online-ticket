@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import { apis } from "../../properties";
-import axiosInstance from "../../util/axiosInstance";
 import axios from "axios";
 
 const { Option } = Select;
@@ -17,12 +16,23 @@ function ViewTicket() {
   const { id } = useParams();
   const [desData, setDesData] = useState();
   const [statuses, setStatuses] = useState([]);
+  const [issueTypes, setIssueTypes] = useState([]);
+  const [emergencyLevels, setEmergencyLevels] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [branchDivisions, setBranchDivisions] = useState([]);
+  const [branchDivisionMap, setBranchDivisionMap] = useState({});
+  const [issueCategories, setIssueCategories] = useState([]);
 
   useBreadCrumb("View Ticket", location.pathname, "", "add");
 
   useEffect(() => {
     fetchTicketDetails();
     fetchStatuses();
+    fetchLocations();
+    fetchBranchDivisions();
+    fetchEmergencyLevels();
+    fetchIssueTypes();
+    fetchIssueCategories();
   }, [id]);
 
 
@@ -33,6 +43,57 @@ function ViewTicket() {
         } catch (error) {
             console.error('Error fetching statuses:', error);
         }
+    };
+
+    const fetchEmergencyLevels = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+        setEmergencyLevels(response.data);
+      } catch (error) {
+        message.error("Failed to load emergency levels");
+      }
+    };
+
+    const fetchLocations = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/getLocations');
+        setLocations(response.data);
+      } catch (error) {
+        message.error("Failed to load locations");
+      }
+    };
+  
+    const fetchBranchDivisions = async (locationId) => {
+      try {
+        const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+        const branchDivisionsData = response.data;
+        const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
+          acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
+          return acc;
+        }, {});
+        setBranchDivisions(branchDivisionsData);
+        setBranchDivisionMap(branchDivisionMap);
+      } catch (error) {
+        message.error("Failed to load branch divisions");
+      }
+    };
+  
+    const fetchIssueTypes = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/getIssueTypes');
+        setIssueTypes(response.data);
+      } catch (error) {
+        message.error("Failed to load issue types");
+      }
+    };
+
+    const fetchIssueCategories = async (issueTypeId) => {
+      try {
+        const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+        setIssueCategories(response.data);
+      } catch (error) {
+        // message.error("Failed to load issue categories");
+      }
     };
 
   const fetchTicketDetails = async () => {
@@ -131,9 +192,11 @@ function ViewTicket() {
                   placeholder="Select Emergency Level"
                   size="large" disabled
                 >
-                  <Option value="High">High</Option>
-                  <Option value="Medium">Medium</Option>
-                  <Option value="Low">Low</Option>
+                {emergencyLevels.map(level => (
+                  <Option key={level.levelId} value={level.levelId}>
+                    {level.levelDes}
+                  </Option>
+                ))}
                 </Select>
               </Form.Item>
 
@@ -148,8 +211,11 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Location" size="large" disabled>
-                  <Option value="Head Office">Head Office</Option>
-                  <Option value="Branch/Division">Branch/Division</Option>
+                {locations.map(location => (
+                    <Option key={location.locationId} value={location.locationId}>
+                      {location.locationDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -168,6 +234,11 @@ function ViewTicket() {
                   placeholder="Select Branch/Division"
                   size="large" disabled
                 >
+                  {branchDivisions.map(branchDivision => (
+                    <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
+                      {branchDivision.branchDivisionDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -182,6 +253,11 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Issue Type" size="large" disabled>
+                {issueTypes.map(issueTypes => (
+                    <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
+                      {issueTypes.issueTypeDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -200,6 +276,11 @@ function ViewTicket() {
                   placeholder="Select Issue Category"
                   size="large" disabled
                 >
+                  {issueCategories.map(category => (
+                    <Option key={category.issueCategoryId} value={category.issueCategoryId}>
+                      {category.issueCategoryDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
