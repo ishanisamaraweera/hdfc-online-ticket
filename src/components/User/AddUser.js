@@ -27,7 +27,7 @@ function AddUser() {
   }, []);
 
   useEffect(() => {
-    form.setFieldsValue({ branchDivision: undefined });
+    //form.setFieldsValue({ branchDivision: undefined });
     fetchBranchDivisionByLocation(form.getFieldValue('location'));
   }, [form.getFieldValue('location')]);
 
