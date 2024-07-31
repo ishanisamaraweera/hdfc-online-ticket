@@ -26,7 +26,7 @@ function AddTicket() {
     status: 1
   });
 
-  useBreadCrumb("Create Ticket", location.pathname, "", "add");
+  useBreadCrumb("Add Ticket", location.pathname, "", "add");
 
   useEffect(() => {
     fetchInitialValues();
@@ -36,7 +36,6 @@ function AddTicket() {
     fetchBranchDivisions();
     fetchEmergencyLevels();
     fetchIssueTypes();
-    fetchIssueCategories();
   }, []);
 
   const fetchInitialValues = async () => {
@@ -53,6 +52,7 @@ function AddTicket() {
         branchDivision: data.branchDivisionId,
         status: 1
       });
+      fetchBranchDivisions(data.locationId);
     } catch (error) {
       message.error("Failed to load initial values");
     }
@@ -174,7 +174,7 @@ function AddTicket() {
       <div className="section_row">
         <div className="com_head">
           <LeftOutlined onClick={() => navigate(-1)} />
-          <p className="common_header">Create Ticket</p>
+          <p className="common_header">Add Ticket</p>
         </div>
 
         <Form
@@ -182,7 +182,8 @@ function AddTicket() {
           form={form}
           onFinish={submitForm}
           onFinishFailed={onFinishFailed}
-          initialValues={initialValues}
+          // initialValues={initialValues}
+          initialValues={{ remember: true }}
           layout="vertical"
         >
           <Row gutter={24}>
@@ -259,7 +260,7 @@ function AddTicket() {
                 >
                   {branchDivisions.map(branchDivision => (
                     <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
-                      {branchDivision.branchDivisionDes}
+                      {branchDivisionMap[branchDivision.branchDivisionId]}
                     </Option>
                   ))}
                 </Select>
