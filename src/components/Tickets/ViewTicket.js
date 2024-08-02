@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import { apis } from "../../properties";
-import axiosInstance from "../../util/axiosInstance";
 import axios from "axios";
 
 const { Option } = Select;
@@ -16,22 +15,107 @@ function ViewTicket() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [desData, setDesData] = useState();
+  const [statuses, setStatuses] = useState([]);
+  const [issueTypes, setIssueTypes] = useState([]);
+  const [emergencyLevels, setEmergencyLevels] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [branchDivisions, setBranchDivisions] = useState([]);
+  const [branchDivisionMap, setBranchDivisionMap] = useState({});
+  const [issueCategories, setIssueCategories] = useState([]);
 
   useBreadCrumb("View Ticket", location.pathname, "", "add");
 
   useEffect(() => {
     fetchTicketDetails();
+    fetchStatuses();
+    fetchLocations();
+    fetchBranchDivisions();
+    fetchEmergencyLevels();
+    fetchIssueTypes();
+    fetchIssueCategories();
+    fetchAllIssueCategories();
   }, [id]);
+
+
+    const fetchStatuses = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/getStatuses');
+            setStatuses(response.data);
+        } catch (error) {
+            console.error('Error fetching statuses:', error);
+        }
+    };
+
+    const fetchEmergencyLevels = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+        setEmergencyLevels(response.data);
+      } catch (error) {
+        message.error("Failed to load emergency levels");
+      }
+    };
+
+    const fetchLocations = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/getLocations');
+        setLocations(response.data);
+      } catch (error) {
+        message.error("Failed to load locations");
+      }
+    };
+  
+    const fetchBranchDivisions = async (locationId) => {
+      try {
+        const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+        const branchDivisionsData = response.data;
+        const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
+          acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
+          return acc;
+        }, {});
+        setBranchDivisions(branchDivisionsData);
+        setBranchDivisionMap(branchDivisionMap);
+      } catch (error) {
+        message.error("Failed to load branch divisions");
+      }
+    };
+  
+    const fetchIssueTypes = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/getIssueTypes');
+        setIssueTypes(response.data);
+      } catch (error) {
+        message.error("Failed to load issue types");
+      }
+    };
+
+    const fetchIssueCategories = async (issueTypeId) => {
+      try {
+        const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+        setIssueCategories(response.data);
+      } catch (error) {
+        // message.error("Failed to load issue categories");
+      }
+    };
+
+    const fetchAllIssueCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/getAllIssueCategories");
+        setIssueCategories(response.data);
+      } catch (error) {
+        //message.error("Failed to load issue categories");
+      }
+    };
 
   const fetchTicketDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
       const ticket = response.data;
+      console.log(ticket);
       form.setFieldsValue({
-        ticketNo: ticket.ticketNo,
+        ticketId: ticket.ticketId,
         emergencyLevel: ticket.emergencyLevel,
         location: ticket.location,
-        branchOrDivision: ticket.branchOrDivision,
+        branchDivision: ticket.branchDivision,
         issueType: ticket.issueType,
         issueCategory: ticket.issueCategory,
         status: ticket.status,
@@ -42,6 +126,8 @@ function ViewTicket() {
         issueDesAndRemarks: ticket.issueDesAndRemarks,
       });
       setDesData(ticket.issueDesAndRemarks);
+      fetchIssueCategories(ticket.issueType);
+      fetchBranchDivisions(ticket.location);
     } catch (error) {
       message.error("Failed to load ticket details");
     }
@@ -92,16 +178,16 @@ function ViewTicket() {
           <Row gutter={24}>
             <Col span={12}>
               <Form.Item
-                label="Ticket No"
-                name="ticketNo" readOnly
+                label="Ticket ID"
+                name="ticketId" 
                 rules={[
                   {
                     required: true,
-                    message: "Ticket No cannot be empty!",
+                    message: "Ticket ID cannot be empty!",
                   },
                 ]}
               >
-                <Input type="text" size="large" placeholder="Ticket No" />
+                <Input type="text" size="large" placeholder="Ticket ID" readOnly />
               </Form.Item>
               <Form.Item
                 label="Emergency Level"
@@ -118,9 +204,11 @@ function ViewTicket() {
                   placeholder="Select Emergency Level"
                   size="large" disabled
                 >
-                  <Option value="High">High</Option>
-                  <Option value="Medium">Medium</Option>
-                  <Option value="Low">Low</Option>
+                {emergencyLevels.map(level => (
+                  <Option key={level.levelId} value={level.levelId}>
+                    {level.levelDes}
+                  </Option>
+                ))}
                 </Select>
               </Form.Item>
 
@@ -135,14 +223,17 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Location" size="large" disabled>
-                  <Option value="Head Office">Head Office</Option>
-                  <Option value="Branch/Division">Branch/Division</Option>
+                {locations.map(location => (
+                    <Option key={location.locationId} value={location.locationId}>
+                      {location.locationDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
               <Form.Item
                 label="Branch/Division"
-                name="branchOrDivision"
+                name="branchDivision"
                 rules={[
                   {
                     required: true,
@@ -155,8 +246,11 @@ function ViewTicket() {
                   placeholder="Select Branch/Division"
                   size="large" disabled
                 >
-                  <Option value="Galle">Galle</Option>
-                  <Option value="Mathara">Mathara</Option>
+                  {branchDivisions.map(branchDivision => (
+                    <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
+                      {branchDivision.branchDivisionDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -171,8 +265,11 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Issue Type" size="large" disabled>
-                  <Option value="Hardware">Hardware</Option>
-                  <Option value="Software">Software</Option>
+                {issueTypes.map(issueTypes => (
+                    <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
+                      {issueTypes.issueTypeDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -191,12 +288,11 @@ function ViewTicket() {
                   placeholder="Select Issue Category"
                   size="large" disabled
                 >
-                  <Option value="UPS Issue">UPS Issue</Option>
-                  <Option value="Printer Issue">Printer Issue</Option>
-                  <Option value="PC Issue">PC Issue</Option>
-                  <Option value="DMS Issue">DMS Issue</Option>
-                  <Option value="CBS Issue">CBS Issue</Option>
-                  <Option value="LOS Issue">LOS Issue</Option>
+                  {issueCategories.map(category => (
+                    <Option key={category.issueCategoryId} value={category.issueCategoryId}>
+                      {category.issueCategoryDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -211,11 +307,11 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Status" size="large" disabled >
-                  <Option value="New">New</Option>
-                  <Option value="Pending">Pending</Option>
-                  <Option value="In Progress">In Progress</Option>
-                  <Option value="Completed">Completed</Option>
-                  <Option value="Closed">Closed</Option>
+                {statuses.map(status => (
+                    <Option key={status.statusId} value={status.statusId}>
+                        {status.statusDes}
+                    </Option>
+                ))}
                 </Select>
               </Form.Item>
             </Col>

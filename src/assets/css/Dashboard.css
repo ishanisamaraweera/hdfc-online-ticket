@@ -641,3 +641,9 @@
   position: absolute;
   z-index: 10;
 }
+
+.box_section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Adjust the gap as needed */
+}

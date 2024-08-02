@@ -12,6 +12,7 @@
   transition: color 0.5s ease 0s;
   width: 24%;
   cursor: pointer;
+  margin: 10px;
 }
 
 .status-card__icon {

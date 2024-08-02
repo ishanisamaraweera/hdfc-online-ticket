@@ -1,10 +1,11 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { Button, Col, Form, Input, message, Radio, Row, Select } from "antd";
 import TextArea from "antd/lib/input/TextArea";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import moment from 'moment';
 
 const { Option } = Select;
 
@@ -12,9 +13,133 @@ function AddTicket() {
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
-  const [desData, setDesData] = useState("");
+  const [issueCategories, setIssueCategories] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [issueTypes, setIssueTypes] = useState([]);
+  const [emergencyLevels, setEmergencyLevels] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [branchDivisions, setBranchDivisions] = useState([]);
+  const [branchDivisionMap, setBranchDivisionMap] = useState({});
+  const [initialValues, setInitialValues] = useState({
+    location: undefined,
+    branchDivision: undefined,
+    status: 1
+  });
 
-  useBreadCrumb("Create Ticket", location.pathname, "", "add");
+  useBreadCrumb("Add Ticket", location.pathname, "", "add");
+
+  useEffect(() => {
+    fetchInitialValues();
+    fetchIPAddress();
+    fetchStatuses('TICKET');
+    fetchLocations();
+    fetchBranchDivisions();
+    fetchEmergencyLevels();
+    fetchIssueTypes();
+  }, []);
+
+  const fetchInitialValues = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getUserDetailsForTicketByUsername/1428');
+      const data = response.data;
+      setInitialValues({
+        location: data.locationId,
+        branchDivision: data.branchDivisionId,
+        status: 1
+      });
+      form.setFieldsValue({
+        location: data.locationId,
+        branchDivision: data.branchDivisionId,
+        status: 1
+      });
+      fetchBranchDivisions(data.locationId);
+    } catch (error) {
+      message.error("Failed to load initial values");
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getLocations');
+      setLocations(response.data);
+    } catch (error) {
+      message.error("Failed to load locations");
+    }
+  };
+
+  const fetchBranchDivisions = async (locationId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+      const branchDivisionsData = response.data;
+      const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
+        acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
+        return acc;
+      }, {});
+      setBranchDivisions(branchDivisionsData);
+      setBranchDivisionMap(branchDivisionMap);
+    } catch (error) {
+      message.error("Failed to load branch divisions");
+    }
+  };
+
+  const fetchIssueTypes = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getIssueTypes');
+      setIssueTypes(response.data);
+    } catch (error) {
+      message.error("Failed to load issue types");
+    }
+  };
+
+  const fetchIPAddress = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getIPAddress');
+      const ipAddress = response.data;
+      form.setFieldsValue({
+        ip: ipAddress,
+      });
+    } catch (error) {
+      message.error("Failed to load IP address");
+    }
+  };
+
+  const handlePcTypeChange = (e) => {
+    if (e.target.value === "No") {
+      form.setFieldsValue({
+        ip: "",
+      });
+    } else {
+      fetchIPAddress();
+    }
+  };
+
+  const fetchIssueCategories = async (issueTypeId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+      setIssueCategories(response.data);
+    } catch (error) {
+      // message.error("Failed to load issue categories");
+    }
+  };
+
+  const fetchStatuses = async (module) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+      setStatuses(response.data);
+    } catch (error) {
+      message.error("Failed to load statuses");
+    }
+  };
+
+  const fetchEmergencyLevels = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+      setEmergencyLevels(response.data);
+    } catch (error) {
+      message.error("Failed to load emergency levels");
+    }
+  };
+
 
   const onFinishFailed = () => {
     message.error("Please fill all the details");
@@ -24,19 +149,17 @@ function AddTicket() {
     form.validateFields().then((values) => {
       const data = {
         ...values,
-        //issueDesAndRemarks: desData,
-        lastUpdatedDateTime: new Date().toISOString(),
-        lastUpdatedUser: "admin",
-        sender: "admin",
-        reportedDateTime: new Date().toISOString()
-        
+        reportedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+        sender: "1428",
+        lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+        lastUpdatedUser: "1428",
       };
       axios.post("http://localhost:8080/addTicket", data)
         .then((result) => {
           console.log(result.data);
           form.resetFields();
-          message.success("Ticket details added successfully");
-          navigate('/tickets'); // Navigate back to tickets page after success
+          message.success("Ticket details added successfully for ticket ID: " + result.data.ticketId);
+          navigate('/tickets');
         })
         .catch((error) => {
           message.error(error.response?.data?.message || "Failed to add ticket");
@@ -51,7 +174,7 @@ function AddTicket() {
       <div className="section_row">
         <div className="com_head">
           <LeftOutlined onClick={() => navigate(-1)} />
-          <p className="common_header">Create Ticket</p>
+          <p className="common_header">Add Ticket</p>
         </div>
 
         <Form
@@ -59,22 +182,23 @@ function AddTicket() {
           form={form}
           onFinish={submitForm}
           onFinishFailed={onFinishFailed}
+          // initialValues={initialValues}
           initialValues={{ remember: true }}
           layout="vertical"
         >
           <Row gutter={24}>
             <Col span={12}>
               {/* <Form.Item
-                label="Ticket No"
-                name="ticketNo" 
+                label="Ticket ID"
+                name="ticketId" 
                 rules={[
                   {
                     required: true,
-                    message: "Ticket No cannot be empty!",
+                    message: "Ticket ID cannot be empty!",
                   },
                 ]}
               >
-                <Input type="text" size="large" placeholder="Ticket No" readOnly />
+                <Input type="text" size="large" placeholder="Ticket ID" readOnly />
               </Form.Item> */}
 
               <Form.Item
@@ -92,9 +216,11 @@ function AddTicket() {
                   placeholder="Select Emergency Level"
                   size="large"
                 >
-                  <Option value="High">High</Option>
-                  <Option value="Medium">Medium</Option>
-                  <Option value="Low">Low</Option>
+                  {emergencyLevels.map(level => (
+                    <Option key={level.levelId} value={level.levelId}>
+                      {level.levelDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -108,15 +234,18 @@ function AddTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Location" size="large">
-                  <Option value="Head Office">Head Office</Option>
-                  <Option value="Branch/Division">Branch/Division</Option>
+                <Select allowClear placeholder="Select Location" size="large" disabled>
+                  {locations.map(location => (
+                    <Option key={location.locationId} value={location.locationId}>
+                      {location.locationDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
               <Form.Item
                 label="Branch/Division"
-                name="branchOrDivision"
+                name="branchDivision"
                 rules={[
                   {
                     required: true,
@@ -127,12 +256,13 @@ function AddTicket() {
                 <Select
                   allowClear
                   placeholder="Select Branch/Division"
-                  size="large"
+                  size="large" disabled
                 >
-                  <Option value="Galle">Galle</Option>
-                  <Option value="Mathara">Mathara</Option>
-                  <Option value="IT Division">IT Division</Option>
-                  <Option value="Front Office">Front Office</Option>
+                  {branchDivisions.map(branchDivision => (
+                    <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
+                      {branchDivisionMap[branchDivision.branchDivisionId]}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -146,9 +276,12 @@ function AddTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Issue Type" size="large">
-                  <Option value="Hardware">Hardware</Option>
-                  <Option value="Software">Software</Option>
+                <Select allowClear placeholder="Select Issue Type" size="large" onChange={fetchIssueCategories}>
+                  {issueTypes.map(issueTypes => (
+                    <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
+                      {issueTypes.issueTypeDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -167,12 +300,11 @@ function AddTicket() {
                   placeholder="Select Issue Category"
                   size="large"
                 >
-                  <Option value="UPS Issue">UPS Issue</Option>
-                  <Option value="Printer Issue">Printer Issue</Option>
-                  <Option value="PC Issue">PC Issue</Option>
-                  <Option value="DMS Issue">DMS Issue</Option>
-                  <Option value="CBS Issue">CBS Issue</Option>
-                  <Option value="LOS Issue">LOS Issue</Option>
+                  {issueCategories.map(category => (
+                    <Option key={category.issueCategoryId} value={category.issueCategoryId}>
+                      {category.issueCategoryDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -186,12 +318,12 @@ function AddTicket() {
                   },
                 ]}
               >
-                <Select allowClear placeholder="Select Status" size="large">
-                  <Option value="New">New</Option>
-                  <Option value="In Progress">In Progress</Option>
-                  <Option value="Pending">Pending</Option>
-                  <Option value="Completed">Completed</Option>
-                  <Option value="Closed">Closed</Option>
+                <Select allowClear placeholder="Select Status" size="large" disabled>
+                  {statuses.map(status => (
+                    <Option key={status.statusId} value={status.statusId}>
+                      {status.statusDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -199,9 +331,20 @@ function AddTicket() {
               <Form.Item
                 label="Contact No"
                 name="contactNo"
-                rules={[{ required: true, message: "Cannot be empty!" }]}
+                rules={[{ required: true, message: "Cannot be empty!" },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message: "Contact No must be exactly 10 digits!"
+                }
+                ]}
               >
-                <Input type="text" size="large" placeholder="Contact No" />
+                <Input type="text" size="large" placeholder="Contact No" maxLength={10}
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
               </Form.Item>
 
               <Form.Item label="Serial No" name="serialNo">
@@ -215,24 +358,42 @@ function AddTicket() {
                     message: "PC Type cannot be empty!",
                   },
                 ]}>
-                <Radio.Group>
+                <Radio.Group onChange={handlePcTypeChange}>
                   <Radio value="Yes">Working PC</Radio>
                   <Radio value="No">Another PC</Radio>
                 </Radio.Group>
               </Form.Item>
 
               <Form.Item
-                label="IP Address"
+                label="IP Address (Enter the IP address that belong to the issue if you have logged from another PC)"
                 name="ip"
                 rules={[
                   {
                     required: true,
                     message: "IP Address cannot be empty!",
                   },
+                  {
+                    pattern: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                    message: "Please enter a valid IP address!",
+                  }
                 ]}
               >
-                <Input type="text" size="large" placeholder="IP Address" />
+                <Input
+                  type="text"
+                  size="large"
+                  placeholder="IP Address"
+                  onKeyPress={(event) => {
+                    const charCode = event.which ? event.which : event.keyCode;
+                    if (
+                      charCode !== 46 && // Full stop
+                      (charCode < 48 || charCode > 57) // Digits
+                    ) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
               </Form.Item>
+
               <Form.Item
                 label="Issue Description & Remarks"
                 name="issueDesAndRemarks"
@@ -243,7 +404,7 @@ function AddTicket() {
                   },
                 ]}
               >
-                <TextArea rows={4} placeholder="Type here ..." />
+                <TextArea rows={4} placeholder="Type explanation about the issue ..." />
               </Form.Item>
             </Col>
           </Row>
