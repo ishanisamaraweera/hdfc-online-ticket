@@ -150,6 +150,13 @@ export const menuItems = [
         route_key: "add-function",
         privilege: ["SUPER_ADMIN"],
       },
+      {
+        name: "Assign Function",
+        exact: true,
+        to: "/user/assign-function",
+        route_key: "assign-function",
+        privilege: ["SUPER_ADMIN"],
+      },
     ],
   },
   {

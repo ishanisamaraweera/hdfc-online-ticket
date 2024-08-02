@@ -5,6 +5,7 @@ import Progress from "react-progress-2";
 import Auth from "../auth/Auth";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
+import axios from "axios";
 
 const { Option } = Select;
 
@@ -19,48 +20,35 @@ export default function Login() {
     message.error("Please fill all the details");
   };
 
-  const userLogin = () => {
-    Progress.show();
-    setLoading(true);
-    form.validateFields().then((values) => {
-      setTimeout(() => {
-        if (values.username === "1428" && values.password === "admin") {
-          message.success("Login Successful");
-          setLogUser(true, "1428", "admin");
-          setActiveRoute("dashboard");
-          Auth.login(() => {
-            navigate("/dashboard");
-          });
-        } else {
-          message.error("Invalid username or password");
-        }
+  const userLogin = async () => {
+    try {
+      Progress.show();
+      setLoading(true);
+      const values = await form.validateFields();
+      console.log("JSON String:" +  JSON.stringify(values));
+      const response = await axios.get('http://localhost:8080/authenticateUser', {
+        params: values
+      });
+
+      if (response.data) {
+        message.success("Login Successful");
+        setLogUser(true, values.username, values.password);
+        setActiveRoute("dashboard");
+        Auth.login(() => {
+          navigate("/dashboard");
+        });
+      } else {
+        message.error("Invalid username or password");
+      }
+    }
+    catch
+      (error){
+        message.error("Validation failed, please check the fields and try again.");
+      } finally {
         Progress.hide();
         setLoading(false);
-      }, 2000);
-    }).catch(() => {
-      Progress.hide();
-      setLoading(false);
-      message.error("Validation failed, please check the fields and try again.");
-    });
-  };
-
-  // const userLogin = async () => {
-  //   Progress.show();
-  //   setLoading(true);
-  //   const formValues = await form.validateFields();
-  //   const login = await axios.post('http://localhost:3001/login', formValues);
-  //   console.log(login);
-  //   if (login.data.success) {
-  //     message.success("Login Successful");
-  //     setLogUser(true, "1428", "admin");
-  //     setActiveRoute("dashboard");
-  //     Auth.login(() => {
-  //       navigate("/dashboard");
-  //     });
-  //   } else {
-  //     message.error("Invalid Credentials");
-  //   }
-  // };
+      }
+    };
 
   return (
     <div className="outer__container">

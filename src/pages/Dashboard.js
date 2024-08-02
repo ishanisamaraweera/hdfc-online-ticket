@@ -16,13 +16,30 @@ function Dashboard() {
   const [completedTicketCount, setCompletedTicketCount] = useState(0);
   const [closedTicketCount, setClosedTicketCount] = useState(0);
   const [totalTicketCount, setTotalTicketCount] = useState(0);
-  const [username, setUsername] = useState(0);
+  const [username, setUsername] = useState("1428");
 
-  const [isModalVisible, setIsModalVisible] = useState(true); // Set true to show modal on load
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const username = "1428";
+    const fetchInitialLoginStatus = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/checkInitialLoginStatus/${username}`);
+        
+        if (response.ok) {
+          const data = await response.text();
+          if (data === "Yes") {
+            setIsModalVisible(true);
+          }
+        } else {
+          console.error("Failed to fetch initial login status");
+        }
+      } catch (error) {
+        console.error("Error fetching initial login status:", error);
+      }
+    };
+
+    fetchInitialLoginStatus();
 
     const fetchNewTicketCount = async () => {
       try {
@@ -118,8 +135,7 @@ function Dashboard() {
 
   const handleFinish = async (values) => {
     try {
-      console.log("*********************************"+JSON.stringify(values));
-      values.username = "1428";      
+      values.username = username;
       const response = await axios.put('http://localhost:8080/changePassword', values);
       message.success("Password changed successfully!");
       setIsModalVisible(false);
