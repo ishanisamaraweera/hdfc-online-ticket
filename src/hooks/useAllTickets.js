@@ -20,13 +20,10 @@ function useAllTickets() {
           Progress.hide();
         })
         .catch((error) => {
-          // message.error(error.response.data.message);
-          console.log(error);
           Progress.hide();
         });
     };
     getData();
-    // eslint-disable-next-line
   }, []);
   return state;
 }

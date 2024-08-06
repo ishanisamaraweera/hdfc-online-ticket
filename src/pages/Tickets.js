@@ -12,8 +12,6 @@ export default function Tickets() {
   return (
     <div className="dashboard">
       <div className="section_row">
-      
-
       <TicketsDataTable />
         <div className="top_row">
           <Button

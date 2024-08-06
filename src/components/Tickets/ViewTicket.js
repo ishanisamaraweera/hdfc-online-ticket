@@ -103,7 +103,7 @@ function ViewTicket() {
         setIssueCategories(response.data);
       } catch (error) {
         //message.error("Failed to load issue categories");
-      }
+        }
     };
 
   const fetchTicketDetails = async () => {
@@ -164,7 +164,7 @@ function ViewTicket() {
       <div className="section_row">
         <div className="com_head">
           <LeftOutlined onClick={() => navigate(-1)} />
-          <p className="common_header">Edit Ticket</p>
+          <p className="common_header">View Ticket</p>
         </div>
 
         <Form

@@ -27,7 +27,6 @@ function AddUser() {
   }, []);
 
   useEffect(() => {
-    //form.setFieldsValue({ branchDivision: undefined });
     fetchBranchDivisionByLocation(form.getFieldValue('location'));
   }, [form.getFieldValue('location')]);
 
@@ -245,7 +244,7 @@ function AddUser() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/dashboard' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href='http://localhost:3000/user' style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

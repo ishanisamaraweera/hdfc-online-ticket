@@ -124,7 +124,7 @@ export const menuItems = [
   {
     name: "Users",
     exact: true,
-    to: "/user/add-user",
+    to: "/user",
     iconClassName: "bi bi-people",
     route_key: "user-role",
     privilege: ["SUPER_ADMIN"],

@@ -26,6 +26,8 @@ import AddIssueType from "./components/IssueType/AddIssueType";
 import AddUserRole from "./components/User/AddUserRole";
 import AddFunction from "./components/User/AddFunction";
 import AssignFunction from "./components/User/AssignFunction.js";
+import ViewUser from "./components/User/ViewUser.js"
+import User from "./pages/User.js"
 
 
 function App() {
@@ -54,6 +56,8 @@ function App() {
           <Route path="/user/add-user-role" element={<AddUserRole />} />
           <Route path="/user/add-function" element={<AddFunction />} />
           <Route path="/user/assign-function" element={<AssignFunction />} />
+          <Route path="/user" element={<User/>} />
+          <Route path="/viewUser/:id" element={<ViewUser />} />
           <Route
             path="/issue-category"
             element={<IssueCategory />}
