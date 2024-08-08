@@ -24,7 +24,7 @@ function AddUserRole() {
     setTargetKeys(nextTargetKeys);
   };
 
-  useBreadCrumb("Create User Role", "Create User Role");
+  useBreadCrumb("Create User Role", location.pathname, "User Role");
 
   const fetchStatuses = async (module) => {
     console.log("Fetching statuses for module:", module);

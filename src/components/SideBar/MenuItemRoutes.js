@@ -137,17 +137,17 @@ export const menuItems = [
         privilege: ["SUPER_ADMIN"], 
       },
       {
-        name: "Add User Role",
+        name: "User Role",
         exact: true,
-        to: "/user/add-user-role",
-        route_key: "add-user-role",
+        to: "/user/user-role",
+        route_key: "user-role",
         privilege: ["SUPER_ADMIN"], 
       },
       {
-        name: "Add Function",
+        name: "Function",
         exact: true,
-        to: "/user/add-function",
-        route_key: "add-function",
+        to: "/user/function",
+        route_key: "function",
         privilege: ["SUPER_ADMIN"],
       },
       {

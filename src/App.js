@@ -23,12 +23,15 @@ import IssueType from "./pages/IssueType";
 import IssueCategory from "./pages/IssueCategory";
 import Settings from "./pages/Settings";
 import AddIssueType from "./components/IssueType/AddIssueType";
-import AddUserRole from "./components/User/AddUserRole";
-import AddFunction from "./components/User/AddFunction";
+import Function from "./pages/Function";
 import AssignFunction from "./components/User/AssignFunction.js";
 import ViewUser from "./components/User/ViewUser.js"
+import UpdateUser from "./components/User/UpdateUser.js"
 import User from "./pages/User.js"
-
+import UserRole from "./pages/UserRole.js"
+import ViewUserRole from "./components/User/ViewUserRole.js"
+import UpdateUserRole from "./components/User/UpdateUserRole.js"
+import AddUserRole from "./components/User/AddUserRole.js"
 
 function App() {
   return (
@@ -53,11 +56,15 @@ function App() {
           <Route path="/issue-type" element={<IssueType />} />
           <Route path="/issue-type/create" element={<AddIssueType />} />
           <Route path="/user/add-user" element={<AddUser />} />
+          <Route path="/user/user-role" element={<UserRole />} />
           <Route path="/user/add-user-role" element={<AddUserRole />} />
-          <Route path="/user/add-function" element={<AddFunction />} />
+          <Route path="/user/function" element={<Function />} />
           <Route path="/user/assign-function" element={<AssignFunction />} />
           <Route path="/user" element={<User/>} />
           <Route path="/viewUser/:id" element={<ViewUser />} />
+          <Route path="/updateUser/:id" element={<UpdateUser />} />
+          <Route path="/viewUserRole/:id" element={<ViewUserRole />} />
+          <Route path="/updateUserRole/:id" element={<UpdateUserRole />} />
           <Route
             path="/issue-category"
             element={<IssueCategory />}
