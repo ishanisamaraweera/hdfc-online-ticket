@@ -67,7 +67,7 @@ function AddUser() {
     setTargetKeys(nextTargetKeys);
   };
 
-  useBreadCrumb("Create User", "Create User");
+  useBreadCrumb("Create User", location.pathname, "User");
 
   const fetchStatuses = async (module) => {
     console.log("Fetching statuses for module:", module);

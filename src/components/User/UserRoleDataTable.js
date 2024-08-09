@@ -163,7 +163,8 @@ function UserRoleDataTable() {
           .put(`http://localhost:8080/deleteUserRole/${id}`)
           .then((result) => {
             let responseJson = result;
-            setRefreshTable(!refreshTable);
+            setRefreshTable(!refreshTable);            
+            setFilteredTickets(filteredTickets.filter(user => user.userRoleId !== id));
             Progress.hide();
             message.success("User role deleted successfully");
           })

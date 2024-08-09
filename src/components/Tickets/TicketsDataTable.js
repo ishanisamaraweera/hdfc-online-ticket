@@ -288,7 +288,8 @@ function TicketDataTable() {
           .put(`http://localhost:8080/deleteTicket/${id}`)
           .then((result) => {
             let responseJson = result;
-            setRefreshTable(!refreshTable);
+            setRefreshTable(!refreshTable);            
+            setFilteredTickets(filteredTickets.filter(user => user.ticketId !== id));
             Progress.hide();
             message.success("Ticket deleted successfully");
           })

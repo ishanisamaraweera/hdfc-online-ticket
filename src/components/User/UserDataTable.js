@@ -229,6 +229,7 @@ function UserDataTable() {
           .then((result) => {
             let responseJson = result;
             setRefreshTable(!refreshTable);
+            setFilteredTickets(filteredTickets.filter(user => user.username !== id));
             Progress.hide();
             message.success("User deleted successfully");
           })
