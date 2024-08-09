@@ -5,12 +5,10 @@ import "./assets/css/Login.css";
 import "./assets/css/MenuSideBar.css";
 import "./assets/css/Responsive.css";
 import "./assets/css/ThemeChange.css";
-
 import Progress from "react-progress-2";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
-import DeleteIssueCategory from "./components/Categories/DeleteIssueCategory/DeleteIssueCategory";
 import AddTicket from "./components/Tickets/AddTicket";
 import UpdateTicket from "./components/Tickets/UpdateTicket";
 import ViewTicket from "./components/Tickets/ViewTicket";
@@ -35,6 +33,7 @@ import UpdateUserRole from "./components/User/UpdateUserRole.js"
 import AddUserRole from "./components/User/AddUserRole.js"
 import ViewFunction from "./components/User/ViewFunction.js"
 import UpdateFunction from "./components/User/UpdateFunction.js"
+import ViewIssueCategory from "./components/IssueCategory/ViewIssueCategory.js"
 
 function App() {
   return (
@@ -72,8 +71,8 @@ function App() {
           <Route path="/viewUserRole/:id" element={<ViewUserRole />} />
           <Route path="/updateUserRole/:id" element={<UpdateUserRole />} />
           <Route path="/issue-category"  element={<IssueCategory />}/>
-          <Route path="/delete-issue-category" element={<DeleteIssueCategory />} />
-          <Route path="/settings" element={<Settings />} /> </Route>
+          <Route path="/viewIssueCategory:id" element={<ViewIssueCategory />} /> 
+          <Route path="/settings" element={<Settings />} /> </Route>          
         <Route path="*" element={<NotFount />} />
       </Routes>
     </div>

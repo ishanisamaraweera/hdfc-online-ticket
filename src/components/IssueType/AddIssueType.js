@@ -8,12 +8,6 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { MediaList } from "../Others/MediaList";
 import { MediaUploader } from "../Others/MediaUploader";
-import useWebGemShapes from "../../hooks/useWebGemShapes";
-import useWebGemTreatments from "../../hooks/useWebGemTreatments";
-import useWebGemOrigins from "../../hooks/useWebGemOrigins";
-import useWebGemCertifications from "../../hooks/useWebGemCertifications";
-import useWebGemTypes from "../../hooks/useWebGemTypes";
-import useWebGemColors from "../../hooks/useWebGemColors";
 import axiosInstance from "../../util/axiosInstance";
 
 const { Option } = Select;
@@ -27,13 +21,6 @@ function AddIssueType({ type }) {
   const [desData, setDesData] = useState();
 
   useBreadCrumb("Create Rings", location.pathname, "", "add");
-
-  const webGemShapes = useWebGemShapes();
-  const webGemTreatments = useWebGemTreatments();
-  const webGemOrigins = useWebGemOrigins();
-  const webGemCertifications = useWebGemCertifications();
-  const webGemTypes = useWebGemTypes();
-  const webGemColors = useWebGemColors();
 
   const onFinishFailed = () => {
     message.error("Please fill all the details");
@@ -261,34 +248,6 @@ function AddIssueType({ type }) {
                 <Input type="text" size="large" placeholder="Gemstone Carat" />
               </Form.Item>
 
-              <Form.Item label="Gemstone Shape" name="gem_shape_id">
-                <Select
-                  allowClear
-                  placeholder="Select Gemstone Shape"
-                  size="large"
-                >
-                  {webGemShapes?.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.Item label="Gemstone Treatment" name="gem_treatment_id">
-                <Select
-                  allowClear
-                  placeholder="Select Gemstone Treatment"
-                  size="large"
-                >
-                  {webGemTreatments?.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
               <Form.Item label="Gemstone Transparency" name="transparency">
                 <Select
                   allowClear
@@ -297,67 +256,6 @@ function AddIssueType({ type }) {
                 >
                   <Option value="Yes">Yes</Option>
                   <Option value="No">No</Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item label="Gemstone Origin" name="gem_origin_ids">
-                <Select
-                  allowClear
-                  placeholder="Select Gemstone Origin"
-                  size="large"
-                  mode="multiple"
-                >
-                  {webGemOrigins?.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Gemstone Certification"
-                name="gem_certificate_ids"
-              >
-                <Select
-                  allowClear
-                  placeholder="Select Gemstone Certification"
-                  size="large"
-                  mode="multiple"
-                >
-                  {webGemCertifications?.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.Item label="Gemstone Type" name="gem_type_id">
-                <Select
-                  allowClear
-                  placeholder="Select Gemstone Type"
-                  size="large"
-                >
-                  {webGemTypes?.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-              <Form.Item label="Gemstone Color" name="gem_color_id">
-                <Select
-                  allowClear
-                  placeholder="Select Gemstone Color"
-                  size="large"
-                >
-                  {webGemColors?.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
                 </Select>
               </Form.Item>
 
