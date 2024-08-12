@@ -1,3 +1,7 @@
+import React from "react";
+import { Menu } from "antd";
+import { useNavigate } from "react-router-dom";
+
 export const menuItems = [
   {
     name: "Dashboard",
@@ -95,3 +99,31 @@ export const menuItems = [
     privilege: "SETTINGS",
   },
 ];
+
+function AppMenu() {
+  const navigate = useNavigate();
+  
+  // Get the pagePrivileges from local storage
+  const pagePrivileges = localStorage.getItem("pagePrivileges")?.split(",") || [];
+  
+  // Filter the menuItems based on the user's privileges
+  const filteredMenuItems = menuItems.filter((item) =>
+    pagePrivileges.includes(item.privilege)
+  );
+
+  return (
+    <Menu>
+      {filteredMenuItems.map((item) => (
+        <Menu.Item
+          key={item.route_key}
+          icon={<i className={item.iconClassName}></i>}
+          onClick={() => navigate(item.to)}
+        >
+          {item.name}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
+}
+
+export default AppMenu;
