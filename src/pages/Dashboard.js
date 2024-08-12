@@ -17,6 +17,8 @@ function Dashboard() {
   const [closedTicketCount, setClosedTicketCount] = useState(0);
   const [totalTicketCount, setTotalTicketCount] = useState(0);
   const [username] = useState(localStorage.getItem("username"));
+  const [allowedPages, setAllowedPages] = useState([]);
+  const [allowedActions, setAllowedActions] = useState([]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -25,15 +27,11 @@ function Dashboard() {
     const fetchInitialLoginStatus = async () => {
       try {
         const response = await fetch(`http://localhost:8080/checkInitialLoginStatus/${username}`);
-        console.log("Username:", username); // Debugging
         
         if (response.ok) {
           const data = await response.text();
-          console.log("Initial Login Status:", data); // Debugging
           if (data.trim() === "Yes") {
             setIsModalVisible(true);
-          }else{
-            console.error("Noooooooooooooooooooooooooooo");
           }
         } else {
           console.error("Failed to fetch initial login status");
@@ -129,12 +127,28 @@ function Dashboard() {
       }
     };
 
+    const fetchPrivileges = async () => {
+      try {
+        const username = localStorage.getItem("username");
+
+        const pagesResponse = await axios.get(`http://localhost:8080/getPagePrivileges/${username}`);
+        const actionsResponse = await axios.get(`http://localhost:8080/getFunctionPrivileges/${username}`);
+        localStorage.setItem("pagePrivileges", pagesResponse.data);
+        localStorage.setItem("actionPrivileges", actionsResponse.data);
+        setAllowedPages(pagesResponse.data);
+        setAllowedActions(actionsResponse.data);
+      } catch (error) {
+        console.error("Failed to fetch privileges", error);
+      }
+    };
+
     fetchNewTicketCount();
     fetchAssignedTicketCount();
     fetchActiveTicketCount();
     fetchCompletedTicketCount();
     fetchClosedTicketCount();
     fetchTotalTicketCount();
+    fetchPrivileges();
   }, []);
 
   const handleFinish = async (values) => {
@@ -148,6 +162,12 @@ function Dashboard() {
       message.error("Failed to change password");
     }
   };
+
+  // Function to check if a page is allowed
+  const isPageAllowed = (page) => allowedPages.includes(page);
+
+  // Function to check if an action is allowed
+  const isActionAllowed = (action) => allowedActions.includes(action);
 
   return (
     <div className="dashboard">
