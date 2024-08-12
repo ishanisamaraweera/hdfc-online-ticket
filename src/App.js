@@ -34,6 +34,7 @@ import AddUserRole from "./components/User/AddUserRole.js"
 import ViewFunction from "./components/User/ViewFunction.js"
 import UpdateFunction from "./components/User/UpdateFunction.js"
 import ViewIssueCategory from "./components/IssueCategory/ViewIssueCategory.js"
+import UpdateIssueCategory from "./components/IssueCategory/UpdateIssueCategory.js"
 
 function App() {
   return (
@@ -71,7 +72,8 @@ function App() {
           <Route path="/viewUserRole/:id" element={<ViewUserRole />} />
           <Route path="/updateUserRole/:id" element={<UpdateUserRole />} />
           <Route path="/issue-category"  element={<IssueCategory />}/>
-          <Route path="/viewIssueCategory:id" element={<ViewIssueCategory />} /> 
+          <Route path="/viewIssueCategory/:id" element={<ViewIssueCategory />} />           
+          <Route path="/updateIssueCategory/:id" element={<UpdateIssueCategory />} /> 
           <Route path="/settings" element={<Settings />} /> </Route>          
         <Route path="*" element={<NotFount />} />
       </Routes>

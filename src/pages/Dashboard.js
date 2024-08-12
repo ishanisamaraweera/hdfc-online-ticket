@@ -16,7 +16,7 @@ function Dashboard() {
   const [completedTicketCount, setCompletedTicketCount] = useState(0);
   const [closedTicketCount, setClosedTicketCount] = useState(0);
   const [totalTicketCount, setTotalTicketCount] = useState(0);
-  const [username, setUsername] = useState("1428");
+  const [username] = useState(localStorage.getItem("username"));
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -25,11 +25,15 @@ function Dashboard() {
     const fetchInitialLoginStatus = async () => {
       try {
         const response = await fetch(`http://localhost:8080/checkInitialLoginStatus/${username}`);
+        console.log("Username:", username); // Debugging
         
         if (response.ok) {
           const data = await response.text();
-          if (data === "Yes") {
+          console.log("Initial Login Status:", data); // Debugging
+          if (data.trim() === "Yes") {
             setIsModalVisible(true);
+          }else{
+            console.error("Noooooooooooooooooooooooooooo");
           }
         } else {
           console.error("Failed to fetch initial login status");

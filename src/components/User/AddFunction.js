@@ -54,7 +54,7 @@ function AddFunction() {
         .then((result) => {
           form.resetFields();
           message.success("Function details added successfully for function ID: " + result.data.userFunctionId);
-          navigate('/dashboard');
+          navigate('/user/function');
         })
         .catch((error) => {
           message.error(error.response?.data?.message || "Failed to add function");
@@ -129,7 +129,7 @@ function AddFunction() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/dashboard' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href='http://localhost:3000/user/function' style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

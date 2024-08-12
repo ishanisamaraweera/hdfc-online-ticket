@@ -32,6 +32,7 @@ export default function Login() {
 
       if (response.data) {
         message.success("Login Successful");
+        localStorage.setItem("username", values.username);
         setLogUser(true, values.username, values.password);
         setActiveRoute("dashboard");
         Auth.login(() => {
