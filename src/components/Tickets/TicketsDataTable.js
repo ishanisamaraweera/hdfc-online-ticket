@@ -157,7 +157,7 @@ function TicketDataTable() {
       sorter: (a, b) => (a.resolutionPeriod && b.resolutionPeriod ? a.resolutionPeriod - b.resolutionPeriod : 0),
     },
     {
-      title: "Assingee Comments",
+      title: "Assignee Comments",
       render: (record) => record?.assigneeComments,
       width: 200,
       sorter: (a, b) => (a.assigneeComments && b.assigneeComments ? a.assigneeComments.localeCompare(b.assigneeComments) : 0),

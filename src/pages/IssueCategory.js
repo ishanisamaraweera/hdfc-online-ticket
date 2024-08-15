@@ -16,7 +16,7 @@ export default function IssueCategory() {
                 <div className="top_row">
                     <Button
                         className="primary__btn"
-                        onClick={() => navigate("/issue-category/add-issue-category")}
+                        onClick={() => navigate("/add-issue-category")}
                     >
                         Add Issue Category
                     </Button>

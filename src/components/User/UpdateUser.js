@@ -27,7 +27,7 @@ function UpdateUser() {
 
     useEffect(() => {
         fetchUserDetails();
-        fetchStatuses();
+        fetchStatuses('USER');
         fetchLocations();
         fetchBranchDivisions();
         fetchUserRoles();
@@ -57,14 +57,15 @@ function UpdateUser() {
         }
     };
 
-    const fetchStatuses = async () => {
+    const fetchStatuses = async (module) => {
+        console.log("Fetching statuses for module:", module);
         try {
-            const response = await axios.get('http://localhost:8080/getStatuses');
-            setStatuses(response.data);
+          const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+          setStatuses(response.data);
         } catch (error) {
-            console.error('Error fetching statuses:', error);
+          message.error("Failed to load statuses", error);
         }
-    };
+      };
 
 
     const fetchLocations = async () => {

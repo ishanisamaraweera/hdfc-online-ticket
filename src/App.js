@@ -33,8 +33,10 @@ import UpdateUserRole from "./components/User/UpdateUserRole.js"
 import AddUserRole from "./components/User/AddUserRole.js"
 import ViewFunction from "./components/User/ViewFunction.js"
 import UpdateFunction from "./components/User/UpdateFunction.js"
+import AddIssueCategory from "./components/IssueCategory/AddIssueCategory.js"
 import ViewIssueCategory from "./components/IssueCategory/ViewIssueCategory.js"
 import UpdateIssueCategory from "./components/IssueCategory/UpdateIssueCategory.js"
+import GenerateReport from "./pages/GenerateReport.js"
 
 function App() {
   return (
@@ -72,8 +74,10 @@ function App() {
           <Route path="/viewUserRole/:id" element={<ViewUserRole />} />
           <Route path="/updateUserRole/:id" element={<UpdateUserRole />} />
           <Route path="/issue-category"  element={<IssueCategory />}/>
+          <Route path="/add-issue-category"  element={<AddIssueCategory />}/>
           <Route path="/viewIssueCategory/:id" element={<ViewIssueCategory />} />           
           <Route path="/updateIssueCategory/:id" element={<UpdateIssueCategory />} /> 
+          <Route path="/tickets/generate-reports" element={<GenerateReport />} /> 
           <Route path="/settings" element={<Settings />} /> </Route>          
         <Route path="*" element={<NotFount />} />
       </Routes>

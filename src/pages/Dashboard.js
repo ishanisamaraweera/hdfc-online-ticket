@@ -130,7 +130,6 @@ function Dashboard() {
     const fetchPrivileges = async () => {
       try {
         const username = localStorage.getItem("username");
-
         const pagesResponse = await axios.get(`http://localhost:8080/getPagePrivileges/${username}`);
         const actionsResponse = await axios.get(`http://localhost:8080/getFunctionPrivileges/${username}`);
         localStorage.setItem("pagePrivileges", pagesResponse.data);
