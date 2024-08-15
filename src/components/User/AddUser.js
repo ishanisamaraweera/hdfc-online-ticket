@@ -100,7 +100,7 @@ function AddUser() {
         .then((result) => {
           form.resetFields();
           message.success("User details added successfully for username: " + result.data.username);
-          navigate('/dashboard');
+          navigate('/user');
         })
         .catch((error) => {
           message.error(error.response?.data?.message || "Failed to add user");
