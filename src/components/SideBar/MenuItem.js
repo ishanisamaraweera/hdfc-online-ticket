@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useStore } from "../../store";
 /**
- * @author ishani.s
+ * 
  * @function MenuItem
  **/
 
