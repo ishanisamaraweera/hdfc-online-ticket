@@ -39,7 +39,7 @@ export default function Login() {
           navigate("/dashboard");
         });
       } else {
-        message.error("Invalid username or password");
+        message.error("Invalid username or password or user deactivated");
       }
     }
     catch
