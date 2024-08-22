@@ -162,6 +162,10 @@ function AddUser() {
               </Form.Item>
             </Col>
             <Col span={12}>
+              <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Email cannot be empty!' }]}>
+                <Input type="text" size="large" placeholder="Enter Email" />
+              </Form.Item>
+
               <Form.Item label="Designation" name="designation" rules={[{ required: true, message: 'Designation cannot be empty!' }]}>
                 <Input type="text" size="large" placeholder="Enter Designation" />
               </Form.Item>
@@ -229,7 +233,7 @@ function AddUser() {
                   allowClear
                   placeholder="Select Status"
                   size="large">
-                  {Array.isArray(statuses) &&  statuses.map(status => (
+                  {Array.isArray(statuses) && statuses.map(status => (
                     <Option key={status.statusId} value={status.statusId}>
                       {status.statusDes}
                     </Option>

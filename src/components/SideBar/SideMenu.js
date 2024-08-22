@@ -56,4 +56,28 @@ const SideMenu = () => {
   );
 };
 
+//{
+/* <div className="main-menu">
+      <ul>
+        {menuItems
+        //.filter((menuItem) => menuItem?.name)
+        .map((menuItem, index) => {
+          // Check if the current menu item has a name property
+          //if (menuItem?.name) {
+            return (
+              <MenuItem
+                key={index}
+                name={menuItem.name}
+                exact={menuItem.exact}
+                to={menuItem.to}
+                subMenus={menuItem.subMenus || []}
+                iconClassName={menuItem.iconClassName}
+                route_key={menuItem.route_key}
+              />
+            );
+          //}
+        })}
+      </ul>
+      </div> *///}
+
 export default SideMenu;

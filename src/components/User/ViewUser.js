@@ -95,6 +95,7 @@ function ViewUser() {
                     username: user.username,
                     displayName: user.displayName,
                     epf: user.epf,
+                    email: user.email,
                     designation: user.designation,
                     dob: user.dob,
                     location: user.location,
@@ -199,6 +200,19 @@ function ViewUser() {
                             </Form.Item>
                         </Col>
                         <Col span={12}>
+                            <Form.Item
+                                label="Email"
+                                name="email"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Email cannot be empty!",
+                                    },
+                                ]}
+                            >
+                                <Input type="text" size="large" placeholder="Email" readOnly />
+                            </Form.Item>
+
                             <Form.Item
                                 label="Designation"
                                 name="designation"

@@ -1,6 +1,11 @@
+
+
 import React from "react";
 import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+console.log("MenuItemRoutes.js is loaded");
 
 // Get the pagePrivileges from local storage
 const pagePrivileges = localStorage.getItem("pagePrivileges")?.split(",") || [];
@@ -122,4 +127,35 @@ export const menuItems = [
     route_key: "SETTINGS",
     privilege: "SETTINGS",
   },
-];
+]//.map((menuItem) => {
+  // console.log(`Checking privilege for ${menuItem.name}: ${menuItem.privilege}`);
+  // console.log(`Privilege available: ${pagePrivileges.includes(menuItem.privilege)}`);
+
+//   // Filter the subMenus based on privileges
+//   if (menuItem.subMenus) {
+//     menuItem.subMenus = menuItem.subMenus.filter(subMenu =>
+//       pagePrivileges.includes(subMenu.privilege)
+//     );
+//   }
+
+//   // Check if the current menu item's privilege is included in the user's privileges
+//   if (pagePrivileges.includes(menuItem.privilege) || (menuItem.subMenus && menuItem.subMenus.length > 0)) {
+//     return menuItem;
+//   }
+
+//   // Return null if the privilege is not present
+//   return null;
+// }).filter(Boolean); // Filter out null values
+// if (pagePrivileges.includes(menuItem.privilege)) {
+//   // Return the menu item if the privilege is present
+//   if (menuItem?.name) {
+//     return (
+//       <Menu.Item key={menuItem.route_key} icon={<i className={menuItem.iconClassName}></i>}>
+//         <Link to={menuItem.to}>{menuItem.name}</Link>
+//       </Menu.Item>
+//     );
+//   }
+// }
+// // Return null if the privilege is not present
+// return null;
+// });
