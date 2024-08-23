@@ -13,13 +13,15 @@ import Progress from "react-progress-2";
 import { useNavigate } from "react-router-dom";
 import { apis } from "../../properties";
 import { useRefreshTable } from "../../store";
-import axiosInstance from "../../util/axiosInstance";
 import useAllTickets from "../../hooks/useAllTickets";
 import axios from "axios";
-import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver'; // Adjust the path accordingly
+import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver';
+import { useStore } from "../../store";
+import { AutoScaling } from "aws-sdk";
 
 const { confirm } = Modal;
 const { Search } = Input;
+
 
 function TicketDataTable() {
   const { refreshTable, setRefreshTable } = useRefreshTable();
@@ -32,6 +34,7 @@ function TicketDataTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const tickets = useAllTickets();
   const [filteredTickets, setFilteredTickets] = useState(tickets);
+  const { actionPrivileges } = useStore();
 
   useEffect(() => {
     setFilteredTickets(
@@ -47,7 +50,7 @@ function TicketDataTable() {
     console.log("ResizeObserver triggered");
   });
 
-    const columns = [
+  const columns = [
     {
       title: "Ticket ID",
       dataIndex: "ticketId",
@@ -64,7 +67,7 @@ function TicketDataTable() {
       title: "Assignee",
       dataIndex: "assignee",
       width: 200,
-      sorter: (a, b) => (a.assignee && b.assignee ? a.assignee.localeCompare(b.assignee) :0),
+      sorter: (a, b) => (a.assignee && b.assignee ? a.assignee.localeCompare(b.assignee) : 0),
     },
     {
       title: "Reported Date Time",
@@ -116,7 +119,7 @@ function TicketDataTable() {
       title: "Serial No",
       render: (record) => record?.serialNo,
       width: 200,
-      sorter: (a, b) => (a.serialNo && b.serialNo ? a.serialNo.localeCompare(b.serialNo) :0),
+      sorter: (a, b) => (a.serialNo && b.serialNo ? a.serialNo.localeCompare(b.serialNo) : 0),
     },
     {
       title: "Is Working PC",
@@ -141,7 +144,7 @@ function TicketDataTable() {
       render: (record) => record?.assigneeResponseDateTime,
       width: 200,
       sorter: (a, b) =>
-        (a.assigneeResponseDateTime && b.assigneeResponseDateTime ? new Date(a.assigneeResponseDateTime) - new Date(b.assigneeResponseDateTime) :0),
+        (a.assigneeResponseDateTime && b.assigneeResponseDateTime ? new Date(a.assigneeResponseDateTime) - new Date(b.assigneeResponseDateTime) : 0),
     },
     {
       title: "Resolved Date Time",
@@ -189,7 +192,7 @@ function TicketDataTable() {
         </Tag>
       ),
       fixed: "right",
-      width: 75,
+      width: 90,
       sorter: (a, b) => a.status.localeCompare(b.status),
     },
     {
@@ -207,34 +210,47 @@ function TicketDataTable() {
             />
           </Tooltip>
           &nbsp;&nbsp;
-          <Tooltip placement="bottom" title="Edit">
-            <Button
-              className="edit_button"
-              shape="circle"
-              icon={<EditOutlined />}
-              onClick={() => {
-                navigate(`/updateTicket/${record.ticketId}`);
-              }}
-            />
-          </Tooltip>
-          &nbsp;&nbsp;
-          <Tooltip placement="bottom" title="Close">
-            <Button
-              className="delete_button"
-              shape="circle"
-              icon={<CloseOutlined />}
-              onClick={() => statusChange(record.ticketId, "Closed")}
-            />
-          </Tooltip>
-          &nbsp;&nbsp;
-          <Tooltip placement="bottom" title="Delete">
-            <Button
-              className="delete_button"
-              shape="circle"
-              icon={<DeleteOutlined />}
-              onClick={() => deleteContent(record.ticketId)}
-            />
-          </Tooltip>
+          {actionPrivileges.includes("UPDATE_TICKET") && (
+            <>
+              <Tooltip placement="bottom" title="Edit">
+                <Button
+                  className="edit_button"
+                  shape="circle"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    navigate(`/updateTicket/${record.ticketId}`);
+                  }}
+                />
+              </Tooltip>
+              &nbsp;&nbsp;
+            </>
+          )}
+          {actionPrivileges.includes("CLOSE_TICKET") && (
+            <>
+              <Tooltip placement="bottom" title="Close">
+                <Button
+                  className="delete_button"
+                  shape="circle"
+                  icon={<CloseOutlined />}
+                  onClick={() => statusChange(record.ticketId, "Closed")}
+                />
+              </Tooltip>
+              &nbsp;&nbsp;
+            </>
+          )}
+          {actionPrivileges.includes("DELETE_TICKET") && (
+            <>
+              <Tooltip placement="bottom" title="Delete">
+                <Button
+                  className="delete_button"
+                  shape="circle"
+                  icon={<DeleteOutlined />}
+                  onClick={() => deleteContent(record.ticketId)}
+                />
+              </Tooltip>
+              &nbsp;&nbsp;
+            </>
+          )}
         </>
       ),
       fixed: "right",
@@ -288,7 +304,7 @@ function TicketDataTable() {
           .put(`http://localhost:8080/deleteTicket/${id}`)
           .then((result) => {
             let responseJson = result;
-            setRefreshTable(!refreshTable);            
+            setRefreshTable(!refreshTable);
             setFilteredTickets(filteredTickets.filter(user => user.ticketId !== id));
             Progress.hide();
             message.success("Ticket deleted successfully");

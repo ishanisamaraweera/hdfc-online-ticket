@@ -1,5 +1,5 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, message, Radio, Row, Select } from "antd";
+import { Button, Col, Form, Input, message, Radio, Row, Select, Divider } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -22,6 +22,8 @@ function ViewTicket() {
   const [branchDivisions, setBranchDivisions] = useState([]);
   const [branchDivisionMap, setBranchDivisionMap] = useState({});
   const [issueCategories, setIssueCategories] = useState([]);
+  const [assignees, setAssignees] = useState([]); // State for assignees
+  const [selectedAssignee, setSelectedAssignee] = useState(null);
 
   useBreadCrumb("View Ticket", location.pathname, "", "add");
 
@@ -34,6 +36,7 @@ function ViewTicket() {
     fetchIssueTypes();
     fetchIssueCategories();
     fetchAllIssueCategories();
+    fetchAgents();
   }, [id]);
 
 
@@ -106,6 +109,15 @@ function ViewTicket() {
         }
     };
 
+    const fetchAgents = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/getUserListsByUserRole/AGENT');
+        setAssignees(response.data);
+      } catch (error) {
+        message.error("Failed to load assignees");
+      }
+    };
+
   const fetchTicketDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
@@ -157,6 +169,20 @@ function ViewTicket() {
           message.error(error.response.data.message);
         });
     });
+  };
+
+  const handleAssign = () => {
+    if (selectedAssignee) {
+      axios.post(`http://localhost:8080/assignTicket/${id}`, { assigneeId: selectedAssignee })
+        .then((response) => {
+          message.success("Ticket successfully assigned");
+        })
+        .catch((error) => {
+          message.error("Failed to assign ticket");
+        });
+    } else {
+      message.warning("Please select an assignee");
+    }
   };
 
   return (
@@ -367,6 +393,40 @@ function ViewTicket() {
               >
                 <TextArea rows={4} placeholder="Type here ..." readOnly />
               </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider />
+
+          {/* Assignee Section */}
+          <Row gutter={24}>
+            <Col span={12}>
+              <Form.Item
+                label="Assignee"
+                name="assignee"
+              >
+                <Select
+                  allowClear
+                  placeholder="Select Assignee"
+                  size="large"
+                  onChange={value => setSelectedAssignee(value)}
+                >
+                  {assignees.map(assignee => (
+                    <Option key={assignee.username} value={assignee.username}>
+                      {assignee.displayName}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Button
+                type="primary"
+                onClick={handleAssign}
+                style={{ marginTop: '32px' }}
+              >
+                Assign
+              </Button>
             </Col>
           </Row>
 

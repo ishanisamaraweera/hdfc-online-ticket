@@ -7,7 +7,7 @@ import axios from 'axios';
 
 export default function Tickets() {
   const location = useLocation();
-  useBreadCrumb("Generate Reports", location.pathname, "Tickets");
+  useBreadCrumb("Reports", location.pathname, "Reports");
   
 
   const handleDownload = async () => {

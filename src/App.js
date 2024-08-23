@@ -37,6 +37,7 @@ import AddIssueCategory from "./components/IssueCategory/AddIssueCategory.js"
 import ViewIssueCategory from "./components/IssueCategory/ViewIssueCategory.js"
 import UpdateIssueCategory from "./components/IssueCategory/UpdateIssueCategory.js"
 import GenerateReport from "./pages/GenerateReport.js"
+import AppMenu from "./components/SideBar/AppMenu.js"
 
 function App() {
   return (

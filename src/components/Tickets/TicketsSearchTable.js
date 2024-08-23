@@ -53,7 +53,7 @@ function TicketsSearchTable() {
     localStorage.setItem("statusVal", selectedStatus);
   };
 
-  const handleSubmitStatus = async () => { 
+  const handleSubmitStatus = async () => {
     if (selectedStatus) {
       try {
         localStorage.setItem("statusVal", selectedStatus);
@@ -65,16 +65,16 @@ function TicketsSearchTable() {
       }
     } else {
       localStorage.setItem("statusVal", selectedStatus);
-        const response = await axios.get(`http://localhost:8080/searchTickets`);
-        setFilteredTickets(response.data);
-        setRefreshTable(!refreshTable);
+      const response = await axios.get(`http://localhost:8080/searchTickets`);
+      setFilteredTickets(response.data);
+      setRefreshTable(!refreshTable);
     }
   };
 
   useDebouncedResizeObserver(() => {
     console.log("ResizeObserver triggered");
   });
-
+  
   const columns = [
     {
       title: "Ticket ID",
@@ -229,7 +229,7 @@ function TicketsSearchTable() {
           label="Status"
           name="status"
         >
-          <Select allowClear placeholder="Select Status" size="small"  style={{ width: '150px', marginRight: '10px' }} onChange={handleStatusChange}>
+          <Select allowClear placeholder="Select Status" size="small" style={{ width: '150px', marginRight: '10px' }} onChange={handleStatusChange}>
             {statuses.map(status => (
               <Option key={status.statusId} value={status.statusId}>
                 {status.statusDes}

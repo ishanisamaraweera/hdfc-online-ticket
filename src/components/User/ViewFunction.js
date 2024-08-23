@@ -67,10 +67,10 @@ function ViewFunction() {
                     status: userFunction.status,
                 });
             } else {
-                message.error("No user details found.!");
+                message.error("No function details found.!");
             }
         } catch (error) {
-            message.error("Failed to load user details");
+            message.error("Failed to load function details");
         }
     };
 

@@ -67,6 +67,12 @@ function UserDataTable() {
       sorter: (a, b) => a.epf.localeCompare(b.epf),
     },
     {
+      title: "Email",
+      render: (record) => record?.email,
+      width: 200,
+      sorter: (a, b) => a.email.localeCompare(b.email),
+    },
+    {
       title: "Designation",
       dataIndex: "designation",
       width: 200,

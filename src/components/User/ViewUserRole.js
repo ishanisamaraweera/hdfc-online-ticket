@@ -77,10 +77,10 @@ function ViewUserRole() {
                     status: userRole.status,
                 });
             } else {
-                message.error("No user details found.!");
+                message.error("No user role details found.!");
             }
         } catch (error) {
-            message.error("Failed to load user details");
+            message.error("Failed to load user role details");
         }
     };
 

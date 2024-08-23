@@ -24,13 +24,13 @@ function Dashboard() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  const { setPagePrivileges, setActionPrivileges, actionPrivileges  } = useStore();
+  const { setPagePrivileges, setActionPrivileges, actionPrivileges } = useStore();
 
   useEffect(() => {
     const fetchInitialLoginStatus = async () => {
       try {
         const response = await fetch(`http://localhost:8080/checkInitialLoginStatus/${username}`);
-        
+
         if (response.ok) {
           const data = await response.text();
           if (data.trim() === "Yes") {
@@ -222,15 +222,15 @@ function Dashboard() {
           </Form.Item>
         </Form>
       </Modal>
-      {actionPrivileges.includes("ADD_USER") && (
-      <div className="box_section">
-        <DashBoardBox title="My New Tickets" count={newTicketCount} icon={"bi bi-plus-circle"} />
-        <DashBoardBox title="My Assigned Tickets" count={assignedTicketCount} icon={"bi bi-card-checklist"} />
-        <DashBoardBox title="My Active Tickets" count={activeTicketCount} icon={"bi bi-brightness-high"} />
-        <DashBoardBox title="My Completed Tickets" count={completedTicketCount} icon={"bi bi-calendar2-check"} />
-        <DashBoardBox title="My Closed Tickets" count={closedTicketCount} icon={"bi bi-x-circle"} />
-        <DashBoardBox title="My Total Tickets" count={totalTicketCount} icon={"bi bi-hdd-stack"} />
-      </div>
+      {actionPrivileges.includes("DASHBOARD_VIEW") && (
+        <div className="box_section">
+          <DashBoardBox title="My New Tickets" count={newTicketCount} icon={"bi bi-plus-circle"} />
+          <DashBoardBox title="My Assigned Tickets" count={assignedTicketCount} icon={"bi bi-card-checklist"} />
+          <DashBoardBox title="My Active Tickets" count={activeTicketCount} icon={"bi bi-brightness-high"} />
+          <DashBoardBox title="My Completed Tickets" count={completedTicketCount} icon={"bi bi-calendar2-check"} />
+          <DashBoardBox title="My Closed Tickets" count={closedTicketCount} icon={"bi bi-x-circle"} />
+          <DashBoardBox title="My Total Tickets" count={totalTicketCount} icon={"bi bi-hdd-stack"} />
+        </div>
       )}
     </div>
   );
