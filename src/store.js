@@ -10,6 +10,8 @@ export const useStore = create(
         authUser: false,
         activeSideMenu: false,
         activeRoute: "dashboard",
+        pagePrivileges: [],
+        actionPrivileges: [],
 
         setLogUser: (authUser, accessToken, profileData) => {
           set((state) => ({
@@ -18,6 +20,14 @@ export const useStore = create(
             accessToken: accessToken,
             profileData: profileData,
           }));
+        },
+
+        setPagePrivileges: (pagePrivileges) => {
+          set((state) => ({ ...state, pagePrivileges: pagePrivileges }));
+        },
+
+        setActionPrivileges: (actionPrivileges) => {
+          set((state) => ({ ...state, actionPrivileges: actionPrivileges }));
         },
 
         setProfileData: (profileData) => {

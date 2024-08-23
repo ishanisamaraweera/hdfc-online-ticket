@@ -5,6 +5,7 @@ import DashBoardBox from "../components/DashBoardWidgets/DashBoardBox";
 import useBreadCrumb from "../hooks/useBreadCrumb";
 import axios from "axios";
 import '../assets/css/Dashboard.css';
+import { useStore } from "../store";
 
 function Dashboard() {
   const location = useLocation();
@@ -22,6 +23,8 @@ function Dashboard() {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+
+  const { setPagePrivileges, setActionPrivileges, actionPrivileges  } = useStore();
 
   useEffect(() => {
     const fetchInitialLoginStatus = async () => {
@@ -132,6 +135,8 @@ function Dashboard() {
         const username = localStorage.getItem("username");
         const pagesResponse = await axios.get(`http://localhost:8080/getPagePrivileges/${username}`);
         const actionsResponse = await axios.get(`http://localhost:8080/getFunctionPrivileges/${username}`);
+        setPagePrivileges(pagesResponse.data)
+        setActionPrivileges(actionsResponse.data)
         localStorage.setItem("pagePrivileges", pagesResponse.data);
         localStorage.setItem("actionPrivileges", actionsResponse.data);
         setAllowedPages(pagesResponse.data);
@@ -217,6 +222,7 @@ function Dashboard() {
           </Form.Item>
         </Form>
       </Modal>
+      {actionPrivileges.includes("ADD_USER") && (
       <div className="box_section">
         <DashBoardBox title="My New Tickets" count={newTicketCount} icon={"bi bi-plus-circle"} />
         <DashBoardBox title="My Assigned Tickets" count={assignedTicketCount} icon={"bi bi-card-checklist"} />
@@ -225,6 +231,7 @@ function Dashboard() {
         <DashBoardBox title="My Closed Tickets" count={closedTicketCount} icon={"bi bi-x-circle"} />
         <DashBoardBox title="My Total Tickets" count={totalTicketCount} icon={"bi bi-hdd-stack"} />
       </div>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useStore } from "../../store";
 
 const SideMenu = () => {
   const activeSideMenu = useStore((state) => state.activeSideMenu);
+  const pagePrivileges = useStore((state) => state.pagePrivileges);
 
   const removeActiveClassFromSubMenu = () => {
     document.querySelectorAll(".sub-menu").forEach((el) => {
@@ -39,7 +40,8 @@ const SideMenu = () => {
 
       <div className="main-menu">
         <ul>
-          {menuItems.map((menuItem, index) => (
+          {menuItems.map((menuItem, index) => 
+          pagePrivileges.includes(menuItem.route_key) && (
             <MenuItem
               key={index}
               name={menuItem.name}

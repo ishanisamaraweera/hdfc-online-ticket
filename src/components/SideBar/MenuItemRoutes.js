@@ -127,7 +127,7 @@ export const menuItems = [
     route_key: "SETTINGS",
     privilege: "SETTINGS",
   },
-]//.map((menuItem) => {
+];//.map((menuItem) => {
   // console.log(`Checking privilege for ${menuItem.name}: ${menuItem.privilege}`);
   // console.log(`Privilege available: ${pagePrivileges.includes(menuItem.privilege)}`);
 
