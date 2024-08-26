@@ -6,6 +6,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import { apis } from "../../properties";
 import axios from "axios";
+import { useStore } from "../../store";
 
 const { Option } = Select;
 
@@ -22,8 +23,9 @@ function ViewTicket() {
   const [branchDivisions, setBranchDivisions] = useState([]);
   const [branchDivisionMap, setBranchDivisionMap] = useState({});
   const [issueCategories, setIssueCategories] = useState([]);
-  const [assignees, setAssignees] = useState([]); // State for assignees
+  const [assignees, setAssignees] = useState([]);
   const [selectedAssignee, setSelectedAssignee] = useState(null);
+  const { actionPrivileges } = useStore();
 
   useBreadCrumb("View Ticket", location.pathname, "", "add");
 
@@ -40,83 +42,83 @@ function ViewTicket() {
   }, [id]);
 
 
-    const fetchStatuses = async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/getStatuses');
-            setStatuses(response.data);
-        } catch (error) {
-            console.error('Error fetching statuses:', error);
-        }
-    };
+  const fetchStatuses = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getStatuses');
+      setStatuses(response.data);
+    } catch (error) {
+      console.error('Error fetching statuses:', error);
+    }
+  };
 
-    const fetchEmergencyLevels = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
-        setEmergencyLevels(response.data);
-      } catch (error) {
-        message.error("Failed to load emergency levels");
-      }
-    };
+  const fetchEmergencyLevels = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+      setEmergencyLevels(response.data);
+    } catch (error) {
+      message.error("Failed to load emergency levels");
+    }
+  };
 
-    const fetchLocations = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/getLocations');
-        setLocations(response.data);
-      } catch (error) {
-        message.error("Failed to load locations");
-      }
-    };
-  
-    const fetchBranchDivisions = async (locationId) => {
-      try {
-        const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
-        const branchDivisionsData = response.data;
-        const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
-          acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
-          return acc;
-        }, {});
-        setBranchDivisions(branchDivisionsData);
-        setBranchDivisionMap(branchDivisionMap);
-      } catch (error) {
-        message.error("Failed to load branch divisions");
-      }
-    };
-  
-    const fetchIssueTypes = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/getIssueTypes');
-        setIssueTypes(response.data);
-      } catch (error) {
-        message.error("Failed to load issue types");
-      }
-    };
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getLocations');
+      setLocations(response.data);
+    } catch (error) {
+      message.error("Failed to load locations");
+    }
+  };
 
-    const fetchIssueCategories = async (issueTypeId) => {
-      try {
-        const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
-        setIssueCategories(response.data);
-      } catch (error) {
-        // message.error("Failed to load issue categories");
-      }
-    };
+  const fetchBranchDivisions = async (locationId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+      const branchDivisionsData = response.data;
+      const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
+        acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
+        return acc;
+      }, {});
+      setBranchDivisions(branchDivisionsData);
+      setBranchDivisionMap(branchDivisionMap);
+    } catch (error) {
+      message.error("Failed to load branch divisions");
+    }
+  };
 
-    const fetchAllIssueCategories = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/getAllIssueCategories");
-        setIssueCategories(response.data);
-      } catch (error) {
-        //message.error("Failed to load issue categories");
-        }
-    };
+  const fetchIssueTypes = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getIssueTypes');
+      setIssueTypes(response.data);
+    } catch (error) {
+      message.error("Failed to load issue types");
+    }
+  };
 
-    const fetchAgents = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/getUserListsByUserRole/AGENT');
-        setAssignees(response.data);
-      } catch (error) {
-        message.error("Failed to load assignees");
-      }
-    };
+  const fetchIssueCategories = async (issueTypeId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+      setIssueCategories(response.data);
+    } catch (error) {
+      // message.error("Failed to load issue categories");
+    }
+  };
+
+  const fetchAllIssueCategories = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/getAllIssueCategories");
+      setIssueCategories(response.data);
+    } catch (error) {
+      //message.error("Failed to load issue categories");
+    }
+  };
+
+  const fetchAgents = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/getUserListsByUserRole/AGENT');
+      setAssignees(response.data);
+    } catch (error) {
+      message.error("Failed to load assignees");
+    }
+  };
 
   const fetchTicketDetails = async () => {
     try {
@@ -173,7 +175,7 @@ function ViewTicket() {
 
   const handleAssign = () => {
     if (selectedAssignee) {
-      axios.post(`http://localhost:8080/assignTicket/${id}`, { assigneeId: selectedAssignee })
+      axios.put(`http://localhost:8080/assignTicket/${id}`, { assigneeId: selectedAssignee, username: localStorage.getItem("username") })
         .then((response) => {
           message.success("Ticket successfully assigned");
         })
@@ -205,7 +207,7 @@ function ViewTicket() {
             <Col span={12}>
               <Form.Item
                 label="Ticket ID"
-                name="ticketId" 
+                name="ticketId"
                 rules={[
                   {
                     required: true,
@@ -230,11 +232,11 @@ function ViewTicket() {
                   placeholder="Select Emergency Level"
                   size="large" disabled
                 >
-                {emergencyLevels.map(level => (
-                  <Option key={level.levelId} value={level.levelId}>
-                    {level.levelDes}
-                  </Option>
-                ))}
+                  {emergencyLevels.map(level => (
+                    <Option key={level.levelId} value={level.levelId}>
+                      {level.levelDes}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -249,7 +251,7 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Location" size="large" disabled>
-                {locations.map(location => (
+                  {locations.map(location => (
                     <Option key={location.locationId} value={location.locationId}>
                       {location.locationDes}
                     </Option>
@@ -291,7 +293,7 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Issue Type" size="large" disabled>
-                {issueTypes.map(issueTypes => (
+                  {issueTypes.map(issueTypes => (
                     <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
                       {issueTypes.issueTypeDes}
                     </Option>
@@ -333,11 +335,11 @@ function ViewTicket() {
                 ]}
               >
                 <Select allowClear placeholder="Select Status" size="large" disabled >
-                {statuses.map(status => (
+                  {statuses.map(status => (
                     <Option key={status.statusId} value={status.statusId}>
-                        {status.statusDes}
+                      {status.statusDes}
                     </Option>
-                ))}
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -396,9 +398,11 @@ function ViewTicket() {
             </Col>
           </Row>
 
-          <Divider />
+          {actionPrivileges.includes("ASSIGN_TICKET") && (
+            <>
+            <Divider />
 
-          {/* Assignee Section */}
+    
           <Row gutter={24}>
             <Col span={12}>
               <Form.Item
@@ -429,6 +433,8 @@ function ViewTicket() {
               </Button>
             </Col>
           </Row>
+          </>
+          )}
 
           <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
             <Button type="secondary" className="secondary__btn" htmlType="back">

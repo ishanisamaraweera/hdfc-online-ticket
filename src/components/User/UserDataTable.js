@@ -13,10 +13,10 @@ import Progress from "react-progress-2";
 import { useNavigate } from "react-router-dom";
 import { apis } from "../../properties";
 import { useRefreshTable } from "../../store";
-import useAllUsers from "../../hooks/useAllUsers"; 
-
+import useAllUsers from "../../hooks/useAllUsers";
+import { useStore } from "../../store";
 import axios from "axios";
-import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver'; 
+import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver';
 
 const { confirm } = Modal;
 const { Search } = Input;
@@ -28,7 +28,7 @@ function UserDataTable() {
     page: 1,
     pageSize: 10,
   });
-
+  const { actionPrivileges } = useStore();
   const [searchQuery, setSearchQuery] = useState("");
   const users = useAllUsers();
   const [filteredTickets, setFilteredTickets] = useState(users);
@@ -47,7 +47,7 @@ function UserDataTable() {
     console.log("ResizeObserver triggered");
   });
 
-    const columns = [
+  const columns = [
     {
       title: "Username",
       dataIndex: "username",
@@ -76,7 +76,7 @@ function UserDataTable() {
       title: "Designation",
       dataIndex: "designation",
       width: 200,
-      sorter: (a, b) => (a.designation && b.designation ? a.designation.localeCompare(b.designation) :0),
+      sorter: (a, b) => (a.designation && b.designation ? a.designation.localeCompare(b.designation) : 0),
     },
     {
       title: "Date of Birth",
@@ -116,7 +116,7 @@ function UserDataTable() {
       sorter: (a, b) =>
         new Date(a.addedDateTime) - new Date(b.addedDateTime),
     },
-    
+
     {
       title: "Last Updated User",
       render: (record) => record?.lastUpdatedUser,
@@ -162,29 +162,39 @@ function UserDataTable() {
             />
           </Tooltip>
           &nbsp;&nbsp;
-          <Tooltip placement="bottom" title="Edit">
-            <Button
-              className="edit_button"
-              shape="circle"
-              icon={<EditOutlined />}
-              onClick={() => {
-                navigate(`/updateUser/${record.username}`);
-              }}
-            />
-          </Tooltip>
-          &nbsp;&nbsp;
-          <Tooltip placement="bottom" title="Delete">
-            <Button
-              className="delete_button"
-              shape="circle"
-              icon={<DeleteOutlined />}
-              onClick={() => deleteContent(record.username)}
-            />
-          </Tooltip>
+          {actionPrivileges.includes("UPDATE_USER") && (
+            <>
+              <Tooltip placement="bottom" title="Edit">
+                <Button
+                  className="edit_button"
+                  shape="circle"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    navigate(`/updateUser/${record.username}`);
+                  }}
+                />
+              </Tooltip>
+              &nbsp;&nbsp;
+            </>
+          )}
+          {actionPrivileges.includes("DELETE_USER") && (
+            <>
+              
+              <Tooltip placement="bottom" title="Delete">
+                <Button
+                  className="delete_button"
+                  shape="circle"
+                  icon={<DeleteOutlined />}
+                  onClick={() => deleteContent(record.username)}
+                />
+              </Tooltip>
+              &nbsp;&nbsp;
+            </>
+          )}
         </>
       ),
       fixed: "right",
-      width: 150,
+      width: 175,
       align: "right",
     },
   ];
