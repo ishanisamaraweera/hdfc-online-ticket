@@ -138,6 +138,7 @@ function ViewTicket() {
         isWorkingPc: ticket.isWorkingPc,
         ip: ticket.ip,
         issueDesAndRemarks: ticket.issueDesAndRemarks,
+        assignee: ticket.assignee,
       });
       setDesData(ticket.issueDesAndRemarks);
       fetchIssueCategories(ticket.issueType);
@@ -327,12 +328,6 @@ function ViewTicket() {
               <Form.Item
                 label="Status"
                 name="status" readOnly
-                rules={[
-                  {
-                    required: true,
-                    message: "Status cannot be empty!",
-                  },
-                ]}
               >
                 <Select allowClear placeholder="Select Status" size="large" disabled >
                   {statuses.map(status => (
