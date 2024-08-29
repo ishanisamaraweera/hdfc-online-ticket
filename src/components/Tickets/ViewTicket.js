@@ -37,8 +37,9 @@ function ViewTicket() {
 
   const handleAddComment = () => {
     if (newComment.trim()) {
-      setComments([...comments, newComment.trim()]);
+      setComments([...comments, localStorage.getItem("username") + ": " + newComment.trim()] );
       setNewComment("");
+
     } else {
       message.warning("Please enter a comment before adding.");
     }
