@@ -167,11 +167,11 @@ function Dashboard() {
     }
   };
 
-  // Function to check if a page is allowed
-  const isPageAllowed = (page) => allowedPages.includes(page);
+  // // Function to check if a page is allowed
+  // const isPageAllowed = (page) => allowedPages.includes(page);
 
-  // Function to check if an action is allowed
-  const isActionAllowed = (action) => allowedActions.includes(action);
+  // // Function to check if an action is allowed
+  // const isActionAllowed = (action) => allowedActions.includes(action);
 
   return (
     <div className="dashboard">
