@@ -1,5 +1,5 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, message, Radio, Row, Select, Divider } from "antd";
+import { Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -7,7 +7,7 @@ import useBreadCrumb from "../../hooks/useBreadCrumb";
 import { apis } from "../../properties";
 import axios from "axios";
 import { useStore } from "../../store";
-import { Progress, Slider } from "antd";
+import { } from "antd";
 
 const { Option } = Select;
 
@@ -28,9 +28,20 @@ function ViewTicket() {
   const [selectedAssignee, setSelectedAssignee] = useState(null);
   const { actionPrivileges } = useStore();
   const [completedPercentage, setCompletedPercentage] = useState(50);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
 
   const handleSliderChange = (value) => {
     setCompletedPercentage(value);
+  };
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      setComments([...comments, newComment.trim()]);
+      setNewComment("");
+    } else {
+      message.warning("Please enter a comment before adding.");
+    }
   };
 
   useBreadCrumb("View Ticket", location.pathname, "", "add");
@@ -150,7 +161,7 @@ function ViewTicket() {
       setDesData(ticket.issueDesAndRemarks);
       fetchIssueCategories(ticket.issueType);
       fetchBranchDivisions(ticket.location);
-      setCompletedPercentage(ticket.completedPercentage)
+      setCompletedPercentage(ticket.completedPercentage);
     } catch (error) {
       message.error("Failed to load ticket details");
     }
@@ -431,9 +442,10 @@ function ViewTicket() {
                       </Form.Item>
                     </Col>
                   </Row>
+                  <Divider />
                 </>
               )}
-              <Divider />
+
               <Row gutter={24}>
                 <Col span={12}>
                   <Form.Item
@@ -443,21 +455,21 @@ function ViewTicket() {
                     <div style={{ width: "300px" }}>
                       <Progress
                         percent={completedPercentage}
-                        strokeColor="#000000"  
-                        trailColor="#f0f0f0" 
+                        strokeColor="#000000"
+                        trailColor="#f0f0f0"
                       />
                       <Slider
                         value={completedPercentage}
                         onChange={handleSliderChange}
                         min={0}
                         max={100}
-                        style={{ marginTop: "20px", width: "250px"}}
+                        style={{ marginTop: "20px", width: "250px" }}
                       />
                     </div>
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  {actionPrivileges.includes("ASSIGN_TICKET") && (
+                  {actionPrivileges.includes("UPDATE_TICKET") && (
                     <Form.Item>
                       <Button
                         type="primary"
@@ -468,18 +480,46 @@ function ViewTicket() {
                       </Button>
                     </Form.Item>
                   )}
-                </Col></Row>
-              <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
-                <Button type="secondary" className="secondary__btn" htmlType="back">
-                  <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
-                    Back
-                  </a>
+                </Col>
+              </Row>
+
+              {/* Comment Section */}
+              <Form.Item label="Add Comment" name="newComment">
+                <TextArea
+                  rows={4}
+                  placeholder="Type your comment here..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+                <Button type="primary" onClick={handleAddComment} style={{ marginTop: "10px" }}>
+                  Add Comment
                 </Button>
-              </div>
-            </Col>
-          </Row>
-        </Form>
-      </div>
+              </Form.Item>
+
+              {/* List of Comments */}
+              <Divider>Comments</Divider>
+              <List
+                bordered
+                dataSource={comments}
+                renderItem={(item) => (
+                  <List.Item>
+                    {item}
+                  </List.Item>
+                )}
+              />
+
+
+          <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
+            <Button type="secondary" className="secondary__btn" htmlType="back">
+              <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
+                Back
+              </a>
+            </Button>
+          </div>
+        </Col>
+      </Row>
+    </Form>
+      </div >
     </div >
   );
 }
