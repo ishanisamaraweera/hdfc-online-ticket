@@ -24,12 +24,15 @@ function ViewTicket() {
   const [branchDivisions, setBranchDivisions] = useState([]);
   const [branchDivisionMap, setBranchDivisionMap] = useState({});
   const [issueCategories, setIssueCategories] = useState([]);
-  const [assignees, setAssignees] = useState([]);
-  const [selectedAssignee, setSelectedAssignee] = useState(null);
+  const [agents, setAgents] = useState([]);
+  const [selectedAgent, setSelectedAgent] = useState(null);
   const { actionPrivileges } = useStore();
   const [completedPercentage, setCompletedPercentage] = useState(50);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [agentComment, setAgentComment] = useState("");
+
 
   const handleSliderChange = (value) => {
     setCompletedPercentage(value);
@@ -37,7 +40,8 @@ function ViewTicket() {
 
   const handleAddComment = () => {
     if (newComment.trim()) {
-      setComments([...comments, localStorage.getItem("username") + ": " + newComment.trim()] );
+      setComments([...comments, displayName + ": " + newComment.trim()] );
+      //
       setNewComment("");
 
     } else {
@@ -57,8 +61,19 @@ function ViewTicket() {
     fetchIssueCategories();
     fetchAllIssueCategories();
     fetchAgents();
+    fetchDisplayName();
   }, [id]);
 
+
+  const fetchDisplayName = async () => {
+    const username = localStorage.getItem("username");
+    try {
+      const response = await axios.get(`http://localhost:8080/getDisplayNameByUsername/${username}`);
+      setDisplayName(response.data);
+    } catch (error) {
+      console.error('Error fetching display name:', error);
+    }
+  };
 
   const fetchStatuses = async () => {
     try {
@@ -132,9 +147,9 @@ function ViewTicket() {
   const fetchAgents = async () => {
     try {
       const response = await axios.get('http://localhost:8080/getUserListsByUserRole/AGENT');
-      setAssignees(response.data);
+      setAgents(response.data);
     } catch (error) {
-      message.error("Failed to load assignees");
+      message.error("Failed to load agents");
     }
   };
 
@@ -156,7 +171,7 @@ function ViewTicket() {
         isWorkingPc: ticket.isWorkingPc,
         ip: ticket.ip,
         issueDesAndRemarks: ticket.issueDesAndRemarks,
-        assignee: ticket.assignee,
+        agent: ticket.agent,
         completedPercentage: ticket.completedPercentage,
       });
       setDesData(ticket.issueDesAndRemarks);
@@ -195,8 +210,8 @@ function ViewTicket() {
   };
 
   const handleAssign = () => {
-    if (selectedAssignee) {
-      axios.put(`http://localhost:8080/assignTicket/${id}`, { assigneeId: selectedAssignee, username: localStorage.getItem("username") })
+    if (selectedAgent) {
+      axios.put(`http://localhost:8080/assignTicket/${id}`, { agentId: selectedAgent, username: localStorage.getItem("username") })
         .then((response) => {
           message.success("Ticket successfully assigned");
         })
@@ -204,12 +219,12 @@ function ViewTicket() {
           message.error("Failed to assign ticket");
         });
     } else {
-      message.warning("Please select an assignee");
+      message.warning("Please select an agent");
     }
   };
 
   const acceptTicket = () => {
-    axios.put(`http://localhost:8080/acceptTicket/${id}`, { username: localStorage.getItem("username") })
+    axios.put(`http://localhost:8080/acceptTicket/${id}`, { username: localStorage.getItem("username"), agentComment: agentComment })
       .then((response) => {
         message.success("Ticket successfully accepted");
       })
@@ -219,7 +234,7 @@ function ViewTicket() {
   };
 
   const rejectTicket = () => {
-    axios.put(`http://localhost:8080/rejectTicket/${id}`, { username: localStorage.getItem("username") })
+    axios.put(`http://localhost:8080/rejectTicket/${id}`, { username: localStorage.getItem("username"), agentComment: agentComment })
       .then((response) => {
         message.success("Ticket successfully rejected");
       })
@@ -235,6 +250,16 @@ function ViewTicket() {
       })
       .catch((error) => {
         message.error("Failed to update completed percentage");
+      });
+  };
+
+  const saveStatus = () => {
+    axios.put(`http://localhost:8080/saveStatus/${id}`, { username: localStorage.getItem("username") })
+      .then((response) => {
+        message.success("Ticket status succesfully updated");
+      })
+      .catch((error) => {
+        message.error("Failed to update ticket status");
       });
   };
 
@@ -381,18 +406,18 @@ function ViewTicket() {
                   <Row gutter={24}>
                     <Col span={12}>
                       <Form.Item
-                        label="Assignee"
-                        name="assignee"
+                        label="Agent"
+                        name="agent"
                       >
                         <Select
                           allowClear
-                          placeholder="Select Assignee"
+                          placeholder="Select Agent"
                           size="large"
-                          onChange={value => setSelectedAssignee(value)}
+                          onChange={value => setSelectedAgent(value)}
                         >
-                          {assignees.map(assignee => (
-                            <Option key={assignee.username} value={assignee.username}>
-                              {assignee.displayName}
+                          {agents.map(agent => (
+                            <Option key={agent.username} value={agent.username}>
+                              {agent.displayName}
                             </Option>
                           ))}
                         </Select>
@@ -479,7 +504,14 @@ function ViewTicket() {
                       >
                         Save
                       </Button>
-                    </Form.Item>
+                    <Button
+                      type="primary"
+                      onClick={saveStatus}
+                      style={{ marginTop: '32px', marginLeft: '12px'}}
+                    >
+                      Completed
+                    </Button>
+                  </Form.Item>
                   )}
                 </Col>
               </Row>

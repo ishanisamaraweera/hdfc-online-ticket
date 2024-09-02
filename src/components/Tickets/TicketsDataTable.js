@@ -64,10 +64,10 @@ function TicketDataTable() {
       sorter: (a, b) => a.sender.localeCompare(b.sender),
     },
     {
-      title: "Assignee",
-      dataIndex: "assignee",
+      title: "Agent",
+      dataIndex: "agent",
       width: 200,
-      sorter: (a, b) => (a.assignee && b.assignee ? a.assignee.localeCompare(b.assignee) : 0),
+      sorter: (a, b) => (a.agent && b.agent ? a.agent.localeCompare(b.agent) : 0),
     },
     {
       title: "Reported Date Time",
@@ -140,11 +140,11 @@ function TicketDataTable() {
       sorter: (a, b) => a.issueDesAndRemarks.localeCompare(b.issueDesAndRemarks),
     },
     {
-      title: "Assignee Response Date-Time",
-      render: (record) => record?.assigneeResponseDateTime,
+      title: "Agent Response Date-Time",
+      render: (record) => record?.agentResponseDateTime,
       width: 200,
       sorter: (a, b) =>
-        (a.assigneeResponseDateTime && b.assigneeResponseDateTime ? new Date(a.assigneeResponseDateTime) - new Date(b.assigneeResponseDateTime) : 0),
+        (a.agentResponseDateTime && b.agentResponseDateTime ? new Date(a.agentResponseDateTime) - new Date(b.agentResponseDateTime) : 0),
     },
     {
       title: "Resolved Date Time",
@@ -160,10 +160,10 @@ function TicketDataTable() {
       sorter: (a, b) => (a.resolutionPeriod && b.resolutionPeriod ? a.resolutionPeriod - b.resolutionPeriod : 0),
     },
     {
-      title: "Assignee Comments",
-      render: (record) => record?.assigneeComments,
+      title: "Agent Comments",
+      render: (record) => record?.agentComments,
       width: 200,
-      sorter: (a, b) => (a.assigneeComments && b.assigneeComments ? a.assigneeComments.localeCompare(b.assigneeComments) : 0),
+      sorter: (a, b) => (a.agentComments && b.agentComments ? a.agentComments.localeCompare(b.agentComments) : 0),
     },
     {
       title: "Last Updated User",
