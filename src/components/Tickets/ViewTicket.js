@@ -1,5 +1,5 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
+import { Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List, Fragment } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -402,7 +402,7 @@ function ViewTicket() {
 
             <Col span={12}>
               {actionPrivileges.includes("ASSIGN_TICKET") && (
-                <>
+                <Fragment>
                   <Row gutter={24}>
                     <Col span={12}>
                       <Form.Item
@@ -433,11 +433,11 @@ function ViewTicket() {
                       </Button>
                     </Col>
                   </Row>
-                </>
+                </Fragment>
               )}
 
               {actionPrivileges.includes("ACCEPT_TICKET") && (
-                <>
+                <Fragment>
                   <Divider />
                   <Row gutter={24}>
                     <Col span={12}>
@@ -469,7 +469,7 @@ function ViewTicket() {
                     </Col>
                   </Row>
                   <Divider />
-                </>
+                </Fragment>
               )}
 
               <Row gutter={24}>
