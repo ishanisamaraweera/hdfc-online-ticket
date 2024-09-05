@@ -1,5 +1,5 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List, Fragment } from "antd";
+import { Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -40,10 +40,23 @@ function ViewTicket() {
 
   const handleAddComment = () => {
     if (newComment.trim()) {
-      setComments([...comments, displayName + ": " + newComment.trim()] );
-      //
-      setNewComment("");
+      const commentData = {
+        addedBy: localStorage.getItem("username"),
+        ticketId: id,
+        comment: newComment.trim(),
+      };
 
+      try {
+        console.log("***************" + JSON.stringify(commentData));
+        const response = axios.post('http://localhost:8080/addComment', commentData);
+          
+        setComments([...comments, <span key={comments.length}><strong>{displayName}:</strong> {newComment.trim()}</span>]);
+        setNewComment("");
+        message.success("Comment added successfully");
+      } catch (error) {
+        message.error("Failed to add comment");
+        console.error("Error adding comment:", error);
+      }
     } else {
       message.warning("Please enter a comment before adding.");
     }
@@ -53,6 +66,7 @@ function ViewTicket() {
 
   useEffect(() => {
     fetchTicketDetails();
+    fetchCommentDetails();
     fetchStatuses();
     fetchLocations();
     fetchBranchDivisions();
@@ -173,11 +187,27 @@ function ViewTicket() {
         issueDesAndRemarks: ticket.issueDesAndRemarks,
         agent: ticket.agent,
         completedPercentage: ticket.completedPercentage,
+        agentComment: ticket.agentComment,
       });
       setDesData(ticket.issueDesAndRemarks);
       fetchIssueCategories(ticket.issueType);
       fetchBranchDivisions(ticket.location);
       setCompletedPercentage(ticket.completedPercentage);
+    } catch (error) {
+      message.error("Failed to load ticket details");
+    }
+  };
+
+  const fetchCommentDetails = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getCommentsByTicketId/${id}`);
+      const commentsData = response.data;
+      setComments(commentsData.map(comment => (
+        <span key={comment.id}>
+          <strong>{comment.addedBy}:</strong> {comment.comment}
+        </span>
+      )));
+  
     } catch (error) {
       message.error("Failed to load ticket details");
     }
@@ -224,24 +254,31 @@ function ViewTicket() {
   };
 
   const acceptTicket = () => {
-    axios.put(`http://localhost:8080/acceptTicket/${id}`, { username: localStorage.getItem("username"), agentComment: agentComment })
-      .then((response) => {
-        message.success("Ticket successfully accepted");
-      })
-      .catch((error) => {
-        message.error("Failed to accept ticket");
-      });
+    form.validateFields(['agentComment']).then(() => {
+      const agentComment = form.getFieldValue('agentComment');
+      axios.put(`http://localhost:8080/acceptTicket/${id}`, { username: localStorage.getItem("username"), agentComment })
+        .then((response) => {
+          message.success("Ticket successfully accepted");
+        })
+        .catch((error) => {
+          message.error("Failed to accept ticket");
+        });
+    });
   };
 
   const rejectTicket = () => {
-    axios.put(`http://localhost:8080/rejectTicket/${id}`, { username: localStorage.getItem("username"), agentComment: agentComment })
-      .then((response) => {
-        message.success("Ticket successfully rejected");
-      })
-      .catch((error) => {
-        message.error("Failed to reject ticket");
-      });
+    form.validateFields(['agentComment']).then(() => {
+      const agentComment = form.getFieldValue('agentComment');
+      axios.put(`http://localhost:8080/rejectTicket/${id}`, { username: localStorage.getItem("username"), agentComment })
+        .then((response) => {
+          message.success("Ticket successfully rejected");
+        })
+        .catch((error) => {
+          message.error("Failed to reject ticket");
+        });
+    });
   };
+
 
   const savePercentage = () => {
     axios.put(`http://localhost:8080/savePercentage/${id}`, { completedPercentage: completedPercentage, username: localStorage.getItem("username") })
@@ -402,7 +439,7 @@ function ViewTicket() {
 
             <Col span={12}>
               {actionPrivileges.includes("ASSIGN_TICKET") && (
-                <Fragment>
+                <>
                   <Row gutter={24}>
                     <Col span={12}>
                       <Form.Item
@@ -433,11 +470,11 @@ function ViewTicket() {
                       </Button>
                     </Col>
                   </Row>
-                </Fragment>
+                </>
               )}
 
               {actionPrivileges.includes("ACCEPT_TICKET") && (
-                <Fragment>
+                <>
                   <Divider />
                   <Row gutter={24}>
                     <Col span={12}>
@@ -445,7 +482,10 @@ function ViewTicket() {
                         label="Agent Comment"
                         name="agentComment"
                       >
-                        <TextArea rows={4} placeholder="Type here ..." />
+                        <TextArea rows={4} placeholder="Type here ..." value={agentComment} onChange={(e) => {
+                          setAgentComment(e.target.value);
+                          form.setFieldValue({ agentComment: e.target.value })
+                        }} />
                       </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -469,7 +509,7 @@ function ViewTicket() {
                     </Col>
                   </Row>
                   <Divider />
-                </Fragment>
+                </>
               )}
 
               <Row gutter={24}>
@@ -504,14 +544,14 @@ function ViewTicket() {
                       >
                         Save
                       </Button>
-                    <Button
-                      type="primary"
-                      onClick={saveStatus}
-                      style={{ marginTop: '32px', marginLeft: '12px'}}
-                    >
-                      Completed
-                    </Button>
-                  </Form.Item>
+                      <Button
+                        type="primary"
+                        onClick={saveStatus}
+                        style={{ marginTop: '32px', marginLeft: '12px' }}
+                      >
+                        Completed
+                      </Button>
+                    </Form.Item>
                   )}
                 </Col>
               </Row>
@@ -542,16 +582,16 @@ function ViewTicket() {
               />
 
 
-          <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
-            <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
-                Back
-              </a>
-            </Button>
-          </div>
-        </Col>
-      </Row>
-    </Form>
+              <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
+                <Button type="secondary" className="secondary__btn" htmlType="back">
+                  <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
+                    Back
+                  </a>
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </Form>
       </div >
     </div >
   );
