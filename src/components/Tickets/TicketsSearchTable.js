@@ -6,7 +6,7 @@ import {
   EyeOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Modal, Table, Tag, Tooltip, message, Input } from "antd";
+import { Form, Modal, Table, Tag, Button, message, Input, Select } from "antd";
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import Progress from "react-progress-2";
@@ -15,15 +15,14 @@ import { apis } from "../../properties";
 import { useRefreshTable } from "../../store";
 import useAllTickets from "../../hooks/useAllTickets";
 import axios from "axios";
-import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver';
-import { useStore } from "../../store";
-import { AutoScaling } from "aws-sdk";
+import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver'; // Adjust the path accordingly
 
+const { Option } = Select;
 const { confirm } = Modal;
 const { Search } = Input;
 
 
-function TicketDataTable() {
+function TicketsSearchTable() {
   const { refreshTable, setRefreshTable } = useRefreshTable();
   const navigate = useNavigate();
   const [filterData, setFilterData] = useState({
@@ -31,25 +30,51 @@ function TicketDataTable() {
     pageSize: 10,
   });
 
-  const [searchQuery, setSearchQuery] = useState("");
   const tickets = useAllTickets();
   const [filteredTickets, setFilteredTickets] = useState(tickets);
-  const { actionPrivileges } = useStore();
+  const [statuses, setStatuses] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   useEffect(() => {
-    setFilteredTickets(
-      tickets.filter(ticket =>
-        Object.values(ticket).some(value =>
-          value ? value.toString().toLowerCase().includes(searchQuery.toLowerCase()) : false
-        )
-      )
-    );
-  }, [searchQuery, tickets]);
+    fetchStatuses('TICKET');
+  }, []);
+
+  const fetchStatuses = async (module) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+      setStatuses(response.data);
+    } catch (error) {
+      message.error("Failed to load statuses");
+    }
+  };
+
+  const handleStatusChange = (value) => {
+    setSelectedStatus(value);
+    localStorage.setItem("statusVal", selectedStatus);
+  };
+
+  const handleSubmitStatus = async () => {
+    if (selectedStatus) {
+      try {
+        localStorage.setItem("statusVal", selectedStatus);
+        const response = await axios.get(`http://localhost:8080/searchTickets/${selectedStatus}`);
+        setFilteredTickets(response.data);
+        setRefreshTable(!refreshTable);
+      } catch (error) {
+        message.error("Failed to update status");
+      }
+    } else {
+      localStorage.setItem("statusVal", selectedStatus);
+      const response = await axios.get(`http://localhost:8080/searchTickets`);
+      setFilteredTickets(response.data);
+      setRefreshTable(!refreshTable);
+    }
+  };
 
   useDebouncedResizeObserver(() => {
     console.log("ResizeObserver triggered");
   });
-
+  
   const columns = [
     {
       title: "Ticket ID",
@@ -192,141 +217,31 @@ function TicketDataTable() {
         </Tag>
       ),
       fixed: "right",
-      width: 90,
+      width: 75,
       sorter: (a, b) => a.status.localeCompare(b.status),
-    },
-    {
-      title: "Action",
-      render: (text, record) => (
-        <>
-          <Tooltip placement="bottom" title="View">
-            <Button
-              className="view_button"
-              shape="circle"
-              icon={<EyeOutlined />}
-              onClick={() => {
-                navigate(`/viewTicket/${record.ticketId}`);
-              }}
-            />
-          </Tooltip>
-          &nbsp;&nbsp;
-          {actionPrivileges.includes("UPDATE_TICKET") && (
-            <>
-              <Tooltip placement="bottom" title="Edit">
-                <Button
-                  className="edit_button"
-                  shape="circle"
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    navigate(`/updateTicket/${record.ticketId}`);
-                  }}
-                />
-              </Tooltip>
-              &nbsp;&nbsp;
-            </>
-          )}
-          {actionPrivileges.includes("CLOSE_TICKET") && (
-            <>
-              <Tooltip placement="bottom" title="Close">
-                <Button
-                  className="delete_button"
-                  shape="circle"
-                  icon={<CloseOutlined />}
-                  onClick={() => statusChange(record.ticketId, "Closed")}
-                />
-              </Tooltip>
-              &nbsp;&nbsp;
-            </>
-          )}
-          {actionPrivileges.includes("DELETE_TICKET") && (
-            <>
-              <Tooltip placement="bottom" title="Delete">
-                <Button
-                  className="delete_button"
-                  shape="circle"
-                  icon={<DeleteOutlined />}
-                  onClick={() => deleteContent(record.ticketId)}
-                />
-              </Tooltip>
-              &nbsp;&nbsp;
-            </>
-          )}
-        </>
-      ),
-      fixed: "right",
-      width: 175,
-      align: "right",
     },
   ];
 
-  const statusChange = (id, type) => {
-    confirm({
-      title: `Are you sure?`,
-      icon: <ExclamationCircleOutlined />,
-      content: `Do you want to ${type} this ticket?`,
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      onOk() {
-        Progress.show();
-        axios
-          .put(`http://localhost:8080/closeTicket/${id}`, {
-            status: type,
-          })
-          .then((result) => {
-            let responseJson = result;
-            setRefreshTable(!refreshTable);
-            message.success("Ticket closed successfully");
-            Progress.hide();
-          })
-          .catch((error) => {
-            message.error(error.response?.data?.message || "Failed to close ticket");
-            Progress.hide();
-          });
-      },
-      onCancel() {
-        console.log("Cancel");
-      },
-    });
-  };
-
-  const deleteContent = (id) => {
-    confirm({
-      title: `Are you sure?`,
-      icon: <ExclamationCircleOutlined />,
-      content: `Do you want to delete this ticket?`,
-      okText: "Yes",
-      okType: "primary",
-      cancelText: "No",
-      onOk() {
-        Progress.show();
-        axios
-          .put(`http://localhost:8080/deleteTicket/${id}`)
-          .then((result) => {
-            let responseJson = result;
-            setRefreshTable(!refreshTable);
-            setFilteredTickets(filteredTickets.filter(user => user.ticketId !== id));
-            Progress.hide();
-            message.success("Ticket deleted successfully");
-          })
-          .catch((error) => {
-            message.error(error.response?.data?.message || "Failed to delete ticket! Tickets cannot delete after assign to an agent");
-            Progress.hide();
-          });
-      },
-      onCancel() {
-        console.log("Cancel");
-      },
-    });
-  };
-
   return (
     <>
-      <Search
-        placeholder="Search tickets"
-        onChange={(e) => setSearchQuery(e.target.value)}
-        style={{ marginBottom: 16, width: 300 }}
-      />
+      <Form>
+        <Form.Item
+          label="Status"
+          name="status"
+        >
+          <Select allowClear placeholder="Select Status" size="small" style={{ width: '150px', marginRight: '10px' }} onChange={handleStatusChange}>
+            {statuses.map(status => (
+              <Option key={status.statusId} value={status.statusId}>
+                {status.statusDes}
+              </Option>
+            ))}
+          </Select>
+
+          <Button type="submit" onClick={handleSubmitStatus} className="primary__btn">
+            Search
+          </Button>
+        </Form.Item>
+      </Form>
       <Table
         scroll={{ x: 1800 }}
         columns={columns}
@@ -351,4 +266,4 @@ function TicketDataTable() {
   );
 }
 
-export default TicketDataTable;
+export default TicketsSearchTable;

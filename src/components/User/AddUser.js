@@ -27,7 +27,6 @@ function AddUser() {
   }, []);
 
   useEffect(() => {
-    //form.setFieldsValue({ branchDivision: undefined });
     fetchBranchDivisionByLocation(form.getFieldValue('location'));
   }, [form.getFieldValue('location')]);
 
@@ -68,7 +67,7 @@ function AddUser() {
     setTargetKeys(nextTargetKeys);
   };
 
-  useBreadCrumb("Create User", "Create User");
+  useBreadCrumb("Create User", location.pathname, "User");
 
   const fetchStatuses = async (module) => {
     console.log("Fetching statuses for module:", module);
@@ -101,7 +100,7 @@ function AddUser() {
         .then((result) => {
           form.resetFields();
           message.success("User details added successfully for username: " + result.data.username);
-          navigate('/dashboard');
+          navigate('/user');
         })
         .catch((error) => {
           message.error(error.response?.data?.message || "Failed to add user");
@@ -163,6 +162,10 @@ function AddUser() {
               </Form.Item>
             </Col>
             <Col span={12}>
+              <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Email cannot be empty!' }]}>
+                <Input type="text" size="large" placeholder="Enter Email" />
+              </Form.Item>
+
               <Form.Item label="Designation" name="designation" rules={[{ required: true, message: 'Designation cannot be empty!' }]}>
                 <Input type="text" size="large" placeholder="Enter Designation" />
               </Form.Item>
@@ -230,7 +233,7 @@ function AddUser() {
                   allowClear
                   placeholder="Select Status"
                   size="large">
-                  {Array.isArray(statuses) &&  statuses.map(status => (
+                  {Array.isArray(statuses) && statuses.map(status => (
                     <Option key={status.statusId} value={status.statusId}>
                       {status.statusDes}
                     </Option>
@@ -245,7 +248,7 @@ function AddUser() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/dashboard' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href='http://localhost:3000/user' style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

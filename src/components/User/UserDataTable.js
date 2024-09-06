@@ -13,38 +13,35 @@ import Progress from "react-progress-2";
 import { useNavigate } from "react-router-dom";
 import { apis } from "../../properties";
 import { useRefreshTable } from "../../store";
-import useAllTickets from "../../hooks/useAllTickets";
+import useAllUsers from "../../hooks/useAllUsers";
+import { useStore } from "../../store";
 import axios from "axios";
 import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver';
-import { useStore } from "../../store";
-import { AutoScaling } from "aws-sdk";
 
 const { confirm } = Modal;
 const { Search } = Input;
 
-
-function TicketDataTable() {
+function UserDataTable() {
   const { refreshTable, setRefreshTable } = useRefreshTable();
   const navigate = useNavigate();
   const [filterData, setFilterData] = useState({
     page: 1,
     pageSize: 10,
   });
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const tickets = useAllTickets();
-  const [filteredTickets, setFilteredTickets] = useState(tickets);
   const { actionPrivileges } = useStore();
+  const [searchQuery, setSearchQuery] = useState("");
+  const users = useAllUsers();
+  const [filteredTickets, setFilteredTickets] = useState(users);
 
   useEffect(() => {
     setFilteredTickets(
-      tickets.filter(ticket =>
-        Object.values(ticket).some(value =>
+      users.filter(user =>
+        Object.values(user).some(value =>
           value ? value.toString().toLowerCase().includes(searchQuery.toLowerCase()) : false
         )
       )
     );
-  }, [searchQuery, tickets]);
+  }, [searchQuery, users]);
 
   useDebouncedResizeObserver(() => {
     console.log("ResizeObserver triggered");
@@ -52,38 +49,44 @@ function TicketDataTable() {
 
   const columns = [
     {
-      title: "Ticket ID",
-      dataIndex: "ticketId",
+      title: "Username",
+      dataIndex: "username",
       width: 200,
-      sorter: (a, b) => parseInt(a.ticketId, 10) - parseInt(b.ticketId, 10),
+      sorter: (a, b) => a.username.localeCompare(b.username),
     },
     {
-      title: "Sender",
-      dataIndex: "sender",
+      title: "Name",
+      dataIndex: "displayName",
       width: 200,
-      sorter: (a, b) => a.sender.localeCompare(b.sender),
+      sorter: (a, b) => a.displayName.localeCompare(b.displayName),
     },
     {
-      title: "Agent",
-      dataIndex: "agent",
+      title: "EPF",
+      render: (record) => record?.epf,
       width: 200,
-      sorter: (a, b) => (a.agent && b.agent ? a.agent.localeCompare(b.agent) : 0),
+      sorter: (a, b) => a.epf.localeCompare(b.epf),
     },
     {
-      title: "Reported Date Time",
+      title: "Email",
+      render: (record) => record?.email,
+      width: 200,
+      sorter: (a, b) => a.email.localeCompare(b.email),
+    },
+    {
+      title: "Designation",
+      dataIndex: "designation",
+      width: 200,
+      sorter: (a, b) => (a.designation && b.designation ? a.designation.localeCompare(b.designation) : 0),
+    },
+    {
+      title: "Date of Birth",
       render: (record) =>
-        record.reportedDateTime
-          ? moment(record.reportedDateTime).format("YYYY-MM-DD h:mm:ss a")
+        record.dob
+          ? moment(record.dob).format("YYYY-MM-DD")
           : "",
       width: 180,
       sorter: (a, b) =>
-        new Date(a.reportedDateTime) - new Date(b.reportedDateTime),
-    },
-    {
-      title: "Emergency Level",
-      render: (record) => record?.emergencyLevel,
-      width: 200,
-      sorter: (a, b) => a.emergencyLevel.localeCompare(b.emergencyLevel),
+        new Date(a.dob) - new Date(b.dob),
     },
     {
       title: "Location",
@@ -98,73 +101,22 @@ function TicketDataTable() {
       sorter: (a, b) => a.branchDivision.localeCompare(b.branchDivision),
     },
     {
-      title: "Issue Type",
-      render: (record) => record?.issueType,
+      title: "Added By",
+      render: (record) => record?.addedBy,
       width: 200,
-      sorter: (a, b) => a.issueType.localeCompare(b.issueType),
+      sorter: (a, b) => a.addedBy.localeCompare(b.addedBy),
     },
     {
-      title: "Issue Category",
-      render: (record) => record?.issueCategory,
-      width: 200,
-      sorter: (a, b) => a.issueCategory.localeCompare(b.issueCategory),
-    },
-    {
-      title: "Contact No",
-      render: (record) => record?.contactNo,
-      width: 200,
-      sorter: (a, b) => a.contactNo.localeCompare(b.contactNo),
-    },
-    {
-      title: "Serial No",
-      render: (record) => record?.serialNo,
-      width: 200,
-      sorter: (a, b) => (a.serialNo && b.serialNo ? a.serialNo.localeCompare(b.serialNo) : 0),
-    },
-    {
-      title: "Is Working PC",
-      render: (record) => record?.isWorkingPc,
-      width: 200,
-      sorter: (a, b) => a.isWorkingPc.localeCompare(b.isWorkingPc),
-    },
-    {
-      title: "IP",
-      render: (record) => record?.ip,
-      width: 200,
-      sorter: (a, b) => a.ip.localeCompare(b.ip),
-    },
-    {
-      title: "Issue Description & Remarks",
-      render: (record) => record?.issueDesAndRemarks,
-      width: 200,
-      sorter: (a, b) => a.issueDesAndRemarks.localeCompare(b.issueDesAndRemarks),
-    },
-    {
-      title: "Agent Response Date-Time",
-      render: (record) => record?.agentResponseDateTime,
+      title: "Added Date-Time",
+      render: (record) =>
+        record.addedDateTime
+          ? moment(record.addedDateTime).format("YYYY-MM-DD h:mm:ss a")
+          : "",
       width: 200,
       sorter: (a, b) =>
-        (a.agentResponseDateTime && b.agentResponseDateTime ? new Date(a.agentResponseDateTime) - new Date(b.agentResponseDateTime) : 0),
+        new Date(a.addedDateTime) - new Date(b.addedDateTime),
     },
-    {
-      title: "Resolved Date Time",
-      render: (record) => record?.resolvedDateTime,
-      width: 200,
-      sorter: (a, b) =>
-        (a.resolvedDateTime && b.resolvedDateTime ? new Date(a.resolvedDateTime) - new Date(b.resolvedDateTime) : 0),
-    },
-    {
-      title: "Resolution Period",
-      render: (record) => record?.resolutionPeriod,
-      width: 200,
-      sorter: (a, b) => (a.resolutionPeriod && b.resolutionPeriod ? a.resolutionPeriod - b.resolutionPeriod : 0),
-    },
-    {
-      title: "Agent Comments",
-      render: (record) => record?.agentComments,
-      width: 200,
-      sorter: (a, b) => (a.agentComments && b.agentComments ? a.agentComments.localeCompare(b.agentComments) : 0),
-    },
+
     {
       title: "Last Updated User",
       render: (record) => record?.lastUpdatedUser,
@@ -186,13 +138,13 @@ function TicketDataTable() {
       render: (record) => (
         <Tag
           className="tags"
-          color={record.status === "Closed" ? "#c73b27" : "#0d8c63"}
+          color={record.status === "Deactive" ? "#c73b27" : "#0d8c63"}
         >
           {record.status}
         </Tag>
       ),
       fixed: "right",
-      width: 90,
+      width: 75,
       sorter: (a, b) => a.status.localeCompare(b.status),
     },
     {
@@ -205,12 +157,12 @@ function TicketDataTable() {
               shape="circle"
               icon={<EyeOutlined />}
               onClick={() => {
-                navigate(`/viewTicket/${record.ticketId}`);
+                navigate(`/viewUser/${record.username}`);
               }}
             />
           </Tooltip>
           &nbsp;&nbsp;
-          {actionPrivileges.includes("UPDATE_TICKET") && (
+          {actionPrivileges.includes("UPDATE_USER") && (
             <>
               <Tooltip placement="bottom" title="Edit">
                 <Button
@@ -218,34 +170,22 @@ function TicketDataTable() {
                   shape="circle"
                   icon={<EditOutlined />}
                   onClick={() => {
-                    navigate(`/updateTicket/${record.ticketId}`);
+                    navigate(`/updateUser/${record.username}`);
                   }}
                 />
               </Tooltip>
               &nbsp;&nbsp;
             </>
           )}
-          {actionPrivileges.includes("CLOSE_TICKET") && (
+          {actionPrivileges.includes("DELETE_USER") && (
             <>
-              <Tooltip placement="bottom" title="Close">
-                <Button
-                  className="delete_button"
-                  shape="circle"
-                  icon={<CloseOutlined />}
-                  onClick={() => statusChange(record.ticketId, "Closed")}
-                />
-              </Tooltip>
-              &nbsp;&nbsp;
-            </>
-          )}
-          {actionPrivileges.includes("DELETE_TICKET") && (
-            <>
+              
               <Tooltip placement="bottom" title="Delete">
                 <Button
                   className="delete_button"
                   shape="circle"
                   icon={<DeleteOutlined />}
-                  onClick={() => deleteContent(record.ticketId)}
+                  onClick={() => deleteContent(record.username)}
                 />
               </Tooltip>
               &nbsp;&nbsp;
@@ -294,23 +234,23 @@ function TicketDataTable() {
     confirm({
       title: `Are you sure?`,
       icon: <ExclamationCircleOutlined />,
-      content: `Do you want to delete this ticket?`,
+      content: `Do you want to delete this user?`,
       okText: "Yes",
       okType: "primary",
       cancelText: "No",
       onOk() {
         Progress.show();
         axios
-          .put(`http://localhost:8080/deleteTicket/${id}`)
+          .put(`http://localhost:8080/deleteUser/${id}`)
           .then((result) => {
             let responseJson = result;
             setRefreshTable(!refreshTable);
-            setFilteredTickets(filteredTickets.filter(user => user.ticketId !== id));
+            setFilteredTickets(filteredTickets.filter(user => user.username !== id));
             Progress.hide();
-            message.success("Ticket deleted successfully");
+            message.success("User deleted successfully");
           })
           .catch((error) => {
-            message.error(error.response?.data?.message || "Failed to delete ticket! Tickets cannot delete after assign to an agent");
+            message.error(error.response?.data?.message || "Failed to delete user!");
             Progress.hide();
           });
       },
@@ -323,7 +263,7 @@ function TicketDataTable() {
   return (
     <>
       <Search
-        placeholder="Search tickets"
+        placeholder="Search users"
         onChange={(e) => setSearchQuery(e.target.value)}
         style={{ marginBottom: 16, width: 300 }}
       />
@@ -351,4 +291,4 @@ function TicketDataTable() {
   );
 }
 
-export default TicketDataTable;
+export default UserDataTable;

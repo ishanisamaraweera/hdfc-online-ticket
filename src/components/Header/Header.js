@@ -34,6 +34,9 @@ function Header(props) {
   const menu = (
     <Menu>
       <Menu.Item onClick={logout}>
+        <div>Change Password</div>
+      </Menu.Item>
+      <Menu.Item onClick={logout}>
         <div>Logout</div>
       </Menu.Item>
     </Menu>

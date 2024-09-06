@@ -3,17 +3,15 @@ import { useEffect, useState } from "react";
 import Progress from "react-progress-2";
 import { apis } from "../properties";
 import { useRefreshTable } from "../store";
-import axiosInstance from "../util/axiosInstance";
 import axios from "axios";
 
-function useAllTickets() {
+function useAllIssueCategories() {
   const [state, setState] = useState([]);
 
   useEffect(() => {
-    const getData = () => {
-     
+    const getData = () => {     
       Progress.show();
-      axios.get("http://localhost:8080/getTicket")
+      axios.get("http://localhost:8080/getAllIssueCategories")
         .then((result) => {
           let responseJson = result;
           setState(responseJson.data);
@@ -28,4 +26,4 @@ function useAllTickets() {
   return state;
 }
 
-export default useAllTickets;
+export default useAllIssueCategories;

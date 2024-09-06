@@ -5,6 +5,7 @@ import DashBoardBox from "../components/DashBoardWidgets/DashBoardBox";
 import useBreadCrumb from "../hooks/useBreadCrumb";
 import axios from "axios";
 import '../assets/css/Dashboard.css';
+import { useStore } from "../store";
 
 function Dashboard() {
   const location = useLocation();
@@ -16,19 +17,23 @@ function Dashboard() {
   const [completedTicketCount, setCompletedTicketCount] = useState(0);
   const [closedTicketCount, setClosedTicketCount] = useState(0);
   const [totalTicketCount, setTotalTicketCount] = useState(0);
-  const [username, setUsername] = useState("1428");
+  const [username] = useState(localStorage.getItem("username"));
+  const [allowedPages, setAllowedPages] = useState([]);
+  const [allowedActions, setAllowedActions] = useState([]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+
+  const { setPagePrivileges, setActionPrivileges, actionPrivileges } = useStore();
 
   useEffect(() => {
     const fetchInitialLoginStatus = async () => {
       try {
         const response = await fetch(`http://localhost:8080/checkInitialLoginStatus/${username}`);
-        
+
         if (response.ok) {
           const data = await response.text();
-          if (data === "Yes") {
+          if (data.trim() === "Yes") {
             setIsModalVisible(true);
           }
         } else {
@@ -125,12 +130,29 @@ function Dashboard() {
       }
     };
 
+    const fetchPrivileges = async () => {
+      try {
+        const username = localStorage.getItem("username");
+        const pagesResponse = await axios.get(`http://localhost:8080/getPagePrivileges/${username}`);
+        const actionsResponse = await axios.get(`http://localhost:8080/getFunctionPrivileges/${username}`);
+        setPagePrivileges(pagesResponse.data)
+        setActionPrivileges(actionsResponse.data)
+        localStorage.setItem("pagePrivileges", pagesResponse.data);
+        localStorage.setItem("actionPrivileges", actionsResponse.data);
+        setAllowedPages(pagesResponse.data);
+        setAllowedActions(actionsResponse.data);
+      } catch (error) {
+        console.error("Failed to fetch privileges", error);
+      }
+    };
+
     fetchNewTicketCount();
     fetchAssignedTicketCount();
     fetchActiveTicketCount();
     fetchCompletedTicketCount();
     fetchClosedTicketCount();
     fetchTotalTicketCount();
+    fetchPrivileges();
   }, []);
 
   const handleFinish = async (values) => {
@@ -144,6 +166,12 @@ function Dashboard() {
       message.error("Failed to change password");
     }
   };
+
+  // // Function to check if a page is allowed
+  // const isPageAllowed = (page) => allowedPages.includes(page);
+
+  // // Function to check if an action is allowed
+  // const isActionAllowed = (action) => allowedActions.includes(action);
 
   return (
     <div className="dashboard">
@@ -194,14 +222,16 @@ function Dashboard() {
           </Form.Item>
         </Form>
       </Modal>
-      <div className="box_section">
-        <DashBoardBox title="My New Tickets" count={newTicketCount} icon={"bi bi-plus-circle"} />
-        <DashBoardBox title="My Assigned Tickets" count={assignedTicketCount} icon={"bi bi-card-checklist"} />
-        <DashBoardBox title="My Active Tickets" count={activeTicketCount} icon={"bi bi-brightness-high"} />
-        <DashBoardBox title="My Completed Tickets" count={completedTicketCount} icon={"bi bi-calendar2-check"} />
-        <DashBoardBox title="My Closed Tickets" count={closedTicketCount} icon={"bi bi-x-circle"} />
-        <DashBoardBox title="My Total Tickets" count={totalTicketCount} icon={"bi bi-hdd-stack"} />
-      </div>
+      {actionPrivileges.includes("DASHBOARD_VIEW") && (
+        <div className="box_section">
+          <DashBoardBox title="My New Tickets" count={newTicketCount} icon={"bi bi-plus-circle"} />
+          <DashBoardBox title="My Assigned Tickets" count={assignedTicketCount} icon={"bi bi-card-checklist"} />
+          <DashBoardBox title="My Active Tickets" count={activeTicketCount} icon={"bi bi-brightness-high"} />
+          <DashBoardBox title="My Completed Tickets" count={completedTicketCount} icon={"bi bi-calendar2-check"} />
+          <DashBoardBox title="My Closed Tickets" count={closedTicketCount} icon={"bi bi-x-circle"} />
+          <DashBoardBox title="My Total Tickets" count={totalTicketCount} icon={"bi bi-hdd-stack"} />
+        </div>
+      )}
     </div>
   );
 }

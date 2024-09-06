@@ -2,23 +2,23 @@ import { Button } from "antd";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../hooks/useBreadCrumb";
-import IssueCategoryDataTable from "../components/IssueCategory/IssueCategoryDataTable";
+import UserRoleDataTable from "../components/User/UserRoleDataTable";
 
-export default function IssueCategory() {
+export default function UserRole() {
     const navigate = useNavigate();
     const location = useLocation();
-    useBreadCrumb("Issue Category", location.pathname, "Issue Category");
+    useBreadCrumb("User Role", location.pathname, "User Role");
 
     return (
         <div className="dashboard">
             <div className="section_row">
-                <IssueCategoryDataTable />
+                <UserRoleDataTable />
                 <div className="top_row">
                     <Button
                         className="primary__btn"
-                        onClick={() => navigate("/add-issue-category")}
+                        onClick={() => navigate("/user/add-user-role")}
                     >
-                        Add Issue Category
+                        Add User Role
                     </Button>
                 </div>
             </div>
