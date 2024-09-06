@@ -1,5 +1,7 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
+import { Upload, Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
+import { UploadOutlined } from '@ant-design/icons';
+
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -30,35 +32,58 @@ function ViewTicket() {
   const [completedPercentage, setCompletedPercentage] = useState(50);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [attachments, setAttachments] = useState([]);
   const [displayName, setDisplayName] = useState("");
   const [agentComment, setAgentComment] = useState("");
+  const [file, setFile] = useState(null);
 
+  const handleFileChange = ({ fileList }) => {
+    setAttachments(fileList);
+  };
 
   const handleSliderChange = (value) => {
     setCompletedPercentage(value);
   };
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const commentData = {
-        addedBy: localStorage.getItem("username"),
-        ticketId: id,
-        comment: newComment.trim(),
-      };
+  const handleUpload = ({ file }) => {
+    setFile(file);  // Store selected file in state
+  };
+
+  const handleAddComment = async () => {
+    if (newComment.trim() || attachments.length > 0) {
+
+      handleUpload(file);
+      const formData = new FormData();
+      formData.append("comment", newComment.trim());
+      formData.append("ticketId", id);
+      formData.append("addedBy", localStorage.getItem("username"));
+
+      attachments.forEach(file => {
+        formData.append("attachments", file.originFileObj);
+      });
 
       try {
-        console.log("***************" + JSON.stringify(commentData));
-        const response = axios.post('http://localhost:8080/addComment', commentData);
-          
-        setComments([...comments, <span key={comments.length}><strong>{displayName}:</strong> {newComment.trim()}</span>]);
-        setNewComment("");
-        message.success("Comment added successfully");
+        const response = await axios.post('http://localhost:8080/addComment', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        if (response.status === 200) {
+          setComments([...comments, <span key={comments.length}><strong>{displayName}:</strong> {newComment.trim()}</span>]);
+          setNewComment("");
+          setAttachments([]); // Clear attachments after successful upload
+          message.success("Comment added successfully");
+
+        } else {
+          message.error("Failed to upload comment or file");
+        }
       } catch (error) {
         message.error("Failed to add comment");
         console.error("Error adding comment:", error);
       }
     } else {
-      message.warning("Please enter a comment before adding.");
+      message.warning("Please enter a comment or select a file to upload.");
     }
   };
 
@@ -207,7 +232,7 @@ function ViewTicket() {
           <strong>{comment.addedBy}:</strong> {comment.comment}
         </span>
       )));
-  
+
     } catch (error) {
       message.error("Failed to load ticket details");
     }
@@ -564,10 +589,19 @@ function ViewTicket() {
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                 />
-                <Button type="primary" onClick={handleAddComment} style={{ marginTop: "10px" }}>
-                  Add Comment
-                </Button>
               </Form.Item>
+              {/* File Upload Section */}
+              <Upload
+                fileList={attachments}
+                onChange={handleFileChange}
+                beforeUpload={() => false} // Disable automatic upload
+                multiple // Allows multiple files
+              >
+                <Button icon={<UploadOutlined />}>Attach File</Button>
+              </Upload>
+              <Button type="primary" onClick={handleAddComment} style={{ marginTop: "10px" }}>
+                Add Comment
+              </Button>
 
               {/* List of Comments */}
               <Divider>Comments</Divider>
