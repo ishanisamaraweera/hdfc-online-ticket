@@ -54,9 +54,9 @@ function ViewTicket() {
 
   const handleAddComment = async () => {
     if (newComment.trim() //|| attachments.length > 0
-  ) {
+    ) {
 
-     // handleUpload(file);
+      // handleUpload(file);
       const formData = new FormData();
       formData.append("comment", newComment.trim());
       formData.append("ticketId", id);
@@ -74,15 +74,15 @@ function ViewTicket() {
         });
 
         if (response.status === 200) {
-          setComments([...comments, 
-            <span key={comments.length}>
-              <strong>{displayName}:</strong> {newComment.trim()} 
-              <Text type="secondary" style={{ float: 'right', fontSize: 'small' }}>{addedDateTime}</Text>
- 
-            </span>
+          setComments([...comments,
+          <span key={comments.length}>
+            <strong>{displayName}:</strong> {newComment.trim()}
+            <Text type="secondary" style={{ float: 'right', fontSize: 'small' }}>{addedDateTime}</Text>
+
+          </span>
           ]);
           setNewComment("");
-         // setAttachments([]); // Clear attachments after successful upload
+          // setAttachments([]); // Clear attachments after successful upload
           message.success("Comment added successfully");
 
         } else {
@@ -238,9 +238,14 @@ function ViewTicket() {
       const response = await axios.get(`http://localhost:8080/getCommentsByTicketId/${id}`);
       const commentsData = response.data;
       setComments(commentsData.map(comment => (
-        <span key={comment.id}>
-          <strong>{comment.addedBy}:</strong> {comment.comment} {comment.addedDateTime}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <span style={{ flexGrow: 1 }}>
+          <strong>{comment.addedBy}:</strong> {comment.comment}
         </span>
+        <span style={{ fontSize: '10px', whiteSpace: 'nowrap' }}>
+          {comment.addedDateTime}
+        </span>
+      </div>
       )));
 
     } catch (error) {
