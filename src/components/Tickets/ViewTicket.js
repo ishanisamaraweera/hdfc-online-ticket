@@ -560,7 +560,7 @@ function ViewTicket() {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  {actionPrivileges.includes("UPDATE_TICKET") && (
+                  {actionPrivileges.includes("COMPLETE_TICKET") && (
                     <Form.Item>
                       <Button
                         type="primary"

@@ -26,7 +26,7 @@ function AddTicket() {
     status: 1
   });
 
-  const [fileList, setFileList] = useState([]);
+  //const [fileList, setFileList] = useState([]);
 
   useBreadCrumb("Add Ticket", location.pathname, "", "add");
 
@@ -147,34 +147,39 @@ function AddTicket() {
     message.error("Please fill all the details");
   };
 
-  const handleFileChange = ({ fileList }) => {
-    setFileList(fileList);
-  };
+  // const handleFileChange = ({ fileList }) => {
+  //   setFileList(fileList);
+  // };
 
   const submitForm = () => {
     form.validateFields().then((values) => {
-      const formData = new FormData();
-      fileList.forEach(file => {
-        formData.append('files', file.originFileObj);
-      });
+       //const formData = new FormData();
 
-      const ticketData = {
+      // fileList.forEach(file => {
+      //   formData.append('files', file.originFileObj);
+      // });
+
+      const data = {
         ...values,
         reportedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        sender: "1428",
+        sender: localStorage.getItem("username"),
         lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        lastUpdatedUser: "1428",
+        lastUpdatedUser: localStorage.getItem("username"),
       };
 
-      Object.keys(ticketData).forEach(key => {
-        formData.append(key, ticketData[key]);
-      });
+      // Object.keys(ticketData).forEach(key => {
+      //   formData.append(key, ticketData[key]);
+      // });
 
-      axios.post("http://localhost:8080/addTicket", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      })
+      // console.log(JSON.stringify(formData));
+
+      axios.post("http://localhost:8080/addTicket", data
+      //   , formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   }
+      // }
+    )
         .then((result) => {
           console.log(result.data);
           form.resetFields();
@@ -413,7 +418,7 @@ function AddTicket() {
                 <TextArea rows={4} placeholder="Type explanation about the issue ..." />
               </Form.Item>
 
-              <Form.Item label="Attach Files">
+              {/* <Form.Item label="Attach Files">
                 <Upload
                   fileList={fileList}
                   onChange={handleFileChange}
@@ -423,7 +428,7 @@ function AddTicket() {
                 >
                   <Button icon={<UploadOutlined />}>Select Files</Button>
                 </Upload>
-              </Form.Item>
+              </Form.Item> */}
             </Col>
           </Row>
 
