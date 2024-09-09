@@ -555,7 +555,7 @@ function ViewTicket() {
               <Row gutter={24}>
                 <Col span={12}>
                   <Form.Item
-                    label="Completed Percentage"
+                    label="Completed Percentage (%)"
                     name="completedPercentage"
                   >
                     <div style={{ width: "300px" }}>
