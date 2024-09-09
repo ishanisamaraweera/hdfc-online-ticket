@@ -67,13 +67,6 @@ export const menuItems = [
     privilege: "FUNCTION",
     subMenus: [
       {
-        name: "Add Function",
-        exact: true,
-        to: "user/add-function",
-        route_key: "ADD_FUNCTION",
-        privilege: "ADD_FUNCTION",
-      },
-      {
         name: "Assign Function",
         exact: true,
         to: "/user/assign-function",

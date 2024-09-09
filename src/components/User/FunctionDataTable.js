@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { apis } from "../../properties";
 import { useRefreshTable } from "../../store";
 import useAllUserFunctions from "../../hooks/useAllUserFunctions.js"; 
-
+import { useStore } from "../../store";
 import axios from "axios";
 import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver'; 
 
@@ -32,6 +32,7 @@ function FunctionDataTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const userFunctions = useAllUserFunctions();
   const [filteredTickets, setFilteredTickets] = useState(userFunctions);
+  const { actionPrivileges } = useStore();
 
   useEffect(() => {
     setFilteredTickets(
@@ -111,6 +112,7 @@ function FunctionDataTable() {
       title: "Action",
       render: (text, record) => (
         <>
+        {actionPrivileges.includes("VIEW_FUNCTION") && (
           <Tooltip placement="bottom" title="View">
             <Button
               className="view_button"
@@ -121,7 +123,9 @@ function FunctionDataTable() {
               }}
             />
           </Tooltip>
+        )}
           &nbsp;&nbsp;
+          {actionPrivileges.includes("UPDATE_FUNCTION") && (
           <Tooltip placement="bottom" title="Edit">
             <Button
               className="edit_button"
@@ -132,7 +136,9 @@ function FunctionDataTable() {
               }}
             />
           </Tooltip>
+          )}
           &nbsp;&nbsp;
+          {actionPrivileges.includes("DELETE_FUNCTION") && (
           <Tooltip placement="bottom" title="Delete">
             <Button
               className="delete_button"
@@ -141,6 +147,7 @@ function FunctionDataTable() {
               onClick={() => deleteContent(record.userFunctionId)}
             />
           </Tooltip>
+          )}
         </>
       ),
       fixed: "right",

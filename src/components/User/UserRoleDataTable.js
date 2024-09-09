@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { apis } from "../../properties";
 import { useRefreshTable } from "../../store";
 import useAllUserRoles from "../../hooks/useAllUserRoles.js"; 
-
+import { useStore } from "../../store";
 import axios from "axios";
 import { useDebouncedResizeObserver } from '../../hooks/useDebouncedResizeObserver'; 
 
@@ -32,6 +32,7 @@ function UserRoleDataTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const userRoles = useAllUserRoles();
   const [filteredTickets, setFilteredTickets] = useState(userRoles);
+  const { actionPrivileges } = useStore();
 
   useEffect(() => {
     setFilteredTickets(
@@ -111,6 +112,7 @@ function UserRoleDataTable() {
       title: "Action",
       render: (text, record) => (
         <>
+        {actionPrivileges.includes("VIEW_USER_ROLE") && (
           <Tooltip placement="bottom" title="View">
             <Button
               className="view_button"
@@ -121,7 +123,9 @@ function UserRoleDataTable() {
               }}
             />
           </Tooltip>
+        )}
           &nbsp;&nbsp;
+          {actionPrivileges.includes("UPDATE_USER_ROLE") && (
           <Tooltip placement="bottom" title="Edit">
             <Button
               className="edit_button"
@@ -132,7 +136,9 @@ function UserRoleDataTable() {
               }}
             />
           </Tooltip>
+          )}
           &nbsp;&nbsp;
+          {actionPrivileges.includes("DELETE_USER_ROLE") && (
           <Tooltip placement="bottom" title="Delete">
             <Button
               className="delete_button"
@@ -141,6 +147,7 @@ function UserRoleDataTable() {
               onClick={() => deleteContent(record.userRoleId)}
             />
           </Tooltip>
+          )}
         </>
       ),
       fixed: "right",

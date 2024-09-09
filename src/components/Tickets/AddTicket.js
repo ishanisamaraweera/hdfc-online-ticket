@@ -1,5 +1,5 @@
-import { LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, message, Radio, Row, Select } from "antd";
+import { LeftOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, Col, Form, Input, message, Radio, Row, Select, Upload } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,6 +25,8 @@ function AddTicket() {
     branchDivision: undefined,
     status: 1
   });
+
+  //const [fileList, setFileList] = useState([]);
 
   useBreadCrumb("Add Ticket", location.pathname, "", "add");
 
@@ -145,16 +147,39 @@ function AddTicket() {
     message.error("Please fill all the details");
   };
 
+  // const handleFileChange = ({ fileList }) => {
+  //   setFileList(fileList);
+  // };
+
   const submitForm = () => {
     form.validateFields().then((values) => {
+       //const formData = new FormData();
+
+      // fileList.forEach(file => {
+      //   formData.append('files', file.originFileObj);
+      // });
+
       const data = {
         ...values,
         reportedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        sender: "1428",
+        sender: localStorage.getItem("username"),
         lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        lastUpdatedUser: "1428",
+        lastUpdatedUser: localStorage.getItem("username"),
       };
-      axios.post("http://localhost:8080/addTicket", data)
+
+      // Object.keys(ticketData).forEach(key => {
+      //   formData.append(key, ticketData[key]);
+      // });
+
+      // console.log(JSON.stringify(formData));
+
+      axios.post("http://localhost:8080/addTicket", data
+      //   , formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   }
+      // }
+    )
         .then((result) => {
           console.log(result.data);
           form.resetFields();
@@ -182,25 +207,11 @@ function AddTicket() {
           form={form}
           onFinish={submitForm}
           onFinishFailed={onFinishFailed}
-          // initialValues={initialValues}
           initialValues={{ remember: true }}
           layout="vertical"
         >
           <Row gutter={24}>
             <Col span={12}>
-              {/* <Form.Item
-                label="Ticket ID"
-                name="ticketId" 
-                rules={[
-                  {
-                    required: true,
-                    message: "Ticket ID cannot be empty!",
-                  },
-                ]}
-              >
-                <Input type="text" size="large" placeholder="Ticket ID" readOnly />
-              </Form.Item> */}
-
               <Form.Item
                 label="Emergency Level"
                 name="emergencyLevel"
@@ -326,8 +337,7 @@ function AddTicket() {
                   ))}
                 </Select>
               </Form.Item>
-            </Col>
-            <Col span={12}>
+
               <Form.Item
                 label="Contact No"
                 name="contactNo"
@@ -346,7 +356,8 @@ function AddTicket() {
                   }}
                 />
               </Form.Item>
-
+            </Col>
+            <Col span={12}>
               <Form.Item label="Serial No" name="serialNo">
                 <Input type="text" size="large" placeholder="Serial No" />
               </Form.Item>
@@ -406,6 +417,18 @@ function AddTicket() {
               >
                 <TextArea rows={4} placeholder="Type explanation about the issue ..." />
               </Form.Item>
+
+              {/* <Form.Item label="Attach Files">
+                <Upload
+                  fileList={fileList}
+                  onChange={handleFileChange}
+                  beforeUpload={() => false} // prevent auto upload
+                  multiple
+                  listType="text"
+                >
+                  <Button icon={<UploadOutlined />}>Select Files</Button>
+                </Upload>
+              </Form.Item> */}
             </Col>
           </Row>
 

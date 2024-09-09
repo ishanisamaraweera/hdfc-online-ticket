@@ -10,7 +10,9 @@ import { apis } from "../../properties";
 import axios from "axios";
 import { useStore } from "../../store";
 import { } from "antd";
+import { Typography } from 'antd';
 
+const { Text } = Typography;
 const { Option } = Select;
 
 function ViewTicket() {
@@ -31,15 +33,16 @@ function ViewTicket() {
   const { actionPrivileges } = useStore();
   const [completedPercentage, setCompletedPercentage] = useState(50);
   const [comments, setComments] = useState([]);
+  const [addedDateTime, setAddedDateTime] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [attachments, setAttachments] = useState([]);
+  // const [attachments, setAttachments] = useState([]);
   const [displayName, setDisplayName] = useState("");
   const [agentComment, setAgentComment] = useState("");
   const [file, setFile] = useState(null);
 
-  const handleFileChange = ({ fileList }) => {
-    setAttachments(fileList);
-  };
+  // const handleFileChange = ({ fileList }) => {
+  //   setAttachments(fileList);
+  // };
 
   const handleSliderChange = (value) => {
     setCompletedPercentage(value);
@@ -50,17 +53,18 @@ function ViewTicket() {
   };
 
   const handleAddComment = async () => {
-    if (newComment.trim() || attachments.length > 0) {
+    if (newComment.trim() //|| attachments.length > 0
+    ) {
 
-      handleUpload(file);
+      // handleUpload(file);
       const formData = new FormData();
       formData.append("comment", newComment.trim());
       formData.append("ticketId", id);
       formData.append("addedBy", localStorage.getItem("username"));
 
-      attachments.forEach(file => {
-        formData.append("attachments", file.originFileObj);
-      });
+      // attachments.forEach(file => {
+      //   formData.append("attachments", file.originFileObj);
+      // });
 
       try {
         const response = await axios.post('http://localhost:8080/addComment', formData, {
@@ -70,9 +74,15 @@ function ViewTicket() {
         });
 
         if (response.status === 200) {
-          setComments([...comments, <span key={comments.length}><strong>{displayName}:</strong> {newComment.trim()}</span>]);
+          setComments([...comments,
+          <span key={comments.length}>
+            <strong>{displayName}:</strong> {newComment.trim()}
+            <Text type="secondary" style={{ float: 'right', fontSize: 'small' }}>{addedDateTime}</Text>
+
+          </span>
+          ]);
           setNewComment("");
-          setAttachments([]); // Clear attachments after successful upload
+          // setAttachments([]); // Clear attachments after successful upload
           message.success("Comment added successfully");
 
         } else {
@@ -228,9 +238,14 @@ function ViewTicket() {
       const response = await axios.get(`http://localhost:8080/getCommentsByTicketId/${id}`);
       const commentsData = response.data;
       setComments(commentsData.map(comment => (
-        <span key={comment.id}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <span style={{ flexGrow: 1 }}>
           <strong>{comment.addedBy}:</strong> {comment.comment}
         </span>
+        <span style={{ fontSize: '10px', whiteSpace: 'nowrap' }}>
+          {comment.addedDateTime}
+        </span>
+      </div>
       )));
 
     } catch (error) {
@@ -540,7 +555,7 @@ function ViewTicket() {
               <Row gutter={24}>
                 <Col span={12}>
                   <Form.Item
-                    label="Completed Percentage"
+                    label="Completed Percentage (%)"
                     name="completedPercentage"
                   >
                     <div style={{ width: "300px" }}>
@@ -560,7 +575,7 @@ function ViewTicket() {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  {actionPrivileges.includes("UPDATE_TICKET") && (
+                  {actionPrivileges.includes("COMPLETE_TICKET") && (
                     <Form.Item>
                       <Button
                         type="primary"
@@ -590,7 +605,7 @@ function ViewTicket() {
                   onChange={(e) => setNewComment(e.target.value)}
                 />
               </Form.Item>
-              {/* File Upload Section */}
+              {/* File Upload Section
               <Upload
                 fileList={attachments}
                 onChange={handleFileChange}
@@ -598,7 +613,7 @@ function ViewTicket() {
                 multiple // Allows multiple files
               >
                 <Button icon={<UploadOutlined />}>Attach File</Button>
-              </Upload>
+              </Upload> */}
               <Button type="primary" onClick={handleAddComment} style={{ marginTop: "10px" }}>
                 Add Comment
               </Button>

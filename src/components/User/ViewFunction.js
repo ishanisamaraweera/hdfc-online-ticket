@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import { useStore } from "../../store";
 
 const { Option } = Select;
 
@@ -16,6 +17,7 @@ function ViewFunction() {
     const [statuses, setStatuses] = useState([]);
     const [users, setUsers] = useState([]);
     const [targetKeys, setTargetKeys] = useState([]);
+    const { actionPrivileges } = useStore();
 
     useBreadCrumb("View Function", location.pathname, "Function");
 

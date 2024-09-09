@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import { useStore } from "../../store";
 
 const { Option } = Select;
 
@@ -15,6 +16,7 @@ function AssignFunction() {
     const [userRoles, setUserRoles] = useState([]);
     const [targetKeys, setTargetKeys] = useState([]);
     const [functions, setFunctions] = useState([]);
+    const { actionPrivileges } = useStore();
 
     useEffect(() => {
         fetchUserRoles();
@@ -146,15 +148,19 @@ function AssignFunction() {
                     </Row>
 
                     <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
-                        <Button type="primary" className="primary__btn" htmlType="submit">
-                            Save
-                        </Button>
+                        {actionPrivileges.includes("ASSIGN_FUNCTION") && (
+                            <Button type="primary" className="primary__btn" htmlType="submit">
+                                Save
+                            </Button>
+                        )}
+
                         <Button type="secondary" className="secondary__btn" htmlType="back">
                             <a href='http://localhost:3000/dashboard' style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>
                     </div>
+
                 </Form>
             </div>
         </div>

@@ -147,6 +147,13 @@ function TicketDataTable() {
         (a.agentResponseDateTime && b.agentResponseDateTime ? new Date(a.agentResponseDateTime) - new Date(b.agentResponseDateTime) : 0),
     },
     {
+      title: "Completed Percentage (%)",
+      render: (record) => record?.completedPercentage,
+      width: 200,
+      sorter: (a, b) =>
+        (a.completedPercentage && b.completedPercentage ? new Date(a.completedPercentage) - new Date(b.completedPercentage) : 0),
+    },
+    {
       title: "Resolved Date Time",
       render: (record) => record?.resolvedDateTime,
       width: 200,
@@ -161,9 +168,9 @@ function TicketDataTable() {
     },
     {
       title: "Agent Comments",
-      render: (record) => record?.agentComments,
+      render: (record) => record?.agentComment,
       width: 200,
-      sorter: (a, b) => (a.agentComments && b.agentComments ? a.agentComments.localeCompare(b.agentComments) : 0),
+      sorter: (a, b) => (a.agentComment && b.agentComment ? a.agentComment.localeCompare(b.agentComment) : 0),
     },
     {
       title: "Last Updated User",
