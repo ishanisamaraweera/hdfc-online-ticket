@@ -7,13 +7,14 @@ import axiosInstance from "../util/axiosInstance";
 import axios from "axios";
 
 function useAllTickets() {
-  const [state, setState] = useState([]);
+  const [state, setState] = useState([]);  
+  const [username] = useState(localStorage.getItem("username"));
 
   useEffect(() => {
     const getData = () => {
      
       Progress.show();
-      axios.get("http://localhost:8080/getTicket")
+      axios.get(`http://localhost:8080/getTicket/${username}`)
         .then((result) => {
           let responseJson = result;
           setState(responseJson.data);
