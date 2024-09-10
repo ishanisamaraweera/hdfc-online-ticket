@@ -1,7 +1,7 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { Upload, Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
-
+import { FileOutlined } from '@ant-design/icons'; 
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -35,14 +35,18 @@ function ViewTicket() {
   const [comments, setComments] = useState([]);
   const [addedDateTime, setAddedDateTime] = useState([]);
   const [newComment, setNewComment] = useState("");
-  // const [attachments, setAttachments] = useState([]);
+  const [attachments, setAttachments] = useState([]);
   const [displayName, setDisplayName] = useState("");
   const [agentComment, setAgentComment] = useState("");
   const [file, setFile] = useState(null);
+  const [fileList, setFileList] = useState([]);
 
-  // const handleFileChange = ({ fileList }) => {
-  //   setAttachments(fileList);
-  // };
+  const handleFileChange = (info) => {
+    let fileList = [...info.fileList];
+    // Limit to 1 file
+    fileList = fileList.slice(-1);
+    setFileList(fileList);
+  };
 
   const handleSliderChange = (value) => {
     setCompletedPercentage(value);
@@ -53,38 +57,32 @@ function ViewTicket() {
   };
 
   const handleAddComment = async () => {
-    if (newComment.trim() //|| attachments.length > 0
+    if (newComment.trim() || fileList.length > 0
     ) {
 
-      // handleUpload(file);
+      //handleUpload(file);
       const formData = new FormData();
-      formData.append("comment", newComment.trim());
+      formData.append("commentText", newComment.trim());
       formData.append("ticketId", id);
       formData.append("addedBy", localStorage.getItem("username"));
-
-      // attachments.forEach(file => {
-      //   formData.append("attachments", file.originFileObj);
-      // });
+      if (fileList.length > 0) {
+        formData.append("file", fileList[0].originFileObj);  // Attach file if present
+      }
 
       try {
         const response = await axios.post('http://localhost:8080/addComment', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
-          }
+          },
         });
 
         if (response.status === 200) {
           setComments([...comments,
-          <span key={comments.length}>
-            <strong>{displayName}:</strong> {newComment.trim()}
-            <Text type="secondary" style={{ float: 'right', fontSize: 'small' }}>{addedDateTime}</Text>
-
-          </span>
           ]);
           setNewComment("");
-          // setAttachments([]); // Clear attachments after successful upload
+          setFileList([]);
           message.success("Comment added successfully");
-
+          window.location.reload();
         } else {
           message.error("Failed to upload comment or file");
         }
@@ -112,7 +110,6 @@ function ViewTicket() {
     fetchAgents();
     fetchDisplayName();
   }, [id]);
-
 
   const fetchDisplayName = async () => {
     const username = localStorage.getItem("username");
@@ -237,15 +234,21 @@ function ViewTicket() {
     try {
       const response = await axios.get(`http://localhost:8080/getCommentsByTicketId/${id}`);
       const commentsData = response.data;
-      setComments(commentsData.map(comment => (
+      setComments(commentsData.map(comment => (        
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-        <span style={{ flexGrow: 1 }}>
-          <strong>{comment.addedBy}:</strong> {comment.comment}
-        </span>
-        <span style={{ fontSize: '10px', whiteSpace: 'nowrap' }}>
-          {comment.addedDateTime}
-        </span>
-      </div>
+          <span style={{ flexGrow: 1 }}>
+            <strong>{comment.addedBy}:</strong> {comment.commentText}
+          </span>
+          <span style={{ fontSize: '12px', whiteSpace: 'nowrap', marginRight: '20px'  }}>
+            <a href={`http://localhost:8080/images/${comment.attachmentId}`} download={comment.attachmentId} target="_blank" rel="noopener noreferrer">
+            <FileOutlined style={{ marginRight: '5px' }} />
+              {comment.attachmentId ? comment.attachmentId.split('/').pop() : 'No attachment'}
+            </a>
+          </span>
+          <span style={{ fontSize: '10px', whiteSpace: 'nowrap' , marginLeft: '20px'}}>
+            {comment.addedDateTime}
+          </span>
+        </div>
       )));
 
     } catch (error) {
@@ -318,7 +321,6 @@ function ViewTicket() {
         });
     });
   };
-
 
   const savePercentage = () => {
     axios.put(`http://localhost:8080/savePercentage/${id}`, { completedPercentage: completedPercentage, username: localStorage.getItem("username") })
@@ -582,7 +584,7 @@ function ViewTicket() {
                         onClick={savePercentage}
                         style={{ marginTop: '32px' }}
                       >
-                        Save
+                        Save Percentage
                       </Button>
                       <Button
                         type="primary"
@@ -595,6 +597,7 @@ function ViewTicket() {
                   )}
                 </Col>
               </Row>
+              <Divider />
 
               {/* Comment Section */}
               <Form.Item label="Add Comment" name="newComment">
@@ -605,15 +608,14 @@ function ViewTicket() {
                   onChange={(e) => setNewComment(e.target.value)}
                 />
               </Form.Item>
-              {/* File Upload Section
               <Upload
-                fileList={attachments}
+                beforeUpload={() => false} // Prevent automatic upload
                 onChange={handleFileChange}
-                beforeUpload={() => false} // Disable automatic upload
-                multiple // Allows multiple files
+                fileList={fileList}
+                multiple={false}
               >
-                <Button icon={<UploadOutlined />}>Attach File</Button>
-              </Upload> */}
+                <Button icon={<UploadOutlined />}>Select File</Button>
+              </Upload>
               <Button type="primary" onClick={handleAddComment} style={{ marginTop: "10px" }}>
                 Add Comment
               </Button>
@@ -629,7 +631,6 @@ function ViewTicket() {
                   </List.Item>
                 )}
               />
-
 
               <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
                 <Button type="secondary" className="secondary__btn" htmlType="back">
