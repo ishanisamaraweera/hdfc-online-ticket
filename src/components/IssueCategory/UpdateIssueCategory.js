@@ -94,6 +94,7 @@ function UpdateIssueCategory() {
                 ...values,
                 description: desData,
                 currency: "USD",
+                lastUpdatedUser: localStorage.getItem("username"),
             };
             axios.put("http://localhost:8080/updateIssueCategory", data)
                 .then((result) => {

@@ -83,6 +83,7 @@ function ViewFunction() {
                 ...values,
                 description: desData,
                 currency: "USD",
+                lastUpdatedUser: localStorage.getItem("username"),
             };
             axios.put("http://localhost:8080/updateFunction", data)
                 .then((result) => {

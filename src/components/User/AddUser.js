@@ -89,9 +89,9 @@ function AddUser() {
       const data = {
         ...values,
         addedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        addedBy: "1428",
+        addedBy: localStorage.getItem("username"),
         lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        lastUpdatedUser: "1428",
+        lastUpdatedUser: localStorage.getItem("username"),
         dob: formattedDob
       };
 
