@@ -153,17 +153,26 @@ function AddTicket() {
 
   const submitForm = () => {
     form.validateFields().then((values) => {
+      const formData = new FormData();
 
-      const data = {
-        ...values,
-        reportedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        sender: localStorage.getItem("username"),
-        lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        lastUpdatedUser: localStorage.getItem("username"),
-      };
+      formData.append("reportedDateTime", moment().format('YYYY-MM-DD HH:mm:ss'));
+      formData.append("sender", localStorage.getItem("username"));
+      formData.append("lastUpdatedDateTime", moment().format('YYYY-MM-DD HH:mm:ss'));
+      formData.append("lastUpdatedUser", localStorage.getItem("username"));
 
-      axios.post("http://localhost:8080/addTicket", data
-    )
+      Object.keys(values).forEach((key) => {
+        formData.append(key, values[key]);
+      });
+
+      if (fileList.length > 0) {
+        formData.append("file", fileList[0].originFileObj);
+      }
+
+      axios.post("http://localhost:8080/addTicket", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Important for file uploads
+        },
+      })
         .then((result) => {
           console.log(result.data);
           form.resetFields();
