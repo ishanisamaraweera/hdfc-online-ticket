@@ -43,7 +43,6 @@ function ViewTicket() {
 
   const handleFileChange = (info) => {
     let fileList = [...info.fileList];
-    // Limit to 1 file
     fileList = fileList.slice(-1);
     setFileList(fileList);
   };

@@ -285,6 +285,7 @@ function TicketDataTable() {
             setRefreshTable(!refreshTable);
             message.success("Ticket closed successfully");
             Progress.hide();
+            window.location.reload();
           })
           .catch((error) => {
             message.error(error.response?.data?.message || "Failed to close ticket");

@@ -20,11 +20,17 @@ function AddTicket() {
   const [locations, setLocations] = useState([]);
   const [branchDivisions, setBranchDivisions] = useState([]);
   const [branchDivisionMap, setBranchDivisionMap] = useState({});
+  const [fileList, setFileList] = useState([]);
   const [initialValues, setInitialValues] = useState({
     location: undefined,
     branchDivision: undefined,
     status: 1
   });
+  const handleFileChange = (info) => {
+    let fileList = [...info.fileList];
+    fileList = fileList.slice(-1);
+    setFileList(fileList);
+  };
 
   useBreadCrumb("Add Ticket", location.pathname, "", "add");
 
@@ -395,6 +401,14 @@ function AddTicket() {
               >
                 <TextArea rows={4} placeholder="Type explanation about the issue ..." />
               </Form.Item>
+              <Upload
+                beforeUpload={() => false} // Prevent automatic upload
+                onChange={handleFileChange}
+                fileList={fileList}
+                multiple={false}
+              >
+                <Button icon={<UploadOutlined />}>Select File</Button>
+              </Upload>
             </Col>
           </Row>
 
