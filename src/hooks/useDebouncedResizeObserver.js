@@ -7,12 +7,22 @@ export function useDebouncedResizeObserver(callback, delay = 100) {
 
     const debouncedCallback = () => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(callback, delay);
+      timeoutId = setTimeout(() => {
+        try {
+          callback(); // Attempt to execute the callback
+        } catch (error) {
+          console.error("Error in ResizeObserver callback:", error); // Log any error
+        }
+      }, delay);
     };
 
     if (window.ResizeObserver) {
-      resizeObserver = new ResizeObserver(debouncedCallback);
-      resizeObserver.observe(document.body);
+      try {
+        resizeObserver = new ResizeObserver(debouncedCallback);
+        resizeObserver.observe(document.body); // Observe the body element or specific element
+      } catch (error) {
+        console.error("Error initializing ResizeObserver:", error);
+      }
     }
 
     return () => {
