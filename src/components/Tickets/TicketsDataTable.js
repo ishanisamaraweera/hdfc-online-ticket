@@ -33,7 +33,7 @@ function TicketDataTable() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const tickets = useAllTickets();
-  const [filteredTickets, setFilteredTickets] = useState();
+  const [filteredTickets, setFilteredTickets] = useState(tickets);
   const { actionPrivileges } = useStore();
 
   useEffect(() => {
@@ -169,7 +169,7 @@ function TicketDataTable() {
     },
     {
       title: "Agent Comments",
-      render: (record) => record?.agentComment,
+      render: (record) => record.agentComment ? record.agentComment : "--",
       width: 200,
       sorter: (a, b) => (a.agentComment && b.agentComment ? a.agentComment.localeCompare(b.agentComment) : 0),
     },
