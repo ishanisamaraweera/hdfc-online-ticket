@@ -1,9 +1,10 @@
-export const LIVE_MAIN_API_URL = process.env.REACT_APP_API_URL;
+export const BE_API_URL = "http://localhost:8080"
 export const IMAGE_PATH = process.env.REACT_APP_IMAGEKIT_URL;
 
-export const BASE_API_URL = `${LIVE_MAIN_API_URL}`;
+export const BASE_API_URL = `${BE_API_URL}`;
 
 export const apis = {
+  FUNCTION_DATA: `${BASE_API_URL}/deleteFunction`,
   ADMIN_LOGIN: `${BASE_API_URL}api/v1/admin/login`,
 
   FILE_UPLOAD: `${BASE_API_URL}api/file-upload`,
