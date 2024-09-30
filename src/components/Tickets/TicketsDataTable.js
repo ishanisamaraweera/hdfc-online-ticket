@@ -336,8 +336,6 @@ function TicketDataTable() {
         onChange={(e) => setSearchQuery(e.target.value)}
         style={{ marginBottom: 16, width: 300 }}
       />
-
-<div style={{ overflowX: 'auto' }}>
       <Table
           // scroll={{ x: 2800 }}
         scroll={filteredTickets.length > 5 ? { x: 1800 } : undefined}
@@ -360,7 +358,6 @@ function TicketDataTable() {
           pageSizeOptions: ['5', '10', '15', '20'],
         }}
       />
-      </div>
     </>
   );
 }
