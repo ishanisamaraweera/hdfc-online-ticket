@@ -115,7 +115,7 @@ function EditTicket() {
         isWorkingPc: ticket.isWorkingPc,
         ip: ticket.ip,
         issueDesAndRemarks: ticket.issueDesAndRemarks,
-        lastUpdatedUser: "1428",
+        lastUpdatedUser: localStorage.getItem("username"),
       });
       setDesData(ticket.issueDesAndRemarks);
       fetchIssueCategories(ticket.issueType);
@@ -147,7 +147,7 @@ function EditTicket() {
         issueCategory: values.issueCategory,
         status: values.status,
         issueDesAndRemarks: desData,
-        lastUpdatedUser: "1428",
+        lastUpdatedUser: localStorage.getItem("username"),
       };
 
       // Debugging logs to verify the form values

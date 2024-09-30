@@ -37,13 +37,15 @@ function TicketDataTable() {
   const { actionPrivileges } = useStore();
 
   useEffect(() => {
-    setFilteredTickets(
-      tickets.filter(ticket =>
-        Object.values(ticket).some(value =>
-          value ? value.toString().toLowerCase().includes(searchQuery.toLowerCase()) : false
+    if (tickets.length !== 0) {
+      setFilteredTickets(
+        tickets.filter(ticket =>
+          Object.values(ticket).some(value =>
+            value ? value.toString().toLowerCase().includes(searchQuery.toLowerCase()) : false
+          )
         )
-      )
-    );
+      );
+    }
   }, [searchQuery, tickets]);
 
   useDebouncedResizeObserver(() => {
@@ -65,116 +67,115 @@ function TicketDataTable() {
     },
     {
       title: "Agent",
-      dataIndex: "agent",
+      render: (record) => record.agent ? record.agent : "--",
       width: 200,
-      sorter: (a, b) => (a.agent && b.agent ? a.agent.localeCompare(b.agent) : 0),
+      sorter: (a, b) => a.agent.localeCompare(b.agent),
     },
     {
       title: "Reported Date Time",
       render: (record) =>
         record.reportedDateTime
           ? moment(record.reportedDateTime).format("YYYY-MM-DD h:mm:ss a")
-          : "",
-      width: 180,
-      sorter: (a, b) =>
-        new Date(a.reportedDateTime) - new Date(b.reportedDateTime),
-    },
+          : "--",
+      width: 200,
+      sorter: (a, b) => new Date(a.reportedDateTime) - new Date(b.reportedDateTime),
+    },  
     {
       title: "Emergency Level",
-      render: (record) => record?.emergencyLevel,
+      render: (record) => record.emergencyLevel ? record.emergencyLevel : "--",
       width: 200,
       sorter: (a, b) => a.emergencyLevel.localeCompare(b.emergencyLevel),
-    },
+    },    
     {
       title: "Location",
-      render: (record) => record?.location,
+      render: (record) => record.location ? record.location : "--",
       width: 200,
       sorter: (a, b) => a.location.localeCompare(b.location),
     },
     {
       title: "Branch or Division",
-      render: (record) => record?.branchDivision,
+      render: (record) => record.branchDivision ? record.branchDivision : "--",
       width: 200,
       sorter: (a, b) => a.branchDivision.localeCompare(b.branchDivision),
     },
     {
       title: "Issue Type",
-      render: (record) => record?.issueType,
+      render: (record) => record.issueType ? record.issueType : "--",
       width: 200,
       sorter: (a, b) => a.issueType.localeCompare(b.issueType),
     },
     {
       title: "Issue Category",
-      render: (record) => record?.issueCategory,
+      render: (record) => record.issueCategory ? record.issueCategory : "--",
       width: 200,
       sorter: (a, b) => a.issueCategory.localeCompare(b.issueCategory),
-    },
+    },   
     {
       title: "Contact No",
-      render: (record) => record?.contactNo,
+      render: (record) => record.contactNo ? record.contactNo : "--",
       width: 200,
       sorter: (a, b) => a.contactNo.localeCompare(b.contactNo),
     },
     {
       title: "Serial No",
-      render: (record) => record?.serialNo,
+      render: (record) => record.serialNo ? record.serialNo : "--",
       width: 200,
       sorter: (a, b) => (a.serialNo && b.serialNo ? a.serialNo.localeCompare(b.serialNo) : 0),
     },
     {
       title: "Is Working PC",
-      render: (record) => record?.isWorkingPc,
+      render: (record) => record.isWorkingPc ? record.isWorkingPc : "--",
       width: 200,
       sorter: (a, b) => a.isWorkingPc.localeCompare(b.isWorkingPc),
-    },
+    },    
     {
       title: "IP",
-      render: (record) => record?.ip,
+      render: (record) => record.ip ? record.ip: "--",
       width: 200,
       sorter: (a, b) => a.ip.localeCompare(b.ip),
     },
     {
       title: "Issue Description & Remarks",
-      render: (record) => record?.issueDesAndRemarks,
+      render: (record) => record.issueDesAndRemarks ? record.issueDesAndRemarks : "--",
       width: 200,
       sorter: (a, b) => a.issueDesAndRemarks.localeCompare(b.issueDesAndRemarks),
     },
     {
       title: "Agent Response Date-Time",
-      render: (record) => record?.agentResponseDateTime,
+      render: (record) => record.agentResponseDateTime ? record.agentResponseDateTime : "--",
       width: 200,
       sorter: (a, b) =>
         (a.agentResponseDateTime && b.agentResponseDateTime ? new Date(a.agentResponseDateTime) - new Date(b.agentResponseDateTime) : 0),
     },
     {
       title: "Completed Percentage (%)",
-      render: (record) => record?.completedPercentage,
+      render: (record) => record.completedPercentage ? record.completedPercentage : "0",
       width: 200,
       sorter: (a, b) =>
         (a.completedPercentage && b.completedPercentage ? new Date(a.completedPercentage) - new Date(b.completedPercentage) : 0),
     },
     {
       title: "Resolved Date Time",
-      render: (record) => record?.resolvedDateTime,
+      render: (record) => record.resolvedDateTime ? record.resolvedDateTime : "--",
       width: 200,
       sorter: (a, b) =>
         (a.resolvedDateTime && b.resolvedDateTime ? new Date(a.resolvedDateTime) - new Date(b.resolvedDateTime) : 0),
     },
     {
       title: "Resolution Period",
-      render: (record) => record?.resolutionPeriod,
+      render: (record) => record.resolutionPeriod ? record.resolutionPeriod : "--",
       width: 200,
       sorter: (a, b) => (a.resolutionPeriod && b.resolutionPeriod ? a.resolutionPeriod - b.resolutionPeriod : 0),
     },
     {
       title: "Agent Comments",
-      render: (record) => record?.agentComment,
+      render: (record) => record.agentComment ? record.agentComment : "--",
       width: 200,
       sorter: (a, b) => (a.agentComment && b.agentComment ? a.agentComment.localeCompare(b.agentComment) : 0),
     },
     {
       title: "Last Updated User",
-      render: (record) => record?.lastUpdatedUser,
+      render: (record) => record.lastUpdatedUser ? record.lastUpdatedUser : "--",
       width: 200,
       sorter: (a, b) => (a.lastUpdatedUser && b.lastUpdatedUser ? a.lastUpdatedUser.localeCompare(b.lastUpdatedUser) : 0),
     },
@@ -183,11 +184,11 @@ function TicketDataTable() {
       render: (record) =>
         record.lastUpdatedDateTime
           ? moment(record.lastUpdatedDateTime).format("YYYY-MM-DD h:mm:ss a")
-          : "",
+          : "--",
       width: 180,
       sorter: (a, b) =>
         new Date(a.lastUpdatedDateTime) - new Date(b.lastUpdatedDateTime),
-    },
+    },  
     {
       title: "Status",
       render: (record) => (
@@ -285,6 +286,7 @@ function TicketDataTable() {
             setRefreshTable(!refreshTable);
             message.success("Ticket closed successfully");
             Progress.hide();
+            window.location.reload();
           })
           .catch((error) => {
             message.error(error.response?.data?.message || "Failed to close ticket");
@@ -335,7 +337,8 @@ function TicketDataTable() {
         style={{ marginBottom: 16, width: 300 }}
       />
       <Table
-        scroll={{ x: 1800 }}
+          // scroll={{ x: 2800 }}
+        scroll={filteredTickets.length > 5 ? { x: 1800 } : undefined}
         columns={columns}
         dataSource={filteredTickets}
         bordered
@@ -352,6 +355,7 @@ function TicketDataTable() {
           },
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} items`,
+          pageSizeOptions: ['5', '10', '15', '20'],
         }}
       />
     </>

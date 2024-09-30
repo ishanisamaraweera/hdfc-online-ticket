@@ -31,6 +31,7 @@
 		"react-responsive": "^9.0.0-beta.6",
 		"react-router-dom": "^6.24.0",
 		"react-scripts": "5.0.0",
+		"resize-observer-polyfill": "^1.5.1",
 		"web-vitals": "^2.1.4",
 		"zustand": "^3.5.13"
 	},

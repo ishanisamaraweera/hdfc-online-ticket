@@ -20,13 +20,17 @@ function AddTicket() {
   const [locations, setLocations] = useState([]);
   const [branchDivisions, setBranchDivisions] = useState([]);
   const [branchDivisionMap, setBranchDivisionMap] = useState({});
+  const [fileList, setFileList] = useState([]);
   const [initialValues, setInitialValues] = useState({
     location: undefined,
     branchDivision: undefined,
     status: 1
   });
-
-  //const [fileList, setFileList] = useState([]);
+  const handleFileChange = (info) => {
+    let fileList = [...info.fileList];
+    fileList = fileList.slice(-1);
+    setFileList(fileList);
+  };
 
   useBreadCrumb("Add Ticket", location.pathname, "", "add");
 
@@ -42,7 +46,8 @@ function AddTicket() {
 
   const fetchInitialValues = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getUserDetailsForTicketByUsername/1428');
+      const username = localStorage.getItem("username");
+      const response = await axios.get(`http://localhost:8080/getUserDetailsForTicketByUsername/${username}`);
       const data = response.data;
       setInitialValues({
         location: data.locationId,
@@ -142,44 +147,32 @@ function AddTicket() {
     }
   };
 
-
   const onFinishFailed = () => {
     message.error("Please fill all the details");
   };
 
-  // const handleFileChange = ({ fileList }) => {
-  //   setFileList(fileList);
-  // };
-
   const submitForm = () => {
     form.validateFields().then((values) => {
-       //const formData = new FormData();
+      const formData = new FormData();
 
-      // fileList.forEach(file => {
-      //   formData.append('files', file.originFileObj);
-      // });
+      formData.append("reportedDateTime", moment().format('YYYY-MM-DD HH:mm:ss'));
+      formData.append("sender", localStorage.getItem("username"));
+      formData.append("lastUpdatedDateTime", moment().format('YYYY-MM-DD HH:mm:ss'));
+      formData.append("lastUpdatedUser", localStorage.getItem("username"));
 
-      const data = {
-        ...values,
-        reportedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        sender: localStorage.getItem("username"),
-        lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        lastUpdatedUser: localStorage.getItem("username"),
-      };
+      Object.keys(values).forEach((key) => {
+        formData.append(key, values[key]);
+      });
 
-      // Object.keys(ticketData).forEach(key => {
-      //   formData.append(key, ticketData[key]);
-      // });
+      if (fileList.length > 0) {
+        formData.append("file", fileList[0].originFileObj);
+      }
 
-      // console.log(JSON.stringify(formData));
-
-      axios.post("http://localhost:8080/addTicket", data
-      //   , formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   }
-      // }
-    )
+      axios.post("http://localhost:8080/addTicket", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Important for file uploads
+        },
+      })
         .then((result) => {
           console.log(result.data);
           form.resetFields();
@@ -417,18 +410,14 @@ function AddTicket() {
               >
                 <TextArea rows={4} placeholder="Type explanation about the issue ..." />
               </Form.Item>
-
-              {/* <Form.Item label="Attach Files">
-                <Upload
-                  fileList={fileList}
-                  onChange={handleFileChange}
-                  beforeUpload={() => false} // prevent auto upload
-                  multiple
-                  listType="text"
-                >
-                  <Button icon={<UploadOutlined />}>Select Files</Button>
-                </Upload>
-              </Form.Item> */}
+              <Upload
+                beforeUpload={() => false} // Prevent automatic upload
+                onChange={handleFileChange}
+                fileList={fileList}
+                multiple={false}
+              >
+                <Button icon={<UploadOutlined />}>Select File</Button>
+              </Upload>
             </Col>
           </Row>
 

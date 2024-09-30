@@ -143,7 +143,7 @@ function UpdateUser() {
                 ...values,
                 status: values.status,
                 dob: values.dob.format("YYYY-MM-DD"),
-                lastUpdatedUser: "1428",
+                lastUpdatedUser: localStorage.getItem("username"),
             };
 
             if (targetKeys.length === 0 ) {

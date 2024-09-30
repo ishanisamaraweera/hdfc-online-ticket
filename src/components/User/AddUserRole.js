@@ -45,9 +45,9 @@ function AddUserRole() {
       const data = {
         ...values,
         createdDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        createdUser: "1428",
+        createdUser: localStorage.getItem("username"),
         lastUpdatedDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        lastUpdatedUser: "1428",
+        lastUpdatedUser: localStorage.getItem("username"),
       };
 
       axios.post("http://localhost:8080/addUserRole", data)

@@ -35,8 +35,9 @@ function FunctionDataTable() {
   const { actionPrivileges } = useStore();
 
   useEffect(() => {
+
     setFilteredTickets(
-      userFunctions.filter(userFunction =>
+      userFunctions?.filter(userFunction =>
         Object.values(userFunction).some(value =>
           value ? value.toString().toLowerCase().includes(searchQuery.toLowerCase()) : false
         )
@@ -167,7 +168,7 @@ function FunctionDataTable() {
       onOk() {
         Progress.show();
         axios
-          .put(`http://localhost:8080/deleteFunction/${id}`)
+          .put(`${apis.FUNCTION_DATA}/${id}`)
           .then((result) => {
             let responseJson = result;
             setRefreshTable(!refreshTable);            
@@ -194,7 +195,7 @@ function FunctionDataTable() {
         style={{ marginBottom: 16, width: 300 }}
       />
       <Table
-        scroll={{ x: 1800 }}
+        scroll={filteredTickets.length > 5 ? { x: 1800 } : undefined}
         columns={columns}
         dataSource={filteredTickets}
         bordered

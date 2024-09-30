@@ -194,7 +194,7 @@ function UserRoleDataTable() {
         style={{ marginBottom: 16, width: 300 }}
       />
       <Table
-        scroll={{ x: 1800 }}
+        scroll={filteredTickets.length > 5 ? { x: 1800 } : undefined}
         columns={columns}
         dataSource={filteredTickets}
         bordered

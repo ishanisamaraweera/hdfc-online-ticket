@@ -167,12 +167,6 @@ function Dashboard() {
     }
   };
 
-  // // Function to check if a page is allowed
-  // const isPageAllowed = (page) => allowedPages.includes(page);
-
-  // // Function to check if an action is allowed
-  // const isActionAllowed = (action) => allowedActions.includes(action);
-
   return (
     <div className="dashboard">
       <Modal
@@ -193,7 +187,26 @@ function Dashboard() {
           <Form.Item
             name="newPassword"
             label="New Password"
-            rules={[{ required: true, message: "Please input your new password!" }]}
+            rules={[
+              { required: true, message: "Please input your new password!" },
+              { min: 8, message: "Password must be at least 8 characters long!" },
+              { 
+                pattern: /[A-Z]/, 
+                message: "Password must contain at least one uppercase letter!" 
+              },
+              { 
+                pattern: /[a-z]/, 
+                message: "Password must contain at least one lowercase letter!" 
+              },
+              { 
+                pattern: /\d/, 
+                message: "Password must contain at least one number!" 
+              },
+              { 
+                pattern: /[@$!%*?&#]/, 
+                message: "Password must contain at least one special character!" 
+              },
+            ]}
           >
             <Input.Password />
           </Form.Item>

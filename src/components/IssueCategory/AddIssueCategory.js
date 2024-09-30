@@ -68,6 +68,8 @@ function AddIssueCategory() {
                 ...values,
                 description: desData,
                 currency: "USD",
+                lastUpdatedUser: localStorage.getItem("username"),
+                createdUser: localStorage.getItem("username"),
             };
             axios.post("http://localhost:8080/addIssueCategory", data)
                 .then((result) => {

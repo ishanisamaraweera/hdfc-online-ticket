@@ -77,6 +77,7 @@ function UpdateUserRole() {
                 ...values,
                 description: desData,
                 currency: "USD",
+                lastUpdatedUser: localStorage.getItem("username"),
             };
             axios.put("http://localhost:8080/updateUserRole", data)
                 .then((result) => {
