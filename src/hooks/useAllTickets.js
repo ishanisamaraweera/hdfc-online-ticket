@@ -14,7 +14,7 @@ function useAllTickets() {
     const getData = () => {
      
       Progress.show();
-      axios.get(`http://localhost:8080/getTicket/${username}`)
+      axios.get(`${apis.GET_TICKET}/${username}`)
         .then((result) => {
           let responseJson = result;
           setState(responseJson.data);

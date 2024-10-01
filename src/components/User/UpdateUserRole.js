@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -33,7 +34,7 @@ function UpdateUserRole() {
 
     const fetchStatuses = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getStatuses/USERROLE');
+            const response = await axios.get(`${apis.GET_STATUSES}/USERROLE`);
             setStatuses(response.data);
         } catch (error) {
             console.error('Error fetching statuses:', error);
@@ -42,7 +43,7 @@ function UpdateUserRole() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getAllUserDetails');
+            const response = await axios.get(`${apis.GET_ALL_USER_DETAILS}`);
             setUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -51,7 +52,7 @@ function UpdateUserRole() {
 
     const fetchUserRoleDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserDetailsByUserRole/${id}`);
+            const response = await axios.get(`${apis.GET_USER_DETAILS_BY_USER_ROLE}/${id}`);
             const userRole = response.data;
             if (userRole) {
                 form.setFieldsValue({
@@ -79,7 +80,7 @@ function UpdateUserRole() {
                 currency: "USD",
                 lastUpdatedUser: localStorage.getItem("username"),
             };
-            axios.put("http://localhost:8080/updateUserRole", data)
+            axios.put(`${apis.UPDATE_USER_ROLE}`, data)
                 .then((result) => {
                     setDesData("");
                     form.resetFields();
@@ -161,7 +162,7 @@ function UpdateUserRole() {
                             Update
                         </Button>
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/user/function' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.FUNCTION} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>

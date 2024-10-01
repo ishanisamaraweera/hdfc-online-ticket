@@ -11,7 +11,7 @@ function useAllUserFunctions() {
   useEffect(() => {
     const getData = () => {     
       Progress.show();
-      axios.get("http://localhost:8080/getAllUserFunctions")
+      axios.get(`${apis.GET_ALL_USER_FUNCTIONS}`)
         .then((result) => {
           let responseJson = result;
           setState(responseJson.data);

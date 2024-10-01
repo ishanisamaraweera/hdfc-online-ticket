@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import moment from 'moment';
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -29,7 +30,7 @@ function AddFunction() {
   const fetchStatuses = async (module) => {
     console.log("Fetching statuses for module:", module);
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+      const response = await axios.get(`${apis.GET_STATUSES}/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -50,7 +51,7 @@ function AddFunction() {
         lastUpdatedUser: localStorage.getItem("username"),
       };
 
-      axios.post("http://localhost:8080/addFunction", data)
+      axios.post(`${apis.ADD_FUNCTION}`, data)
         .then((result) => {
           form.resetFields();
           message.success("Function details added successfully for function ID: " + result.data.userFunctionId);
@@ -129,7 +130,7 @@ function AddFunction() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/user/function' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href={apis.FUNCTION} style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

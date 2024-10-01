@@ -41,7 +41,7 @@ function TicketsSearchTable() {
 
   const fetchStatuses = async (module) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+      const response = await axios.get(`${apis.GET_STATUSES}/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -57,7 +57,7 @@ function TicketsSearchTable() {
     if (selectedStatus) {
       try {
         localStorage.setItem("statusVal", selectedStatus);
-        const response = await axios.get(`http://localhost:8080/searchTickets/${selectedStatus}`);
+        const response = await axios.get(`${apis.SEARCH_TICKETS}/${selectedStatus}`);
         setFilteredTickets(response.data);
         setRefreshTable(!refreshTable);
       } catch (error) {
@@ -65,7 +65,7 @@ function TicketsSearchTable() {
       }
     } else {
       localStorage.setItem("statusVal", selectedStatus);
-      const response = await axios.get(`http://localhost:8080/searchTickets`);
+      const response = await axios.get(`${apis.SEARCH_TICKETS}`);
       setFilteredTickets(response.data);
       setRefreshTable(!refreshTable);
     }

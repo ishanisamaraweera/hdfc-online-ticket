@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import { useStore } from "../../store";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -25,7 +26,7 @@ function AssignFunction() {
 
     const fetchUserRoles = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserRoles`);
+            const response = await axios.get(`${apis.GET_USER_ROLES}`);
             setUserRoles(response.data.map(role => ({ key: role.userRoleId, title: role.userRoleDes })));
         } catch (error) {
             message.error("Failed to load user roles");
@@ -34,7 +35,7 @@ function AssignFunction() {
 
     const fetchFunctions = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getFunctions`);
+            const response = await axios.get(`${apis.GET_FUNCTIONS}`);
             setFunctions(response.data.map(functions => ({ key: functions.userFunctionId, title: functions.userFunctionDes })));
         } catch (error) {
             message.error("Failed to load user functions");
@@ -43,7 +44,7 @@ function AssignFunction() {
 
     const fetchUserRoleFunctions = async (userRoleId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserRoleFunctions/${userRoleId}`);
+            const response = await axios.get(`${apis.GET_USER_ROLE_FUNCTIONS}/${userRoleId}`);
             setTargetKeys(response.data.map(func => func.functionId));
         } catch (error) {
             message.error("Failed to load user role functions");
@@ -74,7 +75,7 @@ function AssignFunction() {
 
             console.log("***************" + JSON.stringify(values))
 
-            axios.post("http://localhost:8080/assignFunction", data)
+            axios.post(`${apis.ASSIGN_FUNCTION}`, data)
                 .then((result) => {
                     form.resetFields();
                     message.success("User functions assigned successfully for user role: " + data.userRole);
@@ -155,7 +156,7 @@ function AssignFunction() {
                         )}
 
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/dashboard' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.DASHBOARD} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>
