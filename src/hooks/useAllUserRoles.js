@@ -11,7 +11,7 @@ function useAllUserRoles() {
   useEffect(() => {
     const getData = () => {     
       Progress.show();
-      axios.get("http://localhost:8080/getAllUserRoles")
+      axios.get(`${apis.GET_ALL_USER_ROLES}`)
         .then((result) => {
           let responseJson = result;
           setState(responseJson.data);

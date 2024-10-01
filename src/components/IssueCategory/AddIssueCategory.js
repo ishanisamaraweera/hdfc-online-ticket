@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -33,7 +34,7 @@ function AddIssueCategory() {
 
     const fetchStatuses = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getStatuses/ISSUECATEGORY');
+            const response = await axios.get(`${apis.GET_STATUSES}/ISSUECATEGORY`);
             setStatuses(response.data);
         } catch (error) {
             console.error('Error fetching statuses:', error);
@@ -42,7 +43,7 @@ function AddIssueCategory() {
 
     const fetchIssueTypes = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getIssueTypes');
+            const response = await axios.get(`${apis.GET_ISSUE_TYPES}`);
             setIssueTypes(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -51,7 +52,7 @@ function AddIssueCategory() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getAllUserDetails');
+            const response = await axios.get(`${apis.GET_ALL_USER_DETAILS}`);
             setUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -71,7 +72,7 @@ function AddIssueCategory() {
                 lastUpdatedUser: localStorage.getItem("username"),
                 createdUser: localStorage.getItem("username"),
             };
-            axios.post("http://localhost:8080/addIssueCategory", data)
+            axios.post(`${apis.ADD_ISSUES_CATEGORY}`, data)
                 .then((result) => {
                     setDesData("");
                     form.resetFields();
@@ -160,7 +161,7 @@ function AddIssueCategory() {
                             Add
                         </Button>
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/issue-category' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.ISSUE_CATEGORY} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>

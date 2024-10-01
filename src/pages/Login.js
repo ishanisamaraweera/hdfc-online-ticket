@@ -6,6 +6,7 @@ import Auth from "../auth/Auth";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import axios from "axios";
+import { apis } from "../properties";
 
 const { Option } = Select;
 
@@ -26,7 +27,7 @@ export default function Login() {
       setLoading(true);
       const values = await form.validateFields();
       console.log("JSON String:" +  JSON.stringify(values));
-      const response = await axios.get('http://localhost:8080/authenticateUser', {
+      const response = await axios.get(`${apis.AUTHENTICATE_USER}`, {
         params: values
       });
 

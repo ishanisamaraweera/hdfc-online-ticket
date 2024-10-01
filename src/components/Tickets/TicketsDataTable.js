@@ -278,7 +278,7 @@ function TicketDataTable() {
       onOk() {
         Progress.show();
         axios
-          .put(`http://localhost:8080/closeTicket/${id}`, {
+          .put(`${apis.CLOSE_TICKET}/${id}`, {
             status: type,
           })
           .then((result) => {
@@ -310,7 +310,7 @@ function TicketDataTable() {
       onOk() {
         Progress.show();
         axios
-          .put(`http://localhost:8080/deleteTicket/${id}`)
+          .put(`${apis.DELETE_TICKET}/${id}`)
           .then((result) => {
             let responseJson = result;
             setRefreshTable(!refreshTable);

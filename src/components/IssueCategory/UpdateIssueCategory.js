@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -34,7 +35,7 @@ function UpdateIssueCategory() {
 
     const fetchStatuses = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getStatuses/ISSUECATEGORY');
+            const response = await axios.get(`${apis.GET_STATUSES}/ISSUECATEGORY`);
             setStatuses(response.data);
         } catch (error) {
             console.error('Error fetching statuses:', error);
@@ -43,7 +44,7 @@ function UpdateIssueCategory() {
 
     const fetchIssueTypes = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getIssueTypes');
+            const response = await axios.get(`${apis.GET_ISSUE_TYPES}`);
             setIssueTypes(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -52,7 +53,7 @@ function UpdateIssueCategory() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getAllUserDetails');
+            const response = await axios.get(`${apis.GET_ALL_USER_DETAILS}`);
             setUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -61,7 +62,7 @@ function UpdateIssueCategory() {
 
     const fetchIssueCategoryDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getIssueCategoryDetailsById/${id}`);
+            const response = await axios.get(`${apis.GET_ISSUE_CATEGORY_DETAILS_BY_ID}/${id}`);
             const issueCategory = response.data;
             if (issueCategory) {
                 const lastUpdatedUser = users.find(user => user.username === issueCategory.lastUpdatedUser);
@@ -96,7 +97,7 @@ function UpdateIssueCategory() {
                 currency: "USD",
                 lastUpdatedUser: localStorage.getItem("username"),
             };
-            axios.put("http://localhost:8080/updateIssueCategory", data)
+            axios.put(`${apis.UPDATE_ISSUE_CATEGORY}`, data)
                 .then((result) => {
                     setDesData("");
                     form.resetFields();
@@ -198,7 +199,7 @@ function UpdateIssueCategory() {
                             Update
                         </Button>
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/issue-category' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.ISSUE_CATEGORY} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>

@@ -1,7 +1,7 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { Upload, Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
-import { FileOutlined } from '@ant-design/icons'; 
+import { FileOutlined } from '@ant-design/icons';
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -233,18 +233,18 @@ function ViewTicket() {
     try {
       const response = await axios.get(`http://localhost:8080/getCommentsByTicketId/${id}`);
       const commentsData = response.data;
-      setComments(commentsData.map(comment => (        
+      setComments(commentsData.map(comment => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <span style={{ flexGrow: 1 }}>
             <strong>{comment.addedBy}:</strong> {comment.commentText}
           </span>
-          <span style={{ fontSize: '12px', whiteSpace: 'nowrap', marginRight: '20px'  }}>
+          <span style={{ fontSize: '12px', whiteSpace: 'nowrap', marginRight: '20px' }}>
             <a href={`http://localhost:8080/images/${comment.attachmentId}`} download={comment.attachmentId} target="_blank" rel="noopener noreferrer">
-            <FileOutlined style={{ marginRight: '5px' }} />
+              <FileOutlined style={{ marginRight: '5px' }} />
               {comment.attachmentId ? comment.attachmentId.split('/').pop() : 'No attachment'}
             </a>
           </span>
-          <span style={{ fontSize: '10px', whiteSpace: 'nowrap' , marginLeft: '20px'}}>
+          <span style={{ fontSize: '10px', whiteSpace: 'nowrap', marginLeft: '20px' }}>
             {comment.addedDateTime}
           </span>
         </div>
@@ -309,6 +309,19 @@ function ViewTicket() {
   };
 
   const rejectTicket = () => {
+    form.validateFields(['agentComment']).then(() => {
+      const agentComment = form.getFieldValue('agentComment');
+      axios.put(`http://localhost:8080/rejectTicket/${id}`, { username: localStorage.getItem("username"), agentComment })
+        .then((response) => {
+          message.success("Ticket successfully rejected");
+        })
+        .catch((error) => {
+          message.error("Failed to reject ticket");
+        });
+    });
+  };
+
+  const reopenTicket = () => {
     form.validateFields(['agentComment']).then(() => {
       const agentComment = form.getFieldValue('agentComment');
       axios.put(`http://localhost:8080/rejectTicket/${id}`, { username: localStorage.getItem("username"), agentComment })
@@ -632,6 +645,12 @@ function ViewTicket() {
               />
 
               <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
+                <Button
+                  type="primary"
+                  onClick={reopenTicket}
+                >
+                  Re-open
+                </Button>
                 <Button type="secondary" className="secondary__btn" htmlType="back">
                   <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
                     Back
