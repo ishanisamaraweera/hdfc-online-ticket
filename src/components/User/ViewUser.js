@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -36,7 +37,7 @@ function ViewUser() {
 
     const fetchUserRoles = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserRoles`);
+            const response = await axios.get(`${apis.GET_USER_ROLES}`);
             setUserRoles(response.data.map(role => ({ key: role.userRoleId, title: role.userRoleDes })));
         } catch (error) {
             message.error("Failed to load user roles");
@@ -45,7 +46,7 @@ function ViewUser() {
 
     const fetchUserRolesForUser = async (username) => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserRolesForUsername/${username}`);
+            const response = await axios.get(`${apis.GET_USER_ROLES_FOR_USERNAME}/${username}`);
             setTargetKeys(response.data);
         } catch (error) {
             message.error("Failed to load user roles for user");
@@ -54,7 +55,7 @@ function ViewUser() {
 
     const fetchStatuses = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getStatuses');
+            const response = await axios.get(`${apis.GET_STATUSES}`);
             setStatuses(response.data);
         } catch (error) {
             console.error('Error fetching statuses:', error);
@@ -64,7 +65,7 @@ function ViewUser() {
 
     const fetchLocations = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getLocations');
+            const response = await axios.get(`${apis.GET_LOCATIONS}`);
             setLocations(response.data);
         } catch (error) {
             message.error("Failed to load locations");
@@ -73,7 +74,7 @@ function ViewUser() {
 
     const fetchBranchDivisions = async (locationId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+            const response = await axios.get(`${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`);
             const branchDivisionsData = response.data;
             const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
                 acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
@@ -88,7 +89,7 @@ function ViewUser() {
 
     const fetchUserDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserDetailsByUsername/${id}`);
+            const response = await axios.get(`${apis.GET_USER_DETAILS_BY_USERNAME}/${id}`);
             const user = response.data;
             if (user) {
                 form.setFieldsValue({
@@ -124,7 +125,7 @@ function ViewUser() {
                 description: desData,
                 currency: "USD",
             };
-            axios.put("http://localhost:8080/updateTicket", data)
+            axios.put(`${apis.UPDATE_TICKET}`, data)
                 .then((result) => {
                     console.log(result.data);
                     setDesData("");
@@ -317,7 +318,7 @@ function ViewUser() {
 
                     <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/user' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.USER} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>

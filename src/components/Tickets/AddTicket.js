@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import moment from 'moment';
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -47,7 +48,7 @@ function AddTicket() {
   const fetchInitialValues = async () => {
     try {
       const username = localStorage.getItem("username");
-      const response = await axios.get(`http://localhost:8080/getUserDetailsForTicketByUsername/${username}`);
+      const response = await axios.get(`${apis.GET_USER_DETAILS_FOR_TICKET_BY_USERNAME}/${username}`);
       const data = response.data;
       setInitialValues({
         location: data.locationId,
@@ -67,7 +68,7 @@ function AddTicket() {
 
   const fetchLocations = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getLocations');
+      const response = await axios.get(`${apis.GET_LOCATIONS}`);
       setLocations(response.data);
     } catch (error) {
       message.error("Failed to load locations");
@@ -76,7 +77,7 @@ function AddTicket() {
 
   const fetchBranchDivisions = async (locationId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+      const response = await axios.get(`${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`);
       const branchDivisionsData = response.data;
       const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
         acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
@@ -91,7 +92,7 @@ function AddTicket() {
 
   const fetchIssueTypes = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getIssueTypes');
+      const response = await axios.get(`${apis.GET_ISSUE_TYPES}`);
       setIssueTypes(response.data);
     } catch (error) {
       message.error("Failed to load issue types");
@@ -100,7 +101,7 @@ function AddTicket() {
 
   const fetchIPAddress = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getIPAddress');
+      const response = await axios.get(`${apis.GET_IP_ADDRESS}`);
       const ipAddress = response.data;
       form.setFieldsValue({
         ip: ipAddress,
@@ -122,7 +123,7 @@ function AddTicket() {
 
   const fetchIssueCategories = async (issueTypeId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+      const response = await axios.get(`${apis.GET_ISSUE_CATEGORIES_BY_ISSUE_TYPE}/${issueTypeId}`);
       setIssueCategories(response.data);
     } catch (error) {
       // message.error("Failed to load issue categories");
@@ -131,7 +132,7 @@ function AddTicket() {
 
   const fetchStatuses = async (module) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+      const response = await axios.get(`${apis.GET_STATUSES}/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -140,7 +141,7 @@ function AddTicket() {
 
   const fetchEmergencyLevels = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+      const response = await axios.get(`${apis.GET_EMERGENCY_LEVELS}`);
       setEmergencyLevels(response.data);
     } catch (error) {
       message.error("Failed to load emergency levels");
@@ -168,7 +169,7 @@ function AddTicket() {
         formData.append("file", fileList[0].originFileObj);
       }
 
-      axios.post("http://localhost:8080/addTicket", formData, {
+      axios.post(`${apis.ADD_TICKET}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Important for file uploads
         },
@@ -426,7 +427,7 @@ function AddTicket() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href={apis.TICKETS} style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

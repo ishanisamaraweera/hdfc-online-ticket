@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { apis } from "../properties";
 
 const deleteRecord = async (id) => {
     try {
-        const response = await axios.delete(`http://localhost:8080/deleteTicket/${id}`);
+        const response = await axios.delete(`${apis.DELETE_TICKET}/${id}`);
         console.log('Deleted successfully');
         // Handle any UI updates or state changes
     } catch (error) {

@@ -6,6 +6,7 @@ import useBreadCrumb from "../hooks/useBreadCrumb";
 import axios from "axios";
 import '../assets/css/Dashboard.css';
 import { useStore } from "../store";
+import { apis } from "../properties";
 
 function Dashboard() {
   const location = useLocation();
@@ -29,7 +30,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchInitialLoginStatus = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/checkInitialLoginStatus/${username}`);
+        const response = await fetch(`${apis.CHECK_INITIAL_LOGIN_STATUS}/${username}`);
 
         if (response.ok) {
           const data = await response.text();
@@ -48,7 +49,7 @@ function Dashboard() {
 
     const fetchNewTicketCount = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getNewTicketCount/${username}`);
+        const response = await fetch(`${apis.NEW_TICKET_COUNT}/${username}`);
         if (response.ok) {
           const data = await response.text();
           setNewTicketCount(parseInt(data)); // Parse the response to an integer
@@ -62,7 +63,7 @@ function Dashboard() {
 
     const fetchAssignedTicketCount = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getAssignedTicketCount/${username}`);
+        const response = await fetch(`${apis.ASSIGNED_TICKET_COUNT}/${username}`);
         if (response.ok) {
           const data = await response.text();
           setAssignedTicketCount(parseInt(data)); // Parse the response to an integer
@@ -76,7 +77,7 @@ function Dashboard() {
 
     const fetchActiveTicketCount = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getActiveTicketCount/${username}`);
+        const response = await fetch(`${apis.ACTIVE_TICKET_COUNT}/${username}`);
         if (response.ok) {
           const data = await response.text();
           setActiveTicketCount(parseInt(data)); // Parse the response to an integer
@@ -90,7 +91,7 @@ function Dashboard() {
 
     const fetchCompletedTicketCount = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getCompletedTicketCount/${username}`);
+        const response = await fetch(`${apis.COMPLETED_TICKET_COUNT}/${username}`);
         if (response.ok) {
           const data = await response.text();
           setCompletedTicketCount(parseInt(data)); // Parse the response to an integer
@@ -104,7 +105,7 @@ function Dashboard() {
 
     const fetchClosedTicketCount = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getClosedTicketCount/${username}`);
+        const response = await fetch(`${apis.CLOSED_TICKET_COUNT}/${username}`);
         if (response.ok) {
           const data = await response.text();
           setClosedTicketCount(parseInt(data)); // Parse the response to an integer
@@ -118,7 +119,7 @@ function Dashboard() {
 
     const fetchTotalTicketCount = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getTotalTicketCount/${username}`);
+        const response = await fetch(`${apis.TOTAL_TICKET_COUNT}/${username}`);
         if (response.ok) {
           const data = await response.text();
           setTotalTicketCount(parseInt(data)); // Parse the response to an integer
@@ -133,8 +134,8 @@ function Dashboard() {
     const fetchPrivileges = async () => {
       try {
         const username = localStorage.getItem("username");
-        const pagesResponse = await axios.get(`http://localhost:8080/getPagePrivileges/${username}`);
-        const actionsResponse = await axios.get(`http://localhost:8080/getFunctionPrivileges/${username}`);
+        const pagesResponse = await axios.get(`${apis.PAGE_PRIVILEGES}/${username}`);
+        const actionsResponse = await axios.get(`${apis.FUNCTION_PRIVILEGES}/${username}`);
         setPagePrivileges(pagesResponse.data)
         setActionPrivileges(actionsResponse.data)
         localStorage.setItem("pagePrivileges", pagesResponse.data);
@@ -158,7 +159,7 @@ function Dashboard() {
   const handleFinish = async (values) => {
     try {
       values.username = username;
-      const response = await axios.put('http://localhost:8080/changePassword', values);
+      const response = await axios.put(`${apis.CHANGE_PASSWORD}`, values);
       message.success("Password changed successfully!");
       setIsModalVisible(false);
       form.resetFields();

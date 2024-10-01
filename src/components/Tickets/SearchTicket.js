@@ -30,7 +30,7 @@ function AddTicket() {
       const data = {
         ...values,
       };
-      axios.post("http://localhost:8080/addTicket", data)
+      axios.post(`${apis.ADD_TICKET}`, data)
         .then((result) => {
           console.log(result.data);
           form.resetFields();
@@ -250,7 +250,7 @@ function AddTicket() {
               Submit
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href={apis.TICKETS} style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import moment from 'moment';
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -29,7 +30,7 @@ function AddUserRole() {
   const fetchStatuses = async (module) => {
     console.log("Fetching statuses for module:", module);
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+      const response = await axios.get(`${apis.GET_STATUSES}/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -50,7 +51,7 @@ function AddUserRole() {
         lastUpdatedUser: localStorage.getItem("username"),
       };
 
-      axios.post("http://localhost:8080/addUserRole", data)
+      axios.post(`${apis.ADD_USER_ROLE}`, data)
         .then((result) => {
           form.resetFields();
           message.success("User role details added successfully for user role ID: " + result.data.userRoleId);
@@ -129,7 +130,7 @@ function AddUserRole() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/dashboard' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href={apis.DASHBOARD} style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>

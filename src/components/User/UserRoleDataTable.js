@@ -167,7 +167,7 @@ function UserRoleDataTable() {
       onOk() {
         Progress.show();
         axios
-          .put(`http://localhost:8080/deleteUserRole/${id}`)
+          .put(`${apis.DELETE_USER_ROLE}/${id}`)
           .then((result) => {
             let responseJson = result;
             setRefreshTable(!refreshTable);            

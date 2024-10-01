@@ -1,7 +1,7 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { Upload, Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
-import { FileOutlined } from '@ant-design/icons'; 
+import { FileOutlined } from '@ant-design/icons';
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -69,7 +69,7 @@ function ViewTicket() {
       }
 
       try {
-        const response = await axios.post('http://localhost:8080/addComment', formData, {
+        const response = await axios.post(`${apis.ADD_COMMENT}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
@@ -113,7 +113,7 @@ function ViewTicket() {
   const fetchDisplayName = async () => {
     const username = localStorage.getItem("username");
     try {
-      const response = await axios.get(`http://localhost:8080/getDisplayNameByUsername/${username}`);
+      const response = await axios.get(`${apis.GET_DISPLAY_NAME_BY_USERNAME}/${username}`);
       setDisplayName(response.data);
     } catch (error) {
       console.error('Error fetching display name:', error);
@@ -122,7 +122,7 @@ function ViewTicket() {
 
   const fetchStatuses = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getStatuses');
+      const response = await axios.get(`${apis.GET_STATUSES}`);
       setStatuses(response.data);
     } catch (error) {
       console.error('Error fetching statuses:', error);
@@ -131,7 +131,7 @@ function ViewTicket() {
 
   const fetchEmergencyLevels = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/getEmergencyLevels`);
+      const response = await axios.get(`${apis.GET_EMERGENCY_LEVELS}`);
       setEmergencyLevels(response.data);
     } catch (error) {
       message.error("Failed to load emergency levels");
@@ -140,7 +140,7 @@ function ViewTicket() {
 
   const fetchLocations = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getLocations');
+      const response = await axios.get(`${apis.GET_LOCATIONS}`);
       setLocations(response.data);
     } catch (error) {
       message.error("Failed to load locations");
@@ -149,7 +149,7 @@ function ViewTicket() {
 
   const fetchBranchDivisions = async (locationId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+      const response = await axios.get(`${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`);
       const branchDivisionsData = response.data;
       const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
         acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
@@ -164,7 +164,7 @@ function ViewTicket() {
 
   const fetchIssueTypes = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getIssueTypes');
+      const response = await axios.get(`${apis.GET_ISSUE_TYPES}`);
       setIssueTypes(response.data);
     } catch (error) {
       message.error("Failed to load issue types");
@@ -173,7 +173,7 @@ function ViewTicket() {
 
   const fetchIssueCategories = async (issueTypeId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/getIssueCategoriesByIssueType/${issueTypeId}`);
+      const response = await axios.get(`${apis.GET_ISSUE_CATEGORIES_BY_ISSUE_TYPE}/${issueTypeId}`);
       setIssueCategories(response.data);
     } catch (error) {
       // message.error("Failed to load issue categories");
@@ -182,7 +182,7 @@ function ViewTicket() {
 
   const fetchAllIssueCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/getAllIssueCategories");
+      const response = await axios.get(`${apis.GET_ALL_ISSUE_CATEGORIES}`);
       setIssueCategories(response.data);
     } catch (error) {
       //message.error("Failed to load issue categories");
@@ -191,7 +191,7 @@ function ViewTicket() {
 
   const fetchAgents = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/getUserListsByUserRole/AGENT');
+      const response = await axios.get(`${apis.GET_USER_LIST_BY_USER_ROLE}/AGENT`);
       setAgents(response.data);
     } catch (error) {
       message.error("Failed to load agents");
@@ -200,7 +200,7 @@ function ViewTicket() {
 
   const fetchTicketDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/getTicketByID/${id}`);
+      const response = await axios.get(`${apis.GET_TICKET_BY_ID}/${id}`);
       const ticket = response.data;
       console.log(ticket);
       form.setFieldsValue({
@@ -231,20 +231,20 @@ function ViewTicket() {
 
   const fetchCommentDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/getCommentsByTicketId/${id}`);
+      const response = await axios.get(`${apis.GET_COMMENT_BY_TICKET_ID}/${id}`);
       const commentsData = response.data;
-      setComments(commentsData.map(comment => (        
+      setComments(commentsData.map(comment => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <span style={{ flexGrow: 1 }}>
             <strong>{comment.addedBy}:</strong> {comment.commentText}
           </span>
-          <span style={{ fontSize: '12px', whiteSpace: 'nowrap', marginRight: '20px'  }}>
-            <a href={`http://localhost:8080/images/${comment.attachmentId}`} download={comment.attachmentId} target="_blank" rel="noopener noreferrer">
-            <FileOutlined style={{ marginRight: '5px' }} />
+          <span style={{ fontSize: '12px', whiteSpace: 'nowrap', marginRight: '20px' }}>
+            <a href={`${apis.IMAGES}/${comment.attachmentId}`} download={comment.attachmentId} target="_blank" rel="noopener noreferrer">
+              <FileOutlined style={{ marginRight: '5px' }} />
               {comment.attachmentId ? comment.attachmentId.split('/').pop() : 'No attachment'}
             </a>
           </span>
-          <span style={{ fontSize: '10px', whiteSpace: 'nowrap' , marginLeft: '20px'}}>
+          <span style={{ fontSize: '10px', whiteSpace: 'nowrap', marginLeft: '20px' }}>
             {comment.addedDateTime}
           </span>
         </div>
@@ -268,7 +268,7 @@ function ViewTicket() {
         currency: "USD",
         // slug: values.slug.trim()
       };
-      axios.put("http://localhost:8080/updateTicket", data)
+      axios.put(`${apis.UPDATE_TICKET}`, data)
         .then((result) => {
           console.log(result.data);
           setDesData("");
@@ -283,7 +283,7 @@ function ViewTicket() {
 
   const handleAssign = () => {
     if (selectedAgent) {
-      axios.put(`http://localhost:8080/assignTicket/${id}`, { agentId: selectedAgent, username: localStorage.getItem("username") })
+      axios.put(`${apis.ASSIGN_TICKET}/${id}`, { agentId: selectedAgent, username: localStorage.getItem("username") })
         .then((response) => {
           message.success("Ticket successfully assigned");
         })
@@ -298,7 +298,7 @@ function ViewTicket() {
   const acceptTicket = () => {
     form.validateFields(['agentComment']).then(() => {
       const agentComment = form.getFieldValue('agentComment');
-      axios.put(`http://localhost:8080/acceptTicket/${id}`, { username: localStorage.getItem("username"), agentComment })
+      axios.put(`${apis.ACCEPT_TICKET}/${id}`, { username: localStorage.getItem("username"), agentComment })
         .then((response) => {
           message.success("Ticket successfully accepted");
         })
@@ -311,7 +311,20 @@ function ViewTicket() {
   const rejectTicket = () => {
     form.validateFields(['agentComment']).then(() => {
       const agentComment = form.getFieldValue('agentComment');
-      axios.put(`http://localhost:8080/rejectTicket/${id}`, { username: localStorage.getItem("username"), agentComment })
+      axios.put(`${apis.REJECT_TICKET}/${id}`, { username: localStorage.getItem("username"), agentComment })
+        .then((response) => {
+          message.success("Ticket successfully rejected");
+        })
+        .catch((error) => {
+          message.error("Failed to reject ticket");
+        });
+    });
+  };
+
+  const reopenTicket = () => {
+    form.validateFields(['agentComment']).then(() => {
+      const agentComment = form.getFieldValue('agentComment');
+      axios.put(`${apis.REJECT_TICKET}/${id}`, { username: localStorage.getItem("username"), agentComment })
         .then((response) => {
           message.success("Ticket successfully rejected");
         })
@@ -322,7 +335,7 @@ function ViewTicket() {
   };
 
   const savePercentage = () => {
-    axios.put(`http://localhost:8080/savePercentage/${id}`, { completedPercentage: completedPercentage, username: localStorage.getItem("username") })
+    axios.put(`${apis.SAVE_PERCENTAGE}/${id}`, { completedPercentage: completedPercentage, username: localStorage.getItem("username") })
       .then((response) => {
         message.success("Completed percentage successfully updated");
       })
@@ -332,7 +345,7 @@ function ViewTicket() {
   };
 
   const saveStatus = () => {
-    axios.put(`http://localhost:8080/saveStatus/${id}`, { username: localStorage.getItem("username") })
+    axios.put(`${apis.SAVE_STATUS}/${id}`, { username: localStorage.getItem("username") })
       .then((response) => {
         message.success("Ticket status succesfully updated");
       })
@@ -632,8 +645,14 @@ function ViewTicket() {
               />
 
               <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
+                <Button
+                  type="primary"
+                  onClick={reopenTicket}
+                >
+                  Re-open
+                </Button>
                 <Button type="secondary" className="secondary__btn" htmlType="back">
-                  <a href='http://localhost:3000/tickets' style={{ color: 'black', textDecoration: 'none' }}>
+                  <a href={apis.TICKETS} style={{ color: 'black', textDecoration: 'none' }}>
                     Back
                   </a>
                 </Button>

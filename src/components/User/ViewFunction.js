@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import { useStore } from "../../store";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -35,7 +36,7 @@ function ViewFunction() {
 
     const fetchStatuses = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getStatuses');
+            const response = await axios.get(`${apis.GET_STATUSES}`);
             setStatuses(response.data);
         } catch (error) {
             console.error('Error fetching statuses:', error);
@@ -44,7 +45,7 @@ function ViewFunction() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getAllUserDetails');
+            const response = await axios.get(`${apis.GET_ALL_USER_DETAILS}`);
             setUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -53,7 +54,7 @@ function ViewFunction() {
 
     const fetchFunctionDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getFunctionDetailsByFunctionId/${id}`);
+            const response = await axios.get(`${apis.GET_FUNCTION_DETAILS_BY_ID}/${id}`);
             const userFunction = response.data;
             if (userFunction) {
                 const lastUpdatedUser = users.find(user => user.username === userFunction.lastUpdatedUser);
@@ -87,7 +88,7 @@ function ViewFunction() {
                 description: desData,
                 currency: "USD",
             };
-            axios.put("http://localhost:8080/updateFunction", data)
+            axios.put(`${apis.UPDATE_FUNCTION}`, data)
                 .then((result) => {
                     setDesData("");
                     form.resetFields();
@@ -231,7 +232,7 @@ function ViewFunction() {
 
                     <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/user/function' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.FUNCTION} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>

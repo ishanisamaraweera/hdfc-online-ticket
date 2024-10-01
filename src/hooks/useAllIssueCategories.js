@@ -11,7 +11,7 @@ function useAllIssueCategories() {
   useEffect(() => {
     const getData = () => {     
       Progress.show();
-      axios.get("http://localhost:8080/getAllIssueCategories")
+      axios.get(`${apis.GET_ISSUE_CATEGORIES}`)
         .then((result) => {
           let responseJson = result;
           setState(responseJson.data);

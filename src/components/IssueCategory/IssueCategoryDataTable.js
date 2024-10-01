@@ -174,7 +174,7 @@ function IssueCategoryDataTable() {
       onOk() {
         Progress.show();
         axios
-          .put(`http://localhost:8080/deleteIssueCategory/${id}`)
+          .put(`${apis.DELETE_ISSUE_CATEGORY}/${id}`)
           .then((result) => {
             let responseJson = result;
             setRefreshTable(!refreshTable);

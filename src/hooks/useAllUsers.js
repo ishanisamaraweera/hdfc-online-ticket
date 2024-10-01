@@ -12,7 +12,7 @@ function useAllUsers() {
     const getData = () => {
      
       Progress.show();
-      axios.get("http://localhost:8080/getAllUserDetails")
+      axios.get(`${apis.GET_ALL_USER_DETAILS}`)
         .then((result) => {
           let responseJson = result;
           setState(responseJson.data);

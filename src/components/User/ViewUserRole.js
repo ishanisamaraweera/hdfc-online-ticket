@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -33,7 +34,7 @@ function ViewUserRole() {
 
     const fetchUserRolesForUser = async (username) => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserRolesForUsername/${username}`);
+            const response = await axios.get(`${apis.GET_USER_ROLES_FOR_USERNAME}/${username}`);
             setTargetKeys(response.data);
         } catch (error) {
             message.error("Failed to load user roles for user");
@@ -42,7 +43,7 @@ function ViewUserRole() {
 
     const fetchStatuses = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getStatuses');
+            const response = await axios.get(`${apis.GET_STATUSES}`);
             setStatuses(response.data);
         } catch (error) {
             console.error('Error fetching statuses:', error);
@@ -51,8 +52,7 @@ function ViewUserRole() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getAllUserDetails');            
-            console.log("*****//\\**** User Details: " + JSON.stringify(response.data));
+            const response = await axios.get(`${apis.GET_ALL_USER_DETAILS}`);     
             setUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -61,7 +61,7 @@ function ViewUserRole() {
 
     const fetchUserRoleDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserDetailsByUserRole/${id}`);
+            const response = await axios.get(`${apis.GET_USER_DETAILS_BY_USER_ROLE}/${id}`);
             const userRole = response.data;
             if (userRole) {
                 const lastUpdatedUser = users.find(user => user.username === userRole.lastUpdatedUser);
@@ -95,7 +95,7 @@ function ViewUserRole() {
                 description: desData,
                 currency: "USD",
             };
-            axios.put("http://localhost:8080/updateTicket", data)
+            axios.put(`${apis.UPDATE_TICKET}`, data)
                 .then((result) => {
                     console.log(result.data);
                     setDesData("");
@@ -240,7 +240,7 @@ function ViewUserRole() {
 
                     <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/user/user-role' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.USER_ROLE} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>

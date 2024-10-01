@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../hooks/useBreadCrumb";
 import TicketsSearchTable from "../components/Tickets/TicketsSearchTable";
 import axios from 'axios';
+import { apis } from "../properties";
 
 export default function Tickets() {
   const location = useLocation();
@@ -17,13 +18,13 @@ export default function Tickets() {
 
       if (statusVal != "undefined" && statusVal != "null") {
         response = await axios({
-          url: `http://localhost:8080/exportTickets/${statusVal}`,
+          url: `${apis.EXPORT_TICKETS}/${statusVal}`,
           method: 'GET',
           responseType: 'blob',
         });
       } else {
         response = await axios({
-          url: `http://localhost:8080/exportTickets`,
+          url: `${apis.EXPORT_TICKETS}`,
           method: 'GET',
           responseType: 'blob',
         });

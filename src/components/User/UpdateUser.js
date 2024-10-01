@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import moment from "moment";
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -40,7 +41,7 @@ function UpdateUser() {
 
     const fetchUserRoles = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserRoles`);
+            const response = await axios.get(`${apis.GET_USER_ROLES}`);
             setUserRoles(response.data.map(role => ({ key: role.userRoleId, title: role.userRoleDes })));
         } catch (error) {
             message.error("Failed to load user roles");
@@ -49,7 +50,7 @@ function UpdateUser() {
 
     const fetchUserRolesForUser = async (username) => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserRolesForUsername/${username}`);
+            const response = await axios.get(`${apis.GET_USER_ROLES_FOR_USERNAME}/${username}`);
             setTargetKeys(response.data);
             setInitialTargetKeys(response.data);
         } catch (error) {
@@ -60,7 +61,7 @@ function UpdateUser() {
     const fetchStatuses = async (module) => {
         console.log("Fetching statuses for module:", module);
         try {
-          const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+          const response = await axios.get(`${apis.GET_STATUSES}/${module}`);
           setStatuses(response.data);
         } catch (error) {
           message.error("Failed to load statuses", error);
@@ -70,7 +71,7 @@ function UpdateUser() {
 
     const fetchLocations = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/getLocations');
+            const response = await axios.get(`${apis.GET_LOCATIONS}`);
             setLocations(response.data);
         } catch (error) {
             message.error("Failed to load locations");
@@ -79,7 +80,7 @@ function UpdateUser() {
 
     const fetchBranchDivisions = async (locationId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+            const response = await axios.get(`${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`);
             const branchDivisionsData = response.data;
             const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
                 acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
@@ -94,7 +95,7 @@ function UpdateUser() {
 
     const fetchUserDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/getUserDetailsByUsername/${id}`);
+            const response = await axios.get(`${apis.GET_USER_DETAILS_BY_USERNAME}/${id}`);
             const user = response.data;
             if (user) {
                 form.setFieldsValue({
@@ -126,7 +127,7 @@ function UpdateUser() {
         try {
 
             if (locationId) {
-                const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+                const response = await axios.get(`${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`);
                 setBranchDivision(response.data);
             } else {
                 setBranchDivision([]);
@@ -157,13 +158,13 @@ function UpdateUser() {
             console.log("targetKeys :", targetKeys);
             console.log("initialTargetKeys:", initialTargetKeys);
             // Update user details
-            axios.put("http://localhost:8080/updateUser", data)
+            axios.put(`${apis.UPDATE_USER}`, data)
                 .then((result) => {
 
                     // Update user roles only if they have changed
 
                     if (JSON.stringify(targetKeys) !== JSON.stringify(initialTargetKeys)) {
-                        axios.post(`http://localhost:8080/assignUserRoles/${data.username}`, targetKeys)
+                        axios.post(`${apis.ASSIGN_USER_ROLES}/${data.username}`, targetKeys)
                             .then((result) => {
                                 form.resetFields();
                                 message.success("User details and roles updated successfully");
@@ -366,7 +367,7 @@ function UpdateUser() {
                             Update
                         </Button>
                         <Button type="secondary" className="secondary__btn" htmlType="back">
-                            <a href='http://localhost:3000/user' style={{ color: 'black', textDecoration: 'none' }}>
+                            <a href={apis.USER} style={{ color: 'black', textDecoration: 'none' }}>
                                 Back
                             </a>
                         </Button>

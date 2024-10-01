@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useBreadCrumb from "../../hooks/useBreadCrumb";
 import axios from "axios";
 import moment from 'moment';
+import { apis } from "../../properties";
 
 const { Option } = Select;
 
@@ -34,7 +35,7 @@ function AddUser() {
     try {
 
       if (locationId) {
-        const response = await axios.get(`http://localhost:8080/getBranchDivisionByLocation/${locationId}`);
+        const response = await axios.get(`${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`);
         setBranchDivision(response.data);
       } else {
         setBranchDivision([]);
@@ -46,7 +47,7 @@ function AddUser() {
 
   const fetchLocations = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/getLocations`);
+      const response = await axios.get(`${apis.GET_LOCATIONS}`);
       setLocations(response.data);
     } catch (error) {
       message.error("Failed to load locations");
@@ -55,7 +56,7 @@ function AddUser() {
 
   const fetchUserRoles = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/getUserRoles`);
+      const response = await axios.get(`${apis.GET_USER_ROLES}`);
       setUserRoles(response.data.map(role => ({ key: role.userRoleId, title: role.userRoleDes })));
     } catch (error) {
       message.error("Failed to load user roles");
@@ -72,7 +73,7 @@ function AddUser() {
   const fetchStatuses = async (module) => {
     console.log("Fetching statuses for module:", module);
     try {
-      const response = await axios.get(`http://localhost:8080/getStatuses/${module}`);
+      const response = await axios.get(`${apis.GET_STATUSES}/${module}`);
       setStatuses(response.data);
     } catch (error) {
       message.error("Failed to load statuses");
@@ -96,7 +97,7 @@ function AddUser() {
       };
 
 
-      axios.post("http://localhost:8080/addUser", data)
+      axios.post(`${apis.ADD_USER}`, data)
         .then((result) => {
           form.resetFields();
           message.success("User details added successfully for username: " + result.data.username);
@@ -248,7 +249,7 @@ function AddUser() {
               Add
             </Button>
             <Button type="secondary" className="secondary__btn" htmlType="back">
-              <a href='http://localhost:3000/user' style={{ color: 'black', textDecoration: 'none' }}>
+              <a href={apis.USER} style={{ color: 'black', textDecoration: 'none' }}>
                 Back
               </a>
             </Button>
