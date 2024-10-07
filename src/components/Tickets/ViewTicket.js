@@ -1,7 +1,21 @@
 import { LeftOutlined } from "@ant-design/icons";
-import { Upload, Button, Col, Form, Input, message, Radio, Row, Select, Divider, Progress, Slider, List } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
-import { FileOutlined } from '@ant-design/icons';
+import {
+  Upload,
+  Button,
+  Col,
+  Form,
+  Input,
+  message,
+  Radio,
+  Row,
+  Select,
+  Divider,
+  Progress,
+  Slider,
+  List,
+} from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { FileOutlined } from "@ant-design/icons";
 import TextArea from "antd/lib/input/TextArea";
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -9,8 +23,8 @@ import useBreadCrumb from "../../hooks/useBreadCrumb";
 import { apis } from "../../properties";
 import axios from "axios";
 import { useStore } from "../../store";
-import { } from "antd";
-import { Typography } from 'antd';
+import {} from "antd";
+import { Typography } from "antd";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -52,32 +66,29 @@ function ViewTicket() {
   };
 
   const handleUpload = ({ file }) => {
-    setFile(file);  // Store selected file in state
+    setFile(file); // Store selected file in state
   };
 
   const handleAddComment = async () => {
-    if (newComment.trim() || fileList.length > 0
-    ) {
-
+    if (newComment.trim() || fileList.length > 0) {
       //handleUpload(file);
       const formData = new FormData();
       formData.append("commentText", newComment.trim());
       formData.append("ticketId", id);
       formData.append("addedBy", localStorage.getItem("username"));
       if (fileList.length > 0) {
-        formData.append("file", fileList[0].originFileObj);  // Attach file if present
+        formData.append("file", fileList[0].originFileObj); // Attach file if present
       }
 
       try {
         const response = await axios.post(`${apis.ADD_COMMENT}`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            "Content-Type": "multipart/form-data",
           },
         });
 
         if (response.status === 200) {
-          setComments([...comments,
-          ]);
+          setComments([...comments]);
           setNewComment("");
           setFileList([]);
           message.success("Comment added successfully");
@@ -113,10 +124,12 @@ function ViewTicket() {
   const fetchDisplayName = async () => {
     const username = localStorage.getItem("username");
     try {
-      const response = await axios.get(`${apis.GET_DISPLAY_NAME_BY_USERNAME}/${username}`);
+      const response = await axios.get(
+        `${apis.GET_DISPLAY_NAME_BY_USERNAME}/${username}`
+      );
       setDisplayName(response.data);
     } catch (error) {
-      console.error('Error fetching display name:', error);
+      console.error("Error fetching display name:", error);
     }
   };
 
@@ -125,7 +138,7 @@ function ViewTicket() {
       const response = await axios.get(`${apis.GET_STATUSES}`);
       setStatuses(response.data);
     } catch (error) {
-      console.error('Error fetching statuses:', error);
+      console.error("Error fetching statuses:", error);
     }
   };
 
@@ -149,12 +162,18 @@ function ViewTicket() {
 
   const fetchBranchDivisions = async (locationId) => {
     try {
-      const response = await axios.get(`${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`);
+      const response = await axios.get(
+        `${apis.GET_BRANCH_DIVISION_BY_LOCATION}/${locationId}`
+      );
       const branchDivisionsData = response.data;
-      const branchDivisionMap = branchDivisionsData.reduce((acc, branchDivision) => {
-        acc[branchDivision.branchDivisionId] = branchDivision.branchDivisionDes;
-        return acc;
-      }, {});
+      const branchDivisionMap = branchDivisionsData.reduce(
+        (acc, branchDivision) => {
+          acc[branchDivision.branchDivisionId] =
+            branchDivision.branchDivisionDes;
+          return acc;
+        },
+        {}
+      );
       setBranchDivisions(branchDivisionsData);
       setBranchDivisionMap(branchDivisionMap);
     } catch (error) {
@@ -173,7 +192,9 @@ function ViewTicket() {
 
   const fetchIssueCategories = async (issueTypeId) => {
     try {
-      const response = await axios.get(`${apis.GET_ISSUE_CATEGORIES_BY_ISSUE_TYPE}/${issueTypeId}`);
+      const response = await axios.get(
+        `${apis.GET_ISSUE_CATEGORIES_BY_ISSUE_TYPE}/${issueTypeId}`
+      );
       setIssueCategories(response.data);
     } catch (error) {
       // message.error("Failed to load issue categories");
@@ -191,7 +212,9 @@ function ViewTicket() {
 
   const fetchAgents = async () => {
     try {
-      const response = await axios.get(`${apis.GET_USER_LIST_BY_USER_ROLE}/AGENT`);
+      const response = await axios.get(
+        `${apis.GET_USER_LIST_BY_USER_ROLE}/AGENT`
+      );
       setAgents(response.data);
     } catch (error) {
       message.error("Failed to load agents");
@@ -231,25 +254,54 @@ function ViewTicket() {
 
   const fetchCommentDetails = async () => {
     try {
-      const response = await axios.get(`${apis.GET_COMMENT_BY_TICKET_ID}/${id}`);
+      const response = await axios.get(
+        `${apis.GET_COMMENT_BY_TICKET_ID}/${id}`
+      );
       const commentsData = response.data;
-      setComments(commentsData.map(comment => (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <span style={{ flexGrow: 1 }}>
-            <strong>{comment.addedBy}:</strong> {comment.commentText}
-          </span>
-          <span style={{ fontSize: '12px', whiteSpace: 'nowrap', marginRight: '20px' }}>
-            <a href={`${apis.IMAGES}/${comment.attachmentId}`} download={comment.attachmentId} target="_blank" rel="noopener noreferrer">
-              <FileOutlined style={{ marginRight: '5px' }} />
-              {comment.attachmentId ? comment.attachmentId.split('/').pop() : 'No attachment'}
-            </a>
-          </span>
-          <span style={{ fontSize: '10px', whiteSpace: 'nowrap', marginLeft: '20px' }}>
-            {comment.addedDateTime}
-          </span>
-        </div>
-      )));
-
+      setComments(
+        commentsData.map((comment) => (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <span style={{ flexGrow: 1 }}>
+              <strong>{comment.addedBy}:</strong> {comment.commentText}
+            </span>
+            <span
+              style={{
+                fontSize: "12px",
+                whiteSpace: "nowrap",
+                marginRight: "20px",
+              }}
+            >
+              <a
+                href={`${apis.IMAGES}/${comment.attachmentId}`}
+                download={comment.attachmentId}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FileOutlined style={{ marginRight: "5px" }} />
+                {comment.attachmentId
+                  ? comment.attachmentId.split("/").pop()
+                  : "No attachment"}
+              </a>
+            </span>
+            <span
+              style={{
+                fontSize: "10px",
+                whiteSpace: "nowrap",
+                marginLeft: "20px",
+              }}
+            >
+              {comment.addedDateTime}
+            </span>
+          </div>
+        ))
+      );
     } catch (error) {
       message.error("Failed to load ticket details");
     }
@@ -260,7 +312,6 @@ function ViewTicket() {
   };
 
   const submitForm = () => {
-
     form.validateFields().then((values) => {
       const data = {
         ...values,
@@ -268,7 +319,8 @@ function ViewTicket() {
         currency: "USD",
         // slug: values.slug.trim()
       };
-      axios.put(`${apis.UPDATE_TICKET}`, data)
+      axios
+        .put(`${apis.UPDATE_TICKET}`, data)
         .then((result) => {
           console.log(result.data);
           setDesData("");
@@ -283,7 +335,11 @@ function ViewTicket() {
 
   const handleAssign = () => {
     if (selectedAgent) {
-      axios.put(`${apis.ASSIGN_TICKET}/${id}`, { agentId: selectedAgent, username: localStorage.getItem("username") })
+      axios
+        .put(`${apis.ASSIGN_TICKET}/${id}`, {
+          agentId: selectedAgent,
+          username: localStorage.getItem("username"),
+        })
         .then((response) => {
           message.success("Ticket successfully assigned");
         })
@@ -296,9 +352,13 @@ function ViewTicket() {
   };
 
   const acceptTicket = () => {
-    form.validateFields(['agentComment']).then(() => {
-      const agentComment = form.getFieldValue('agentComment');
-      axios.put(`${apis.ACCEPT_TICKET}/${id}`, { username: localStorage.getItem("username"), agentComment })
+    form.validateFields(["agentComment"]).then(() => {
+      const agentComment = form.getFieldValue("agentComment");
+      axios
+        .put(`${apis.ACCEPT_TICKET}/${id}`, {
+          username: localStorage.getItem("username"),
+          agentComment,
+        })
         .then((response) => {
           message.success("Ticket successfully accepted");
         })
@@ -309,9 +369,13 @@ function ViewTicket() {
   };
 
   const rejectTicket = () => {
-    form.validateFields(['agentComment']).then(() => {
-      const agentComment = form.getFieldValue('agentComment');
-      axios.put(`${apis.REJECT_TICKET}/${id}`, { username: localStorage.getItem("username"), agentComment })
+    form.validateFields(["agentComment"]).then(() => {
+      const agentComment = form.getFieldValue("agentComment");
+      axios
+        .put(`${apis.REJECT_TICKET}/${id}`, {
+          username: localStorage.getItem("username"),
+          agentComment,
+        })
         .then((response) => {
           message.success("Ticket successfully rejected");
         })
@@ -322,20 +386,25 @@ function ViewTicket() {
   };
 
   const reopenTicket = () => {
-    form.validateFields(['agentComment']).then(() => {
-      const agentComment = form.getFieldValue('agentComment');
-      axios.put(`${apis.REJECT_TICKET}/${id}`, { username: localStorage.getItem("username"), agentComment })
-        .then((response) => {
-          message.success("Ticket successfully rejected");
-        })
-        .catch((error) => {
-          message.error("Failed to reject ticket");
-        });
-    });
+    axios
+      .put(`${apis.REOPEN_TICKET}/${id}`, {
+        completedPercentage: completedPercentage,
+        username: localStorage.getItem("username"),
+      })
+      .then((response) => {
+        message.success("Ticket successfully re-opened");
+      })
+      .catch((error) => {
+        message.error("Failed to re-open ticket");
+      });
   };
 
   const savePercentage = () => {
-    axios.put(`${apis.SAVE_PERCENTAGE}/${id}`, { completedPercentage: completedPercentage, username: localStorage.getItem("username") })
+    axios
+      .put(`${apis.SAVE_PERCENTAGE}/${id}`, {
+        completedPercentage: completedPercentage,
+        username: localStorage.getItem("username"),
+      })
       .then((response) => {
         message.success("Completed percentage successfully updated");
       })
@@ -345,7 +414,10 @@ function ViewTicket() {
   };
 
   const saveStatus = () => {
-    axios.put(`${apis.SAVE_STATUS}/${id}`, { username: localStorage.getItem("username") })
+    axios
+      .put(`${apis.SAVE_STATUS}/${id}`, {
+        username: localStorage.getItem("username"),
+      })
       .then((response) => {
         message.success("Ticket status succesfully updated");
       })
@@ -371,117 +443,143 @@ function ViewTicket() {
         >
           <Row gutter={24}>
             <Col span={12}>
-              <Form.Item
-                label="Ticket ID"
-                name="ticketId"
-              >
-                <Input type="text" size="large" placeholder="Ticket ID" readOnly />
+              <Form.Item label="Ticket ID" name="ticketId">
+                <Input
+                  type="text"
+                  size="large"
+                  placeholder="Ticket ID"
+                  readOnly
+                />
               </Form.Item>
-              <Form.Item
-                label="Emergency Level"
-                name="emergencyLevel"
-              >
+              <Form.Item label="Emergency Level" name="emergencyLevel">
                 <Select
                   allowClear
                   placeholder="Select Emergency Level"
-                  size="large" disabled
+                  size="large"
+                  disabled
                 >
-                  {emergencyLevels.map(level => (
+                  {emergencyLevels.map((level) => (
                     <Option key={level.levelId} value={level.levelId}>
                       {level.levelDes}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item
-                label="Location"
-                name="location"
-              >
-                <Select allowClear placeholder="Select Location" size="large" disabled>
-                  {locations.map(location => (
-                    <Option key={location.locationId} value={location.locationId}>
+              <Form.Item label="Location" name="location">
+                <Select
+                  allowClear
+                  placeholder="Select Location"
+                  size="large"
+                  disabled
+                >
+                  {locations.map((location) => (
+                    <Option
+                      key={location.locationId}
+                      value={location.locationId}
+                    >
                       {location.locationDes}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item
-                label="Branch/Division"
-                name="branchDivision"
-              >
+              <Form.Item label="Branch/Division" name="branchDivision">
                 <Select
                   allowClear
                   placeholder="Select Branch/Division"
-                  size="large" disabled
+                  size="large"
+                  disabled
                 >
-                  {branchDivisions.map(branchDivision => (
-                    <Option key={branchDivision.branchDivisionId} value={branchDivision.branchDivisionId}>
+                  {branchDivisions.map((branchDivision) => (
+                    <Option
+                      key={branchDivision.branchDivisionId}
+                      value={branchDivision.branchDivisionId}
+                    >
                       {branchDivision.branchDivisionDes}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item
-                label="Issue Type"
-                name="issueType"
-              >
-                <Select allowClear placeholder="Select Issue Type" size="large" disabled>
-                  {issueTypes.map(issueTypes => (
-                    <Option key={issueTypes.issueTypeId} value={issueTypes.issueTypeId}>
+              <Form.Item label="Issue Type" name="issueType">
+                <Select
+                  allowClear
+                  placeholder="Select Issue Type"
+                  size="large"
+                  disabled
+                >
+                  {issueTypes.map((issueTypes) => (
+                    <Option
+                      key={issueTypes.issueTypeId}
+                      value={issueTypes.issueTypeId}
+                    >
                       {issueTypes.issueTypeDes}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item
-                label="Issue Category"
-                name="issueCategory" readOnly
-              >
+              <Form.Item label="Issue Category" name="issueCategory" readOnly>
                 <Select
                   allowClear
                   placeholder="Select Issue Category"
-                  size="large" disabled
+                  size="large"
+                  disabled
                 >
-                  {issueCategories.map(category => (
-                    <Option key={category.issueCategoryId} value={category.issueCategoryId}>
+                  {issueCategories.map((category) => (
+                    <Option
+                      key={category.issueCategoryId}
+                      value={category.issueCategoryId}
+                    >
                       {category.issueCategoryDes}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item
-                label="Status"
-                name="status" readOnly
-              >
-                <Select allowClear placeholder="Select Status" size="large" disabled >
-                  {statuses.map(status => (
+              <Form.Item label="Status" name="status" readOnly>
+                <Select
+                  allowClear
+                  placeholder="Select Status"
+                  size="large"
+                  disabled
+                >
+                  {statuses.map((status) => (
                     <Option key={status.statusId} value={status.statusId}>
                       {status.statusDes}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item
-                label="Contact No"
-                name="contactNo" readOnly
-              >
-                <Input type="text" size="large" placeholder="Contact No" readOnly />
+              <Form.Item label="Contact No" name="contactNo" readOnly>
+                <Input
+                  type="text"
+                  size="large"
+                  placeholder="Contact No"
+                  readOnly
+                />
               </Form.Item>
-              <Form.Item label="Serial No" name="serialNo"  >
-                <Input type="text" size="large" placeholder="Serial No" readOnly />
+              <Form.Item label="Serial No" name="serialNo">
+                <Input
+                  type="text"
+                  size="large"
+                  placeholder="Serial No"
+                  readOnly
+                />
               </Form.Item>
               <Form.Item label="PC Type" name="isWorkingPc" readOnly>
-                <Radio.Group  >
-                  <Radio value="Yes" disabled >Working PC </Radio>
-                  <Radio value="No" disabled >Another PC</Radio>
+                <Radio.Group>
+                  <Radio value="Yes" disabled>
+                    Working PC{" "}
+                  </Radio>
+                  <Radio value="No" disabled>
+                    Another PC
+                  </Radio>
                 </Radio.Group>
-
               </Form.Item>
-              <Form.Item
-                label="IP Address"
-                name="ip"
-              >
-                <Input type="text" size="large" placeholder="IP Address" readOnly />
+              <Form.Item label="IP Address" name="ip">
+                <Input
+                  type="text"
+                  size="large"
+                  placeholder="IP Address"
+                  readOnly
+                />
               </Form.Item>
               <Form.Item
                 label="Issue Description and Remarks"
@@ -496,17 +594,14 @@ function ViewTicket() {
                 <>
                   <Row gutter={24}>
                     <Col span={12}>
-                      <Form.Item
-                        label="Agent"
-                        name="agent"
-                      >
+                      <Form.Item label="Agent" name="agent">
                         <Select
                           allowClear
                           placeholder="Select Agent"
                           size="large"
-                          onChange={value => setSelectedAgent(value)}
+                          onChange={(value) => setSelectedAgent(value)}
                         >
-                          {agents.map(agent => (
+                          {agents.map((agent) => (
                             <Option key={agent.username} value={agent.username}>
                               {agent.displayName}
                             </Option>
@@ -518,7 +613,7 @@ function ViewTicket() {
                       <Button
                         type="primary"
                         onClick={handleAssign}
-                        style={{ marginTop: '32px' }}
+                        style={{ marginTop: "32px" }}
                       >
                         Assign
                       </Button>
@@ -532,14 +627,18 @@ function ViewTicket() {
                   <Divider />
                   <Row gutter={24}>
                     <Col span={12}>
-                      <Form.Item
-                        label="Agent Comment"
-                        name="agentComment"
-                      >
-                        <TextArea rows={4} placeholder="Type here ..." value={agentComment} onChange={(e) => {
-                          setAgentComment(e.target.value);
-                          form.setFieldValue({ agentComment: e.target.value })
-                        }} />
+                      <Form.Item label="Agent Comment" name="agentComment">
+                        <TextArea
+                          rows={4}
+                          placeholder="Type here ..."
+                          value={agentComment}
+                          onChange={(e) => {
+                            setAgentComment(e.target.value);
+                            form.setFieldValue({
+                              agentComment: e.target.value,
+                            });
+                          }}
+                        />
                       </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -547,16 +646,13 @@ function ViewTicket() {
                         <Button
                           type="primary"
                           onClick={acceptTicket}
-                          style={{ marginTop: '32px' }}
+                          style={{ marginTop: "32px" }}
                         >
                           Accept
                         </Button>
                       </Form.Item>
                       <Form.Item>
-                        <Button
-                          type="primary"
-                          onClick={rejectTicket}
-                        >
+                        <Button type="primary" onClick={rejectTicket}>
                           Reject
                         </Button>
                       </Form.Item>
@@ -594,14 +690,14 @@ function ViewTicket() {
                       <Button
                         type="primary"
                         onClick={savePercentage}
-                        style={{ marginTop: '32px' }}
+                        style={{ marginTop: "32px" }}
                       >
                         Save Percentage
                       </Button>
                       <Button
                         type="primary"
                         onClick={saveStatus}
-                        style={{ marginTop: '32px', marginLeft: '12px' }}
+                        style={{ marginTop: "32px", marginLeft: "12px" }}
                       >
                         Completed
                       </Button>
@@ -628,7 +724,11 @@ function ViewTicket() {
               >
                 <Button icon={<UploadOutlined />}>Select File</Button>
               </Upload>
-              <Button type="primary" onClick={handleAddComment} style={{ marginTop: "10px" }}>
+              <Button
+                type="primary"
+                onClick={handleAddComment}
+                style={{ marginTop: "10px" }}
+              >
                 Add Comment
               </Button>
 
@@ -637,22 +737,25 @@ function ViewTicket() {
               <List
                 bordered
                 dataSource={comments}
-                renderItem={(item) => (
-                  <List.Item>
-                    {item}
-                  </List.Item>
-                )}
+                renderItem={(item) => <List.Item>{item}</List.Item>}
               />
 
-              <div className="left_btn" style={{ display: 'flex', gap: '10px' }}>
-                <Button
-                  type="primary"
-                  onClick={reopenTicket}
-                >
+              <div
+                className="left_btn"
+                style={{ display: "flex", gap: "10px" }}
+              >
+                <Button type="primary" onClick={reopenTicket}>
                   Re-open
                 </Button>
-                <Button type="secondary" className="secondary__btn" htmlType="back">
-                  <a href={apis.TICKETS} style={{ color: 'black', textDecoration: 'none' }}>
+                <Button
+                  type="secondary"
+                  className="secondary__btn"
+                  htmlType="back"
+                >
+                  <a
+                    href={apis.TICKETS}
+                    style={{ color: "black", textDecoration: "none" }}
+                  >
                     Back
                   </a>
                 </Button>
@@ -660,8 +763,8 @@ function ViewTicket() {
             </Col>
           </Row>
         </Form>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
 

@@ -61,6 +61,7 @@ export const apis = {
   NEW_TICKET_COUNT: `${BASE_API_URL}/getNewTicketCount`,
   PAGE_PRIVILEGES: `${BASE_API_URL}/getPagePrivileges`,
   REJECT_TICKET: `${BASE_API_URL}/rejectTicket`,
+  REOPEN_TICKET: `${BASE_API_URL}/reopenTicket`,
   SAVE_PERCENTAGE: `${BASE_API_URL}/savePercentage`,
   SAVE_STATUS: `${BASE_API_URL}/saveStatus`,
   SEARCH_TICKETS: `${BASE_API_URL}/searchTickets`,
@@ -70,7 +71,6 @@ export const apis = {
   UPDATE_TICKET: `${BASE_API_URL}/updateTicket`,
   UPDATE_USER: `${BASE_API_URL}/updateUser`,
   UPDATE_USER_ROLE: `${BASE_API_URL}/updateUserRole`,
-
 
   //Front-end URLs
 
