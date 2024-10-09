@@ -371,17 +371,21 @@ function ViewTicket() {
   const rejectTicket = () => {
     form.validateFields(["agentComment"]).then(() => {
       const agentComment = form.getFieldValue("agentComment");
-      axios
-        .put(`${apis.REJECT_TICKET}/${id}`, {
-          username: localStorage.getItem("username"),
-          agentComment,
-        })
-        .then((response) => {
-          message.success("Ticket successfully rejected");
-        })
-        .catch((error) => {
-          message.error("Failed to reject ticket");
-        });
+      if (agentComment) {
+        axios
+          .put(`${apis.REJECT_TICKET}/${id}`, {
+            username: localStorage.getItem("username"),
+            agentComment,
+          })
+          .then((response) => {
+            message.success("Ticket successfully dismissed");
+          })
+          .catch((error) => {
+            message.error("Failed to dismiss ticket");
+          });
+      } else {
+        message.warning("Enter agent comment");
+      }
     });
   };
 
@@ -422,7 +426,9 @@ function ViewTicket() {
         message.success("Ticket status succesfully updated");
       })
       .catch((error) => {
-        message.error("Failed to update ticket status");
+        message.error(
+          "Completed percentage should be 100% to complete the ticket"
+        );
       });
   };
 
@@ -653,7 +659,7 @@ function ViewTicket() {
                       </Form.Item>
                       <Form.Item>
                         <Button type="primary" onClick={rejectTicket}>
-                          Reject
+                          Dismiss
                         </Button>
                       </Form.Item>
                     </Col>
