@@ -268,7 +268,7 @@ function UserDataTable() {
         style={{ marginBottom: 16, width: 300 }}
       />
       <Table
-        scroll={filteredTickets.length > 5 ? { x: 1800 } : undefined}
+        scroll={filteredTickets.length > 0 ? { x: 1800 } : undefined}
         columns={columns}
         dataSource={filteredTickets}
         bordered

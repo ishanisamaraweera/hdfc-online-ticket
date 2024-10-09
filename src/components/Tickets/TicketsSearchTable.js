@@ -81,6 +81,7 @@ function TicketsSearchTable() {
           ? moment(toDate).format("YYYY-MM-DDTHH:mm:ss")
           : null;
         const params = new URLSearchParams({
+          username: localStorage.getItem("username"),
           status: selectedStatus,
           fromDate: formattedFromDate,
           toDate: formattedToDate,
@@ -110,12 +111,11 @@ function TicketsSearchTable() {
       ? moment(toDate).format("YYYY-MM-DDTHH:mm:ss")
       : null;
       const params = new URLSearchParams({
+        username: localStorage.getItem("username"),
         status: selectedStatus,
         fromDate: formattedFromDate,
         toDate: formattedToDate,
-      }).toString();
-
-      
+      }).toString();      
         response = await axios({
           url: `${apis.EXPORT_TICKETS}?${params}`,
           method: 'GET',

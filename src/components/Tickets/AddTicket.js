@@ -156,9 +156,9 @@ function AddTicket() {
     form.validateFields().then((values) => {
       const formData = new FormData();
 
-      formData.append("reportedDateTime", moment().format('YYYY-MM-DD HH:mm:ss'));
+      formData.append("reportedDateTime", moment().format('YYYY-MM-DDTHH:mm:ss'));
       formData.append("sender", localStorage.getItem("username"));
-      formData.append("lastUpdatedDateTime", moment().format('YYYY-MM-DD HH:mm:ss'));
+      formData.append("lastUpdatedDateTime", moment().format('YYYY-MM-DDTHH:mm:ss'));
       formData.append("lastUpdatedUser", localStorage.getItem("username"));
 
       Object.keys(values).forEach((key) => {
