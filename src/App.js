@@ -24,22 +24,70 @@ import AddIssueType from "./components/IssueType/AddIssueType";
 import Function from "./pages/Function";
 import AddFunction from "./components/User/AddFunction";
 import AssignFunction from "./components/User/AssignFunction.js";
-import ViewUser from "./components/User/ViewUser.js"
-import UpdateUser from "./components/User/UpdateUser.js"
-import User from "./pages/User.js"
-import UserRole from "./pages/UserRole.js"
-import ViewUserRole from "./components/User/ViewUserRole.js"
-import UpdateUserRole from "./components/User/UpdateUserRole.js"
-import AddUserRole from "./components/User/AddUserRole.js"
-import ViewFunction from "./components/User/ViewFunction.js"
-import UpdateFunction from "./components/User/UpdateFunction.js"
-import AddIssueCategory from "./components/IssueCategory/AddIssueCategory.js"
-import ViewIssueCategory from "./components/IssueCategory/ViewIssueCategory.js"
-import UpdateIssueCategory from "./components/IssueCategory/UpdateIssueCategory.js"
-import GenerateReport from "./pages/GenerateReport.js"
-import AppMenu from "./components/SideBar/AppMenu.js"
+import ViewUser from "./components/User/ViewUser.js";
+import UpdateUser from "./components/User/UpdateUser.js";
+import User from "./pages/User.js";
+import UserRole from "./pages/UserRole.js";
+import ViewUserRole from "./components/User/ViewUserRole.js";
+import UpdateUserRole from "./components/User/UpdateUserRole.js";
+import AddUserRole from "./components/User/AddUserRole.js";
+import ViewFunction from "./components/User/ViewFunction.js";
+import UpdateFunction from "./components/User/UpdateFunction.js";
+import AddIssueCategory from "./components/IssueCategory/AddIssueCategory.js";
+import ViewIssueCategory from "./components/IssueCategory/ViewIssueCategory.js";
+import UpdateIssueCategory from "./components/IssueCategory/UpdateIssueCategory.js";
+import GenerateReport from "./pages/GenerateReport.js";
+import AppMenu from "./components/SideBar/AppMenu.js";
+import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(true);
+  const navigate = useNavigate();
+
+  const updateExpireTime = () => {
+    const expireTime = Date.now() + 60000;
+    localStorage.setItem("expireTime",expireTime);
+  }
+  
+  const checkForInactivity = () => {
+    const expireTime = localStorage.getItem("expireTime");    
+  
+    if(expireTime < Date.now()){
+      console.log("Logout!")
+      setLoggedIn(false);
+      window.location.href = "/login";
+    }
+  }
+
+  useEffect(() => {
+    updateExpireTime();
+  
+
+  window.addEventListener("click", updateExpireTime);
+  window.addEventListener("keypress", updateExpireTime);
+  window.addEventListener("scroll", updateExpireTime);
+  window.addEventListener("mousemove", updateExpireTime);
+
+  return () => {
+    window.addEventListener("click", updateExpireTime);
+    window.addEventListener("keypress", updateExpireTime);
+    window.addEventListener("scroll", updateExpireTime);
+    window.addEventListener("mousemove", updateExpireTime);
+  }
+}, []);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    checkForInactivity();
+  }, 60000);
+
+  return () => clearInterval(interval);
+
+}, []);
+
+
+
   return (
     <div className="App">
       <Progress.Component />
@@ -64,22 +112,32 @@ function App() {
           <Route path="/user/add-user" element={<AddUser />} />
           <Route path="/user/user-role" element={<UserRole />} />
           <Route path="/user/add-user-role" element={<AddUserRole />} />
-          <Route path="/user/function" element={<Function />} />          
-          <Route path="/user/add-function" element={<AddFunction />} />                   
+          <Route path="/user/function" element={<Function />} />
+          <Route path="/user/add-function" element={<AddFunction />} />
           <Route path="/viewFunction/:id" element={<ViewFunction />} />
           <Route path="/updateFunction/:id" element={<UpdateFunction />} />
           <Route path="/user/assign-function" element={<AssignFunction />} />
-          <Route path="/user" element={<User/>} />
+          <Route path="/user" element={<User />} />
           <Route path="/viewUser/:id" element={<ViewUser />} />
           <Route path="/updateUser/:id" element={<UpdateUser />} />
           <Route path="/viewUserRole/:id" element={<ViewUserRole />} />
           <Route path="/updateUserRole/:id" element={<UpdateUserRole />} />
-          <Route path="/issue-category"  element={<IssueCategory />}/>
-          <Route path="/add-issue-category"  element={<AddIssueCategory />}/>
-          <Route path="/viewIssueCategory/:id" element={<ViewIssueCategory />} />           
-          <Route path="/updateIssueCategory/:id" element={<UpdateIssueCategory />} /> 
-          <Route path="/tickets/generate-reports" element={<GenerateReport />} /> 
-          <Route path="/settings" element={<Settings />} /> </Route>          
+          <Route path="/issue-category" element={<IssueCategory />} />
+          <Route path="/add-issue-category" element={<AddIssueCategory />} />
+          <Route
+            path="/viewIssueCategory/:id"
+            element={<ViewIssueCategory />}
+          />
+          <Route
+            path="/updateIssueCategory/:id"
+            element={<UpdateIssueCategory />}
+          />
+          <Route
+            path="/tickets/generate-reports"
+            element={<GenerateReport />}
+          />
+          <Route path="/settings" element={<Settings />} />{" "}
+        </Route>
         <Route path="*" element={<NotFount />} />
       </Routes>
     </div>
