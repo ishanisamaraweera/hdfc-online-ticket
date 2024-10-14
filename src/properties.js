@@ -1,5 +1,5 @@
-export const BE_API_URL = "http://localhost:8080";
-export const FE_API_URL = "http://localhost:3000";
+export const BE_API_URL = "http://192.168.8.110:8080";
+export const FE_API_URL = "http://192.168.8.110:3000";
 export const IMAGE_PATH = process.env.REACT_APP_IMAGEKIT_URL;
 
 export const BASE_API_URL = `${BE_API_URL}`;

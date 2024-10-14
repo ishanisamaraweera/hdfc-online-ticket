@@ -1,6 +1,6 @@
 import { Button, Form, Input, message, Select } from "antd";
 import moment from "moment";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Progress from "react-progress-2";
 import Auth from "../auth/Auth";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import axios from "axios";
 import { apis } from "../properties";
 
 const { Option } = Select;
+const SESSION_TIMEOUT = 1 * 60 * 1000; 
 
 export default function Login() {
   const [form] = Form.useForm();
@@ -16,6 +17,44 @@ export default function Login() {
 
   const { setLogUser, setActiveRoute } = useStore();
   const [loading, setLoading] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
+
+  const resetTimeout = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);  
+    }
+
+    const id = setTimeout(() => {
+      handleLogout();
+    }, SESSION_TIMEOUT);
+
+    setTimeoutId(id);
+  };
+
+  const handleLogout = () => {
+    message.warning("Session timed out. Logging out...");
+    localStorage.clear();  // Clear user data
+    setLogUser(false, null, null);  // Reset user context
+    navigate("/login");  // Redirect to login page
+  };
+
+  const startSessionTimeout = () => {
+    resetTimeout();
+    // Event listeners to reset timeout on user activity
+    window.addEventListener("mousemove", resetTimeout);
+    window.addEventListener("click", resetTimeout);
+    window.addEventListener("keypress", resetTimeout);
+  };
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutId);  // Cleanup on component unmount
+      window.removeEventListener("mousemove", resetTimeout);
+      window.removeEventListener("click", resetTimeout);
+      window.removeEventListener("keypress", resetTimeout);
+    };
+  }, [timeoutId]);
+
 
   const onFinishFailed = () => {
     message.error("Please fill all the details");
@@ -38,6 +77,7 @@ export default function Login() {
         setActiveRoute("dashboard");
         Auth.login(() => {
           navigate("/dashboard");
+          startSessionTimeout();
         });
       } else {
         message.error("Invalid username or password or user deactivated");

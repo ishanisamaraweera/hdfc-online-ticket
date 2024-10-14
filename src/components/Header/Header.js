@@ -79,14 +79,14 @@ function Header(props) {
       <div className="Header_right">
         <Notifications />
         <div className="user_pro_name">
-          <p>
+          {/* <p>
             {profileData.first_name
               ? profileData.first_name + " " + profileData.last_name
               : ""}
-          </p>
-          <span>{profileData.role ? profileData.role : ""}</span>
+          </p> */}
+          {/* <span>{profileData.role ? profileData.role : ""}</span> */}
         </div>
-        <Dropdown
+        {/* <Dropdown
           overlay={menu}
           trigger={["click"]}
           placement="bottomLeft"
@@ -100,7 +100,7 @@ function Header(props) {
               icon={<UserOutlined />}
             />
           )}
-        </Dropdown>
+        </Dropdown> */}
       </div>
     </div>
   );

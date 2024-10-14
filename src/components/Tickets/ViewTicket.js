@@ -426,9 +426,13 @@ function ViewTicket() {
         message.success("Ticket status succesfully updated");
       })
       .catch((error) => {
-        message.error(
-          "Completed percentage should be 100% to complete the ticket"
-        );
+        if (error.response && error.response.data && error.response.data.message) {
+          message.error(error.response.data.message);
+        } else {
+          message.error(
+            "Completed percentage should be 100% to complete the ticket"
+          );
+        }
       });
   };
 
