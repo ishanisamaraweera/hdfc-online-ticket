@@ -86,13 +86,13 @@ function Header(props) {
           </p> */}
           {/* <span>{profileData.role ? profileData.role : ""}</span> */}
         </div>
-        {/* <Dropdown
+        <Dropdown
           overlay={menu}
           trigger={["click"]}
           placement="bottomLeft"
           arrow
         >
-          {profileData.img_url ? (
+          {profileData?.img_url ? (
             <Avatar src={`${IMAGE_PATH}/${profileData.img_url}`} />
           ) : (
             <Avatar
@@ -100,7 +100,7 @@ function Header(props) {
               icon={<UserOutlined />}
             />
           )}
-        </Dropdown> */}
+        </Dropdown>
       </div>
     </div>
   );

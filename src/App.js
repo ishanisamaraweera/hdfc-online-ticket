@@ -40,29 +40,28 @@ import GenerateReport from "./pages/GenerateReport.js";
 import AppMenu from "./components/SideBar/AppMenu.js";
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { message } from "antd";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(true);
   const navigate = useNavigate();
 
   const updateExpireTime = () => {
-    const expireTime = Date.now() + 60000;
-    localStorage.setItem("expireTime",expireTime);
+    const expireTime = Date.now() + 600000;
+    localStorage.setItem("expireTime", expireTime);
   }
   
   const checkForInactivity = () => {
     const expireTime = localStorage.getItem("expireTime");    
   
     if(expireTime < Date.now()){
-      console.log("Logout!")
       setLoggedIn(false);
       window.location.href = "/login";
     }
   }
 
   useEffect(() => {
-    updateExpireTime();
-  
+    updateExpireTime();  
 
   window.addEventListener("click", updateExpireTime);
   window.addEventListener("keypress", updateExpireTime);
@@ -80,13 +79,11 @@ function App() {
 useEffect(() => {
   const interval = setInterval(() => {
     checkForInactivity();
-  }, 60000);
+  }, 600000);
 
   return () => clearInterval(interval);
 
 }, []);
-
-
 
   return (
     <div className="App">

@@ -9,7 +9,7 @@ import axios from "axios";
 import { apis } from "../properties";
 
 const { Option } = Select;
-const SESSION_TIMEOUT = 1 * 60 * 1000; 
+const SESSION_TIMEOUT = 10 * 60 * 1000; 
 
 export default function Login() {
   const [form] = Form.useForm();
@@ -18,24 +18,32 @@ export default function Login() {
   const { setLogUser, setActiveRoute } = useStore();
   const [loading, setLoading] = useState(false);
   const [timeoutId, setTimeoutId] = useState(null);
+  const [hasLoggedOut, setHasLoggedOut] = useState(false);
 
   const resetTimeout = () => {
     if (timeoutId) {
       clearTimeout(timeoutId);  
     }
 
-    const id = setTimeout(() => {
-      handleLogout();
-    }, SESSION_TIMEOUT);
-
-    setTimeoutId(id);
+    if (!hasLoggedOut) {
+      const id = setTimeout(() => {
+        handleLogout();
+      }, SESSION_TIMEOUT);
+      setTimeoutId(id);
+    }
   };
 
   const handleLogout = () => {
-    message.warning("Session timed out. Logging out...");
-    localStorage.clear();  // Clear user data
-    setLogUser(false, null, null);  // Reset user context
-    navigate("/login");  // Redirect to login page
+    if (!hasLoggedOut) {
+      setHasLoggedOut(true);
+      message.warning("Session timed out. Logging out...");
+      localStorage.clear();
+      setLogUser(false, null, null);
+      window.removeEventListener("mousemove", resetTimeout);
+      window.removeEventListener("click", resetTimeout);
+      window.removeEventListener("keypress", resetTimeout);
+      navigate("/login");
+    }
   };
 
   const startSessionTimeout = () => {
